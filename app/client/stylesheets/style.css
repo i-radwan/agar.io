@@ -6,4 +6,8 @@
 
 body {
     font: 13px Helvetica, Arial;
+
+    /*  Stop Scrolling  */
+    height: 100%;
+    overflow: hidden;
 }

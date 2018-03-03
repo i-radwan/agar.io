@@ -5,46 +5,85 @@
 // Constants
 const CANVAS_ID = "canvas";
 const CANVAS_BKGD_LINES_SEPARATION = 30;
+const GAME_FPS = 50;
+
+let gameStatus = {
+    init() {
+        this._gems = [{
+            x: window.innerWidth / 1.2,
+            y: window.innerHeight / 1.4,
+            color: "blue",
+            radius: 10,
+            object: {}
+        }, {
+            x: window.innerWidth / 2.6,
+            y: window.innerHeight / 2.6,
+            color: "blue",
+            radius: 10,
+            object: {}
+        }];
+        this._players = [{
+            x: window.innerWidth / 4,
+            y: window.innerHeight / 4,
+            velocity: 200,
+            direction: 120, // Angle
+            color: "green",
+            radius: 30,
+            name: "P1",
+            object: {}
+        }];
+        this._me = {
+            alive: true,
+            x: window.innerWidth / 2,
+            y: window.innerHeight / 2,
+            velocity: 100,
+            direction: 10, // Angle
+            color: "red",
+            radius: 20,
+            object: {},
+            name: "IAR",
+            score: 0,
+            scoreObject: {}
+        };
+    },
+    set(game_status) {
+
+    }
+};
 
 let server = {
     init() {
         this._socket = io();
-    }
 
-    // $('form').submit(function () {
-    //     socket.emit('chat message', $('#m').val());
-    //     $('#m').val('');
-    //     return false;
-    // });
-    // socket.on('chat message', function (msg) {
-    //     $('#messages').append($('<li>').text(msg));
-    // });
+        // Receive messages
+        this._socket.on('game_status', function (game_status) {
+            console.log(game_status);
+        });
+    },
+    /**
+     * Update the server
+     */
+    transmit () {
+        // socket.emit('chat message', $('#m').val());
+        // $('#m').val('');
+    }
 };
 
 let canvas = new fabric.StaticCanvas(CANVAS_ID, {
     width: window.innerWidth,
-    height: window.innerHeight
+    height: window.innerHeight,
+    backgroundColor: "#ffffff"
 });
 
-let game = {
+let gameEngine = {
     init() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        canvas.backgroundColor = "#ffffff";
-
+        this.config();
         this.drawBackgroundLines();
-        // canvas.renderTop();
-        //
-        // canvas.add(
-        //     new fabric.Rect({top: 100, left: 100, width: 50, height: 50, fill: '#f55'}),
-        //     new fabric.Circle({top: 140, left: 230, radius: 75, fill: 'purple'}),
-        //     new fabric.Triangle({top: 300, left: 210, width: 100, height: 100, fill: 'blue'})
-        // );
-        //
+        this.initDraw();
     },
     drawBackgroundLines() {
         // Draw background lines
-        for (let i = CANVAS_BKGD_LINES_SEPARATION; i <= window.innerWidth - CANVAS_BKGD_LINES_SEPARATION; i += CANVAS_BKGD_LINES_SEPARATION) {
+        for (let i = CANVAS_BKGD_LINES_SEPARATION; i <= Math.max(window.innerWidth, window.innerHeight) - CANVAS_BKGD_LINES_SEPARATION; i += CANVAS_BKGD_LINES_SEPARATION) {
             canvas.add(
                 new fabric.Line([i, 0, i, window.innerHeight], {
                     stroke: '#eee'
@@ -57,7 +96,16 @@ let game = {
 
         canvas.renderAll();
     },
-    draw() {
+    /**
+     * Get mouse position
+     * Update gameStatus
+     */
+    update() {
+        // Calculate my angle
+        // Calculate my new position
+
+    },
+    initDraw() {
         this.drawGems();
         this.drawEnemies();
         this.drawMe();
@@ -66,21 +114,61 @@ let game = {
         canvas.renderAll();
     },
     drawGems() {
+        for (let i = 0; i < gameStatus._gems.length; i++) {
+            gameStatus._gems[i].object = this.drawCircle(gameStatus._gems[i]);
+            canvas.add(gameStatus._gems[i].object);
+        }
     },
     drawEnemies() {
+        for (let i = 0; i < gameStatus._players.length; i++) {
+            gameStatus._players[i].object = this.drawCircle(gameStatus._players[i]);
+            canvas.add(gameStatus._players[i].object);
+        }
     },
     drawMe() {
+        gameStatus._me.object = this.drawCircle(gameStatus._me);
+        canvas.add(gameStatus._me.object);
     },
     drawScore() {
+
+    },
+    /**
+     * Refresh the drawing due to game status update
+     */
+    draw() {
+
+    },
+    drawCircle(parameters){
+        return new fabric.Circle({
+            left: parameters.x,
+            top: parameters.y,
+            radius: parameters.radius,
+            fill: parameters.color,
+        });
+    },
+    config() {
+        // Stop scrolling for mobile devices
+        $('body').bind('touchmove', function (e) {
+            e.preventDefault()
+        });
     }
 };
 
+// Start
 $(function () {
     // Initialize
+    gameStatus.init();
     server.init();
-    game.init();
+    gameEngine.init();
 
-    while (1) {
+    // Game loop
+    gameStatus._intervalId = setInterval(function () {
+        gameEngine.update();
+        server.transmit();
 
-    }
+        gameEngine.draw();
+
+        if (!gameStatus._me.alive)
+            clearInterval(gameStatus._intervalId);
+    }, 1000 / GAME_FPS);
 });
