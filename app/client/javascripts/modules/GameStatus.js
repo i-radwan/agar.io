@@ -6,7 +6,7 @@ export default function () {
     var module = {};
 
     module.init = function () {
-        this._gems = [{
+        module._gems = [{
             x: window.innerWidth / 1.2,
             y: window.innerHeight / 1.4,
             color: "blue",
@@ -19,7 +19,7 @@ export default function () {
             radius: 10,
             object: {}
         }];
-        this._players = [{
+        module._players = [{
             x: window.innerWidth / 4,
             y: window.innerHeight / 4,
             velocity: 2,
@@ -29,7 +29,7 @@ export default function () {
             name: "P1",
             object: {}
         }];
-        this._me = {
+        module._me = {
             alive: true,
             x: window.innerWidth / 2,
             y: window.innerHeight / 2,
