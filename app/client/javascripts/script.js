@@ -10,16 +10,16 @@ import gs from './modules/GameServer.js';
 const CANVAS_ID = "canvas";
 const GAME_FPS = 25;
 
-let canvas = new fabric.Canvas(CANVAS_ID, {
-    width: window.innerWidth,
-    height: window.innerHeight,
-    backgroundColor: "#ffffff",
-    hoverCursor: "default",
-    selection: false
-});
-
 // Start
 $(function () {
+    let canvas = new fabric.Canvas(CANVAS_ID, {
+        width: window.innerWidth,
+        height: window.innerHeight,
+        backgroundColor: "#ffffff",
+        hoverCursor: "default",
+        selection: false
+    });
+
     let gameStatus = gt();
     let gameEngine = ge(gameStatus, canvas);
     let gameServer = gs();
@@ -31,9 +31,10 @@ $(function () {
 
     // Game loop
     gameStatus._intervalId = setInterval(function () {
-        gameEngine.update();
+        // Send current state to the server
         gameServer.transmit();
 
+        // Update the game graphics
         gameEngine.draw();
 
         // Stop when dead
