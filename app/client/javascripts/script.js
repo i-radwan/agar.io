@@ -18,12 +18,12 @@ let canvas = new fabric.Canvas(CANVAS_ID, {
     selection: false
 });
 
-let gameStatus = gt();
-let gameEngine = ge(gameStatus, canvas);
-let gameServer = gs();
-
 // Start
 $(function () {
+    let gameStatus = gt();
+    let gameEngine = ge(gameStatus, canvas);
+    let gameServer = gs();
+
     // Initialize
     gameStatus.init();
     gameServer.init();
