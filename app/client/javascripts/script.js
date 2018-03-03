@@ -5,7 +5,15 @@
 // Constants
 const CANVAS_ID = "canvas";
 const CANVAS_BKGD_LINES_SEPARATION = 30;
-const GAME_FPS = 50;
+const GAME_FPS = 25;
+
+let canvas = new fabric.Canvas(CANVAS_ID, {
+    width: window.innerWidth,
+    height: window.innerHeight,
+    backgroundColor: "#ffffff",
+    hoverCursor: "default",
+    selection: false
+});
 
 let gameStatus = {
     init() {
@@ -25,7 +33,7 @@ let gameStatus = {
         this._players = [{
             x: window.innerWidth / 4,
             y: window.innerHeight / 4,
-            velocity: 200,
+            velocity: 2,
             direction: 120, // Angle
             color: "green",
             radius: 30,
@@ -36,14 +44,16 @@ let gameStatus = {
             alive: true,
             x: window.innerWidth / 2,
             y: window.innerHeight / 2,
-            velocity: 100,
+            velocity: 3,
             direction: 10, // Angle
             color: "red",
             radius: 20,
             object: {},
             name: "IAR",
             score: 0,
-            scoreObject: {}
+            scoreObject: {},
+            mouseX: 0,
+            mouseY: 0
         };
     },
     set(game_status) {
@@ -51,7 +61,7 @@ let gameStatus = {
     }
 };
 
-let server = {
+let gameServer = {
     init() {
         this._socket = io();
 
@@ -69,12 +79,6 @@ let server = {
     }
 };
 
-let canvas = new fabric.StaticCanvas(CANVAS_ID, {
-    width: window.innerWidth,
-    height: window.innerHeight,
-    backgroundColor: "#ffffff"
-});
-
 let gameEngine = {
     init() {
         this.config();
@@ -86,10 +90,20 @@ let gameEngine = {
         for (let i = CANVAS_BKGD_LINES_SEPARATION; i <= Math.max(window.innerWidth, window.innerHeight) - CANVAS_BKGD_LINES_SEPARATION; i += CANVAS_BKGD_LINES_SEPARATION) {
             canvas.add(
                 new fabric.Line([i, 0, i, window.innerHeight], {
-                    stroke: '#eee'
+                    stroke: '#eee',
+                    hasControls: false,
+                    hasBorders: false,
+                    lockMovementX: true,
+                    lockMovementY: true,
+                    selection: false
                 }),
                 new fabric.Line([0, i, window.innerWidth, i], {
-                    stroke: '#eee'
+                    stroke: '#eee',
+                    hasControls: false,
+                    hasBorders: false,
+                    lockMovementX: true,
+                    lockMovementY: true,
+                    selection: false
                 })
             );
         }
@@ -136,7 +150,32 @@ let gameEngine = {
      * Refresh the drawing due to game status update
      */
     draw() {
+        this.moveMyCircle();
 
+        canvas.renderAll();
+    },
+    moveMyCircle() {
+        // Get my circle center
+        let myCircleCenterX = gameStatus._me.object.getCenterPoint().x;
+        let myCircleCenterY = gameStatus._me.object.getCenterPoint().y;
+
+        // Check if cursor outside the circle (to avoid vibrations)
+        if (Math.sqrt(Math.pow(gameStatus._me.mouseX - myCircleCenterX, 2) +
+                Math.pow(gameStatus._me.mouseY - myCircleCenterY, 2)) < 2)
+            return;
+
+        // Calculate mouse angle and move my player with the velocity
+        if (gameStatus._me.mouseX - myCircleCenterX === 0) { // Vertical direction
+            gameStatus._me.object.top += Math.sign(gameStatus._me.mouseY - myCircleCenterY) * gameStatus._me.velocity;
+        } else { // Inclined direction
+            let angle = Math.atan2((gameStatus._me.mouseY - myCircleCenterY), (gameStatus._me.mouseX - myCircleCenterX));
+            gameStatus._me.object.top += Math.sin(angle) * gameStatus._me.velocity;
+            gameStatus._me.object.left += Math.cos(angle) * gameStatus._me.velocity;
+        }
+
+        // Update position
+        gameStatus._me.x = gameStatus._me.object.left;
+        gameStatus._me.y = gameStatus._me.object.top;
     },
     drawCircle(parameters){
         return new fabric.Circle({
@@ -144,12 +183,23 @@ let gameEngine = {
             top: parameters.y,
             radius: parameters.radius,
             fill: parameters.color,
+            hasControls: false,
+            hasBorders: false,
+            lockMovementX: true,
+            lockMovementY: true,
+            selection: false
         });
     },
     config() {
         // Stop scrolling for mobile devices
         $('body').bind('touchmove', function (e) {
             e.preventDefault()
+        });
+
+        // Get mouse coordinates
+        canvas.on('mouse:move', function (options) {
+            gameStatus._me.mouseX = options.e.layerX;
+            gameStatus._me.mouseY = options.e.layerY;
         });
     }
 };
@@ -158,13 +208,13 @@ let gameEngine = {
 $(function () {
     // Initialize
     gameStatus.init();
-    server.init();
+    gameServer.init();
     gameEngine.init();
 
     // Game loop
     gameStatus._intervalId = setInterval(function () {
         gameEngine.update();
-        server.transmit();
+        gameServer.transmit();
 
         gameEngine.draw();
 

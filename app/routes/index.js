@@ -1,7 +1,7 @@
 /**
  * Created by ibrahimradwan on 3/2/18.
  */
-var path = require('path');
+let path = require('path');
 
 module.exports = function (app, express) {
     // Set static path to provide required assets
