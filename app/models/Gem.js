@@ -2,9 +2,9 @@
  * Created by ibrahimradwan on 3/2/18.
  */
 
-class Jem {
+class Gem {
     /**
-     * Jem constructor
+     * Gem constructor
      * @param position: object contains {x, y}
      * @param color: object contains {r, g, b}
      * @param points: integer
