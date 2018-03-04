@@ -15,7 +15,9 @@ export default function (gameStatus, canvas) {
 
     module.drawBackgroundLines = function () {
         // Draw background lines
-        for (let i = CANVAS_BKGD_LINES_SEPARATION; i <= Math.max(window.innerWidth, window.innerHeight) - CANVAS_BKGD_LINES_SEPARATION; i += CANVAS_BKGD_LINES_SEPARATION) {
+        for (let i = CANVAS_BKGD_LINES_SEPARATION;
+             i <= Math.max(window.innerWidth, window.innerHeight) - CANVAS_BKGD_LINES_SEPARATION;
+             i += CANVAS_BKGD_LINES_SEPARATION) {
             canvas.add(
                 new fabric.Line([i, 0, i, window.innerHeight], {
                     stroke: '#eee',
@@ -95,9 +97,11 @@ export default function (gameStatus, canvas) {
         let myCircleCenterX = gameStatus._me.object.getCenterPoint().x;
         let myCircleCenterY = gameStatus._me.object.getCenterPoint().y;
 
+        let difference = Math.sqrt(Math.pow(gameStatus._me.mouseX - myCircleCenterX, 2) +
+            Math.pow(gameStatus._me.mouseY - myCircleCenterY, 2));
+
         // Check if cursor outside the circle (to avoid vibrations)
-        if (Math.sqrt(Math.pow(gameStatus._me.mouseX - myCircleCenterX, 2) +
-                Math.pow(gameStatus._me.mouseY - myCircleCenterY, 2)) < 2)
+        if (difference < 2)
             return;
 
         // Calculate mouse angle and move my player with the velocity
@@ -105,8 +109,8 @@ export default function (gameStatus, canvas) {
             gameStatus._me.object.top += Math.sign(gameStatus._me.mouseY - myCircleCenterY) * gameStatus._me.velocity;
         } else { // Inclined direction
             let angle = Math.atan2((gameStatus._me.mouseY - myCircleCenterY), (gameStatus._me.mouseX - myCircleCenterX));
-            gameStatus._me.object.top += Math.sin(angle) * gameStatus._me.velocity;
-            gameStatus._me.object.left += Math.cos(angle) * gameStatus._me.velocity;
+            gameStatus._me.object.top += Math.sin(angle) * Math.min(difference, gameStatus._me.velocity);
+            gameStatus._me.object.left += Math.cos(angle) * Math.min(difference, gameStatus._me.velocity);
         }
 
         // Update position

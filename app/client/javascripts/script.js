@@ -8,7 +8,7 @@ import gs from './modules/GameServer.js';
 
 // Constants
 const CANVAS_ID = "canvas";
-const GAME_FPS = 25;
+const GAME_FPS = 50;
 
 // Start
 $(function () {
