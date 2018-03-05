@@ -4,13 +4,24 @@
 
 export default function () {
     var module = {};
+    module.connectionEstablised = false;
 
-    module.init = function () {
+    module.init = function (startGameLoop) {
         module._socket = io();
 
-        // Receive messages
+        module._socket.on('connect', function () {
+            // Send subscription request
+            module._socket.emit('subscribe', {});
+        });
+
         module._socket.on('game_status', function (game_status) {
-            console.log(game_status);
+            console.log('Incoming message:', game_status);
+
+            // Start game
+            if (!module.connectionEstablised) {
+                startGameLoop();
+                module.connectionEstablised = true;
+            }
         });
     };
 

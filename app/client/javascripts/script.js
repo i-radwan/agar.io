@@ -11,7 +11,14 @@ const CANVAS_ID = "canvas";
 const GAME_FPS = 50;
 
 // Start
+let gameServer = gs();
+
 $(function () {
+    // Initialize
+    gameServer.init(startGameLoop);
+});
+
+function startGameLoop() {
     let canvas = new fabric.Canvas(CANVAS_ID, {
         width: window.innerWidth,
         height: window.innerHeight,
@@ -22,11 +29,8 @@ $(function () {
 
     let gameStatus = gt();
     let gameEngine = ge(gameStatus, canvas);
-    let gameServer = gs();
 
-    // Initialize
     gameStatus.init();
-    gameServer.init();
     gameEngine.init();
 
     // Game loop
@@ -41,4 +45,4 @@ $(function () {
         if (!gameStatus._me.alive)
             clearInterval(gameStatus._intervalId);
     }, 1000 / GAME_FPS);
-});
+}

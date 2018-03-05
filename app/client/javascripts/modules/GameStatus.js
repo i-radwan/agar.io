@@ -27,6 +27,7 @@ export default function () {
             color: "green",
             radius: 30,
             name: "P1",
+            score: 10,
             object: {}
         }];
         module._me = {

@@ -53,7 +53,7 @@ export default function (gameStatus, canvas) {
 
     module.initDraw = function () {
         module.drawGems();
-        module.drawEnemies();
+        module.drawPlayers();
         module.drawMe();
         module.drawScore();
 
@@ -67,7 +67,7 @@ export default function (gameStatus, canvas) {
         }
     };
 
-    module.drawEnemies = function () {
+    module.drawPlayers = function () {
         for (let i = 0; i < gameStatus._players.length; i++) {
             gameStatus._players[i].object = module.drawCircle(gameStatus._players[i]);
             canvas.add(gameStatus._players[i].object);
