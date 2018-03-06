@@ -22,8 +22,8 @@ export default function (gameStatus) {
             gameStatus._me.object.top += Math.sign(gameStatus.env.mouseY - myCircleCenterY) * gameStatus._me.velocity;
         } else { // Inclined direction
             let angle = Math.atan2((gameStatus.env.mouseY - myCircleCenterY), (gameStatus.env.mouseX - myCircleCenterX));
-            gameStatus._me.object.top += Math.sin(angle) * Math.min(difference, gameStatus._me.velocity);
-            gameStatus._me.object.left += Math.cos(angle) * Math.min(difference, gameStatus._me.velocity);
+            gameStatus._me.object.top += Math.sin(angle) * gameStatus._me.velocity;
+            gameStatus._me.object.left += Math.cos(angle) * gameStatus._me.velocity;
         }
 
         // Update position
