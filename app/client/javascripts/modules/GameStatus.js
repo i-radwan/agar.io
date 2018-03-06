@@ -39,7 +39,7 @@ export default function () {
             alive: true,
             x: window.innerWidth / 2,
             y: window.innerHeight / 2,
-            velocity: 10,
+            velocity: 3,
             direction: 10, // Angle
             color: "red",
             radius: 20,

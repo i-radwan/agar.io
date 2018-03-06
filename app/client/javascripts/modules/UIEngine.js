@@ -5,6 +5,7 @@
 // Constants
 const CANVAS_BKGD_LINES_SEPARATION = 30;
 const CANVAS_ID = "canvas";
+const BKGN_CANVAS_ID = "background_canvas";
 
 export default function (gameStatus) {
     let module = {};
@@ -12,8 +13,16 @@ export default function (gameStatus) {
     let canvas = new fabric.Canvas(CANVAS_ID, {
         width: window.innerWidth,
         height: window.innerHeight,
-        backgroundColor: "#ffffff",
+        backgroundColor: "transparent",
         hoverCursor: "default",
+        selection: false
+    });
+
+    let backgroundCanvas = new fabric.StaticCanvas(BKGN_CANVAS_ID, {
+        width: window.innerWidth,
+        height: window.innerHeight,
+        backgroundColor: "white",
+        hoverCursor: "none",
         selection: false
     });
 
@@ -40,7 +49,7 @@ export default function (gameStatus) {
         drawMe();
         drawScore();
 
-        canvas.renderAll();
+        backgroundCanvas.renderAll();
     };
 
     let drawBackgroundLines = function () {
@@ -48,7 +57,7 @@ export default function (gameStatus) {
         for (let i = CANVAS_BKGD_LINES_SEPARATION;
              i <= Math.max(window.innerWidth, window.innerHeight) - CANVAS_BKGD_LINES_SEPARATION;
              i += CANVAS_BKGD_LINES_SEPARATION) {
-            canvas.add(
+            backgroundCanvas.add(
                 new fabric.Line([i, 0, i, window.innerHeight], {
                     stroke: '#eee',
                     hasControls: false,
@@ -67,7 +76,6 @@ export default function (gameStatus) {
                 })
             );
         }
-
     };
 
     let drawGems = function () {
