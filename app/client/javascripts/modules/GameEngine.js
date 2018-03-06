@@ -5,7 +5,7 @@
 import PhysicsEngine from "./PhysicsEngine.js";
 import UIEngine from "./UIEngine.js";
 
-export default function (gameStatus, updatedGameStatus) {
+export default function (gameStatus, serverGameStatus) {
     let module = {};
 
     let physicsEngine = PhysicsEngine(gameStatus);
@@ -23,7 +23,6 @@ export default function (gameStatus, updatedGameStatus) {
 
     module.updateGameStatus = function () {
         physicsEngine.moveMyCircle();
-
     };
 
     let config = function () {

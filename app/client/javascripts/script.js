@@ -7,27 +7,26 @@ import GameEngine from "./modules/GameEngine.js";
 import GameServer from "./modules/GameServer.js";
 
 // Constants
-const GAME_FPS = 25;
+const GAME_FPS = 120;
 
 // Main game object
 let game = {
     init: function () {
         // Establish server communication
         game.gameServer = GameServer();
-        game.gameServer.init(this.startGameLoop);
+        game.gameServer.init(this.startGame);
     },
 
     /**
      * Callback function to be called when the server responds with room status
      */
-    startGameLoop: function () {
-        console.log(game);
+    startGame: function () {
         game.gameStatus = GameStatus();
-        game.updatedGameStatus = GameStatus();
-        game.gameEngine = GameEngine(game.gameStatus, game.updatedGameStatus);
+        game.serverGameStatus = GameStatus();
+        game.gameEngine = GameEngine(game.gameStatus, game.serverGameStatus);
 
         game.gameStatus.init();
-        game.updatedGameStatus.init();
+        game.serverGameStatus.init();
         game.gameEngine.init();
 
         // Game loop

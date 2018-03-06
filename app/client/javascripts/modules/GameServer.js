@@ -6,7 +6,7 @@ export default function () {
     let module = {};
     let connectionEstablished = false;
 
-    module.init = function (startGameLoop) {
+    module.init = function (startGame) {
         module._socket = io();
 
         module._socket.on('connect', function () {
@@ -19,7 +19,7 @@ export default function () {
 
             // Start game
             if (!connectionEstablished) {
-                startGameLoop();
+                startGame();
                 connectionEstablished = true;
             }
         });
