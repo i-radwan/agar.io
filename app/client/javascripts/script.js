@@ -12,27 +12,28 @@ const GAME_FPS = 120;
 // Main game object
 let game = {
     init: function () {
+        game.gameStatus = GameStatus();
+        game.serverGameStatus = GameStatus();
+
+        game.gameStatus.init();
+        game.serverGameStatus.init();
+
         // Establish server communication
-        game.gameServer = GameServer();
-        game.gameServer.init(this.startGame);
+        game.gameServer = GameServer(game.gameStatus, game.serverGameStatus);
+        game.gameServer.init(game.startGame);
     },
 
     /**
      * Callback function to be called when the server responds with room status
      */
     startGame: function () {
-        game.gameStatus = GameStatus();
-        game.serverGameStatus = GameStatus();
         game.gameEngine = GameEngine(game.gameStatus, game.serverGameStatus);
-
-        game.gameStatus.init();
-        game.serverGameStatus.init();
         game.gameEngine.init();
 
         // Game loop
         let _intervalId = setInterval(function () {
             // Send current state to the server
-            game.gameServer.transmit();
+            game.gameServer.sendStatus();
 
             // Update the game status (My location, players, gems, score, ... etc)
             game.gameEngine.updateGameStatus();

@@ -3,9 +3,9 @@
  */
 
 // Constants
-const CANVAS_BKGD_LINES_SEPARATION = 30;
+const CANVAS_BACKGROUND_LINES_SEPARATION = 30;
 const CANVAS_ID = "canvas";
-const BKGN_CANVAS_ID = "background_canvas";
+const BACKGROUND_CANVAS_ID = "background_canvas";
 
 export default function (gameStatus) {
     let module = {};
@@ -18,7 +18,7 @@ export default function (gameStatus) {
         selection: false
     });
 
-    let backgroundCanvas = new fabric.StaticCanvas(BKGN_CANVAS_ID, {
+    let backgroundCanvas = new fabric.StaticCanvas(BACKGROUND_CANVAS_ID, {
         width: window.innerWidth,
         height: window.innerHeight,
         backgroundColor: "white",
@@ -54,9 +54,9 @@ export default function (gameStatus) {
 
     let drawBackgroundLines = function () {
         // Draw background lines
-        for (let i = CANVAS_BKGD_LINES_SEPARATION;
-             i <= Math.max(window.innerWidth, window.innerHeight) - CANVAS_BKGD_LINES_SEPARATION;
-             i += CANVAS_BKGD_LINES_SEPARATION) {
+        for (let i = CANVAS_BACKGROUND_LINES_SEPARATION;
+             i <= Math.max(window.innerWidth, window.innerHeight) - CANVAS_BACKGROUND_LINES_SEPARATION;
+             i += CANVAS_BACKGROUND_LINES_SEPARATION) {
             backgroundCanvas.add(
                 new fabric.Line([i, 0, i, window.innerHeight], {
                     stroke: '#eee',

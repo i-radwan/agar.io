@@ -52,7 +52,7 @@ export default function () {
     /**
      * Update the game status
      */
-    module.set = function (game_status) {
+    module.set = function (receivedGameStatus) {
 
     };
     return module;
