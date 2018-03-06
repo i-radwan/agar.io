@@ -2,47 +2,53 @@
  * Created by ibrahimradwan on 3/2/18.
  */
 // Imports
-import gt from './modules/GameStatus.js';
-import ge from './modules/GameEngine.js';
-import gs from './modules/GameServer.js';
+import GameStatus from "./modules/GameStatus.js";
+import GameEngine from "./modules/GameEngine.js";
+import GameServer from "./modules/GameServer.js";
 
 // Constants
-const CANVAS_ID = "canvas";
-const GAME_FPS = 50;
+const GAME_FPS = 25;
 
-// Start
-let gameServer = gs();
+// Main game object
+let game = {
+    init: function () {
+        // Establish server communication
+        game.gameServer = GameServer();
+        game.gameServer.init(this.startGameLoop);
+    },
 
+    /**
+     * Callback function to be called when the server responds with room status
+     */
+    startGameLoop: function () {
+        console.log(game);
+        game.gameStatus = GameStatus();
+        game.updatedGameStatus = GameStatus();
+        game.gameEngine = GameEngine(game.gameStatus, game.updatedGameStatus);
+
+        game.gameStatus.init();
+        game.updatedGameStatus.init();
+        game.gameEngine.init();
+
+        // Game loop
+        let _intervalId = setInterval(function () {
+            // Send current state to the server
+            game.gameServer.transmit();
+
+            // Update the game status (My location, players, gems, score, ... etc)
+            game.gameEngine.updateGameStatus();
+
+            // Redraw the canvas
+            game.gameEngine.drawGame();
+
+            // Stop when dead
+            if (!game.gameStatus._me.alive)
+                clearInterval(_intervalId);
+        }, 1000 / GAME_FPS);
+    }
+};
+
+// Fire the game
 $(function () {
-    // Initialize
-    gameServer.init(startGameLoop);
+    game.init();
 });
-
-function startGameLoop() {
-    let canvas = new fabric.Canvas(CANVAS_ID, {
-        width: window.innerWidth,
-        height: window.innerHeight,
-        backgroundColor: "#ffffff",
-        hoverCursor: "default",
-        selection: false
-    });
-
-    let gameStatus = gt();
-    let gameEngine = ge(gameStatus, canvas);
-
-    gameStatus.init();
-    gameEngine.init();
-
-    // Game loop
-    gameStatus._intervalId = setInterval(function () {
-        // Send current state to the server
-        gameServer.transmit();
-
-        // Update the game graphics
-        gameEngine.draw();
-
-        // Stop when dead
-        if (!gameStatus._me.alive)
-            clearInterval(gameStatus._intervalId);
-    }, 1000 / GAME_FPS);
-}

@@ -3,9 +3,14 @@
  */
 
 export default function () {
-    var module = {};
+    let module = {};
 
     module.init = function () {
+        module.env = {
+            scoreObject: {},
+            mouseX: window.innerWidth / 2,
+            mouseY: window.innerHeight / 2
+        };
         module._gems = [{
             x: window.innerWidth / 1.2,
             y: window.innerHeight / 1.4,
@@ -40,10 +45,7 @@ export default function () {
             radius: 20,
             object: {},
             name: "IAR",
-            score: 0,
-            scoreObject: {},
-            mouseX: 0,
-            mouseY: 0
+            score: 0
         };
     };
 

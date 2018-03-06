@@ -3,8 +3,8 @@
  */
 
 export default function () {
-    var module = {};
-    module.connectionEstablised = false;
+    let module = {};
+    let connectionEstablished = false;
 
     module.init = function (startGameLoop) {
         module._socket = io();
@@ -18,9 +18,9 @@ export default function () {
             console.log('Incoming message:', game_status);
 
             // Start game
-            if (!module.connectionEstablised) {
+            if (!connectionEstablished) {
                 startGameLoop();
-                module.connectionEstablised = true;
+                connectionEstablished = true;
             }
         });
     };
