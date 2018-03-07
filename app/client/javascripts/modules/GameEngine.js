@@ -37,7 +37,7 @@ export default function (gameStatus, serverGameStatus) {
     let config = function () {
         // Stop scrolling for mobile devices
         $('body').bind('touchmove', function (e) {
-            e.preventDefault()
+            e.preventDefault();
         });
     };
     return module;

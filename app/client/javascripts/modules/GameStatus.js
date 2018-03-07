@@ -5,9 +5,7 @@
 export default function () {
     let module = {};
 
-    module.status = {
-
-    };
+    module.status = {};
 
     module.init = function (serverGameStatus) {
         module.status._env = {
@@ -37,9 +35,8 @@ export default function () {
      * Update the game status
      */
     module.set = function (receivedGameStatus) {
-        console.log("Old status", module.status);
+        // ToDo check if things removed/added to remove/add to the canvas
         module.status = Object.assign(module.status, receivedGameStatus);
-        console.log("New status", module.status);
 
         // Update canvas objects
     };

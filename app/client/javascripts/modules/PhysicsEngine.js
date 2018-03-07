@@ -42,8 +42,8 @@ export default function (gameStatus) {
      */
     module.movePlayer = function (player) {
         // Move canvas object
-        player.canvasObject.top = player.canvasObject.top + Math.sin(player.angle) * player.velocity;
-        player.canvasObject.left = player.canvasObject.left + Math.cos(player.angle) * player.velocity;
+        player.canvasObject.top += Math.sin(player.angle) * player.velocity;
+        player.canvasObject.left += Math.cos(player.angle) * player.velocity;
 
         // Update position
         player.x = player.canvasObject.left;
