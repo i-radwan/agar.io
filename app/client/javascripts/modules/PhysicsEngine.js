@@ -38,7 +38,7 @@ export default function (gameStatus) {
 
     /**
      * Move some player normal movement (velocity and angle)
-     * @param player the player to be moved
+     * @param player the player to be moved.
      */
     module.movePlayer = function (player) {
         // Move canvas object
