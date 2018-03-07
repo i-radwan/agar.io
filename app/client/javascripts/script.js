@@ -1,15 +1,51 @@
 /**
  * Created by ibrahimradwan on 3/2/18.
  */
+// Imports
+import GameStatus from "./modules/GameStatus.js";
+import GameEngine from "./modules/GameEngine.js";
+import GameServer from "./modules/GameServer.js";
 
+// Constants
+const GAME_FPS = 120;
+
+// Main game canvasObject
+let game = {
+    init: function () {
+        game.gameStatus = GameStatus();
+        game.serverGameStatus = GameStatus();
+
+        // Establish server communication
+        game.gameServer = GameServer(game.gameStatus, game.serverGameStatus);
+        game.gameServer.init(game.startGame);
+    },
+
+    /**
+     * Callback function to be called when the server responds with room status
+     */
+    startGame: function () {
+        game.gameEngine = GameEngine(game.gameStatus, game.serverGameStatus);
+        game.gameEngine.init();
+
+        // Game loop
+        let _intervalId = setInterval(function () {
+            // Send current state to the server
+            game.gameServer.sendStatus();
+
+            // Update the game status (My location, players, gems, score, ... etc)
+            game.gameEngine.updateGameStatus();
+
+            // Redraw the canvas
+            game.gameEngine.drawGame();
+
+            // Stop when dead
+            if (!game.gameStatus.status._me.alive)
+                clearInterval(_intervalId);
+        }, 1000 / GAME_FPS);
+    }
+};
+
+// Fire the game
 $(function () {
-    var socket = io();
-    $('form').submit(function () {
-        socket.emit('chat message', $('#m').val());
-        $('#m').val('');
-        return false;
-    });
-    socket.on('chat message', function (msg) {
-        $('#messages').append($('<li>').text(msg));
-    });
+    game.init();
 });
