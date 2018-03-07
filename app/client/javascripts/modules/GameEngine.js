@@ -22,7 +22,16 @@ export default function (gameStatus, serverGameStatus) {
     };
 
     module.updateGameStatus = function () {
-        physicsEngine.moveMyCircle();
+        // Move my circle to follow the mouse
+        physicsEngine.movePlayerToMouse(gameStatus.status._me, {
+            x: gameStatus.status._env.mouseX,
+            y: gameStatus.status._env.mouseY
+        });
+
+        // Move players
+        gameStatus.status._players.forEach(function (player) {
+            physicsEngine.movePlayer(player);
+        });
     };
 
     let config = function () {

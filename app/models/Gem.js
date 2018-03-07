@@ -5,8 +5,8 @@
 class Gem {
     /**
      * Gem constructor
-     * @param position: object contains {x, y}
-     * @param color: object contains {r, g, b}
+     * @param position: canvasObject contains {x, y}
+     * @param color: canvasObject contains {r, g, b}
      * @param points: integer
      */
     constructor(position, color, points) {

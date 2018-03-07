@@ -9,14 +9,11 @@ import GameServer from "./modules/GameServer.js";
 // Constants
 const GAME_FPS = 120;
 
-// Main game object
+// Main game canvasObject
 let game = {
     init: function () {
         game.gameStatus = GameStatus();
         game.serverGameStatus = GameStatus();
-
-        game.gameStatus.init();
-        game.serverGameStatus.init();
 
         // Establish server communication
         game.gameServer = GameServer(game.gameStatus, game.serverGameStatus);
@@ -42,7 +39,7 @@ let game = {
             game.gameEngine.drawGame();
 
             // Stop when dead
-            if (!game.gameStatus._me.alive)
+            if (!game.gameStatus.status._me.alive)
                 clearInterval(_intervalId);
         }, 1000 / GAME_FPS);
     }

@@ -59,42 +59,32 @@ export default function (gameStatus) {
              i += CANVAS_BACKGROUND_LINES_SEPARATION) {
             backgroundCanvas.add(
                 new fabric.Line([i, 0, i, window.innerHeight], {
-                    stroke: '#eee',
-                    hasControls: false,
-                    hasBorders: false,
-                    lockMovementX: true,
-                    lockMovementY: true,
-                    selection: false
+                    stroke: '#eee'
                 }),
                 new fabric.Line([0, i, window.innerWidth, i], {
-                    stroke: '#eee',
-                    hasControls: false,
-                    hasBorders: false,
-                    lockMovementX: true,
-                    lockMovementY: true,
-                    selection: false
+                    stroke: '#eee'
                 })
             );
         }
     };
 
     let drawGems = function () {
-        for (let i = 0; i < gameStatus._gems.length; i++) {
-            gameStatus._gems[i].object = drawCircle(gameStatus._gems[i]);
-            canvas.add(gameStatus._gems[i].object);
+        for (let i = 0; i < gameStatus.status._gems.length; i++) {
+            gameStatus.status._gems[i].canvasObject = drawCircle(gameStatus.status._gems[i]);
+            canvas.add(gameStatus.status._gems[i].canvasObject);
         }
     };
 
     let drawPlayers = function () {
-        for (let i = 0; i < gameStatus._players.length; i++) {
-            gameStatus._players[i].object = drawCircle(gameStatus._players[i]);
-            canvas.add(gameStatus._players[i].object);
+        for (let i = 0; i < gameStatus.status._players.length; i++) {
+            gameStatus.status._players[i].canvasObject = drawCircle(gameStatus.status._players[i]);
+            canvas.add(gameStatus.status._players[i].canvasObject);
         }
     };
 
     let drawMe = function () {
-        gameStatus._me.object = drawCircle(gameStatus._me);
-        canvas.add(gameStatus._me.object);
+        gameStatus.status._me.canvasObject = drawCircle(gameStatus.status._me);
+        canvas.add(gameStatus.status._me.canvasObject);
     };
 
     let drawScore = function () {
@@ -118,8 +108,8 @@ export default function (gameStatus) {
     let config = function () {
         // Get mouse coordinates
         canvas.on('mouse:move', function (options) {
-            gameStatus.env.mouseX = options.e.layerX;
-            gameStatus.env.mouseY = options.e.layerY;
+            gameStatus.status._env.mouseX = options.e.layerX;
+            gameStatus.status._env.mouseY = options.e.layerY;
         });
     };
     return module;

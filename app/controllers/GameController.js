@@ -18,8 +18,8 @@ let gameStatus = {
                     x: 200,
                     y: 300,
                     velocity: 2,
-                    direction: 120, // Angle
-                    color: "green",
+                    angle: 0.1, // Angle
+                    color: "yellow",
                     radius: 30,
                     name: "P1",
                     score: 10,
@@ -27,9 +27,9 @@ let gameStatus = {
                 }, {
                     x: 10,
                     y: 20,
-                    velocity: 10,
-                    direction: 10, // Angle
-                    color: "red",
+                    velocity: 3,
+                    angle: 0, // Angle
+                    color: "purple",
                     radius: 20,
                     name: "IAR",
                     id: 2,
@@ -47,8 +47,37 @@ let gameStatus = {
         },
         {
             _id: 2,
-            _players: [],
-            _gems: []
+            _players: [
+                {
+                    x: 200,
+                    y: 300,
+                    velocity: 2,
+                    angle: -2.3, // Angle
+                    color: "purple",
+                    radius: 30,
+                    name: "P1",
+                    score: 10,
+                    id: 1
+                }, {
+                    x: 10,
+                    y: 20,
+                    velocity: 3,
+                    angle: -2.3, // Angle
+                    color: "yellow",
+                    radius: 20,
+                    name: "IAR",
+                    id: 2,
+                    score: 0
+                }
+            ],
+            _gems: [
+                {
+                    x: 1000 / 2.6,
+                    y: 1200 / 2.6,
+                    color: "blue",
+                    radius: 10
+                }
+            ]
         }]
 };
 
@@ -56,7 +85,11 @@ let gameStatus = {
 io.on('connection', function (socket) {
     socket.on('subscribe', function (msg) {
         socket.join(1);
-        socket.emit('game_status', gameStatus);
+        socket.emit('game_status', gameStatus.rooms[0]);
+
+        setTimeout(function () {
+            socket.emit('game_status', gameStatus.rooms[1]);
+        }, 2000);
     });
 });
 

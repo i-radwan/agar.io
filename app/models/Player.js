@@ -5,9 +5,9 @@
 class Player {
     /**
      * Player constructor
-     * @param initPosition: object contains {x, y}
+     * @param initPosition: canvasObject contains {x, y}
      * @param name: string
-     * @param color: object contains {r, g, b}
+     * @param color: canvasObject contains {r, g, b}
      * @param score: integer
      */
     constructor(initPosition, name, color, score = 0) {

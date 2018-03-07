@@ -20,12 +20,12 @@ export default function (gameStatus, serverGameStatus) {
         _socket.on('game_status', function (receivedGameStatus) {
             console.log('Incoming game status:', receivedGameStatus);
 
-            // ToDo: update game status
             serverGameStatus.set(receivedGameStatus);
+            gameStatus.set(serverGameStatus); // ToDo remove
 
             // Start game
             if (!connectionEstablished) {
-                gameStatus = serverGameStatus;
+                gameStatus.init(receivedGameStatus);
 
                 startGame();
                 connectionEstablished = true;
