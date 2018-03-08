@@ -22,15 +22,10 @@ export default function () {
         if (difference < 2)
             return;
 
-        // ToDo check if this if is required
         // Calculate mouse angle and move my player with the velocity
-        if (target.x - myCircleCenterX === 0) { // Vertical direction
-            player.canvasObject.top += Math.sign(target.y - myCircleCenterY) * player.velocity;
-        } else { // Inclined direction
-            let angle = Math.atan2((target.y - myCircleCenterY), (target.x - myCircleCenterX));
-            player.canvasObject.top += Math.sin(angle) * player.velocity;
-            player.canvasObject.left += Math.cos(angle) * player.velocity;
-        }
+        let angle = Math.atan2((target.y - myCircleCenterY), (target.x - myCircleCenterX));
+        player.canvasObject.top += Math.sin(angle) * player.velocity;
+        player.canvasObject.left += Math.cos(angle) * player.velocity;
 
         // Update position
         player.x = player.canvasObject.left;
