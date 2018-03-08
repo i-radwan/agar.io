@@ -17,6 +17,13 @@ export default function (gameStatus, serverGameStatus) {
     };
 
     /**
+     * Send my angle to the server
+     */
+    module.sendAngle = function () {
+        _socket.emit('angle', gameStatus.status.me.angle);
+    };
+
+    /**
      * Send game status to the server
      */
     module.sendStatus = function () {
@@ -27,7 +34,6 @@ export default function (gameStatus, serverGameStatus) {
         _socket.on('game_status', function (receivedGameStatus) {
             console.log('Incoming game status:', receivedGameStatus);
 
-            console.log(gameStatus);
             gameStatus.status.env.serverResponseReceived = true;
             serverGameStatus = copyReceivedGameStatus(serverGameStatus, receivedGameStatus);
 

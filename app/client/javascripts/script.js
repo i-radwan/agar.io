@@ -8,6 +8,7 @@ import GameServer from "./modules/GameServer.js";
 
 // Constants
 const GAME_FPS = 120;
+const SEND_STATUS_TO_SERVER_RATE = 3000; // milliseconds
 
 // Main game canvasObject
 let game = {
@@ -28,7 +29,7 @@ let game = {
         game.gameEngine.init();
 
         // Game loop
-        let _intervalId = setInterval(function () {
+        let gameLoop = setInterval(function () {
             // Send current state to the server
             game.gameServer.sendStatus();
 
@@ -40,8 +41,17 @@ let game = {
 
             // Stop when dead
             if (!game.gameStatus.status.me.alive)
-                clearInterval(_intervalId);
+                clearInterval(gameLoop);
         }, 1000 / GAME_FPS);
+
+        // Send game status loop
+        let sendStatusLoop = setInterval(function () {
+            // Send current state to the server
+            game.gameServer.sendStatus();
+
+            if (!game.gameStatus.status.me.alive)
+                clearInterval(sendStatusLoop);
+        }, SEND_STATUS_TO_SERVER_RATE);
     }
 };
 

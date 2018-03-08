@@ -40,15 +40,21 @@ export default function (mousePosition) {
     };
 
     module.drawGem = function (gemObject) {
-        return drawCircle(gemObject);
+        let circle = drawCircle(gemObject);
+
+        return circle;
     };
 
     module.drawPlayer = function (playerObject) {
-        return drawCircle(playerObject);
+        let circle = drawCircle(playerObject);
+
+        return circle;
     };
 
     module.drawMe = function (myselfObject) {
-        return drawCircle(myselfObject);
+        let circle = drawCircle(myselfObject);
+
+        return circle;
     };
 
     module.drawScore = function () {
@@ -74,6 +80,7 @@ export default function (mousePosition) {
         else { // Player existed and still -> Relocate
             playerObject.canvasObject.left = playerObject.x;
             playerObject.canvasObject.top = playerObject.y;
+            playerObject.canvasObject.setRadius(playerObject.radius);
         }
     };
 
@@ -124,5 +131,6 @@ export default function (mousePosition) {
             mousePosition.mouseY = options.e.layerY;
         });
     };
+
     return module;
 };

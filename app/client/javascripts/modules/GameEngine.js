@@ -29,11 +29,12 @@ export default function (gameStatus, serverGameStatus) {
 
     module.updateGameStatus = function () {
         // Update gameStatus by serverGameStatus
-        if (gameStatus.status.env.serverResponseReceived)
+        if (gameStatus.status.env.serverResponseReceived) {
             gameStatus.set(serverGameStatus);
 
-        // Remove removed items from the UI
-        updateCanvasObjects();
+            // Remove removed items from the UI
+            updateCanvasObjects();
+        }
 
         // Move my circle to follow the mouse
         physicsEngine.movePlayerToMouse(gameStatus.status.me, {

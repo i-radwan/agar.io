@@ -53,9 +53,9 @@ let gameStatus = {
                     x: 200,
                     y: 300,
                     velocity: 2,
-                    angle: -2.3, // Angle
-                    color: "purple",
-                    radius: 30,
+                    angle: 0.1, // Angle
+                    color: "yellow",
+                    radius: 15,
                     name: "P1",
                     score: 10,
                     id: 1
@@ -63,8 +63,8 @@ let gameStatus = {
                     x: 10,
                     y: 20,
                     velocity: 3,
-                    angle: -2.3, // Angle
-                    color: "yellow",
+                    angle: 0, // Angle
+                    color: "purple",
                     radius: 20,
                     name: "IAR",
                     id: 2,
@@ -80,7 +80,7 @@ let gameStatus = {
                 },
                 {
                     x: 1000 / 1.6,
-                    y: 1200 / 1.6,
+                    y: 1200 / 2.3,
                     color: "black",
                     radius: 10
                 }
@@ -96,7 +96,7 @@ io.on('connection', function (socket) {
 
         setTimeout(function () {
             socket.emit('game_status', gameStatus.rooms[1]);
-        }, 2000);
+        }, 5000);
     });
 });
 
