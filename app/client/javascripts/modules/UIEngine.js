@@ -41,21 +41,15 @@ export default function (mousePosition) {
     };
 
     module.drawGem = function (gemObject) {
-        let circle = drawCircle(gemObject);
-
-        return circle;
+        return drawCircle(gemObject);
     };
 
     module.drawPlayer = function (playerObject) {
-        let circle = drawCircle(playerObject);
-
-        return circle;
+        return drawCircle(playerObject);
     };
 
     module.drawMe = function (myselfObject) {
-        let circle = drawCircle(myselfObject);
-
-        return circle;
+        return drawCircle(myselfObject);
     };
 
     module.drawScore = function () {
@@ -109,9 +103,11 @@ export default function (mousePosition) {
 
     let drawBackgroundLines = function () {
         // Draw background lines
-        for (let i = CANVAS_BACKGROUND_LINES_SEPARATION;
-             i <= Math.max(window.innerWidth, window.innerHeight) - CANVAS_BACKGROUND_LINES_SEPARATION;
-             i += CANVAS_BACKGROUND_LINES_SEPARATION) {
+        for (
+            let i = CANVAS_BACKGROUND_LINES_SEPARATION;
+            i <= Math.max(window.innerWidth, window.innerHeight) - CANVAS_BACKGROUND_LINES_SEPARATION;
+            i += CANVAS_BACKGROUND_LINES_SEPARATION
+        ) {
             backgroundCanvas.add(
                 new fabric.Line([i, 0, i, window.innerHeight], {
                     stroke: '#eee'
