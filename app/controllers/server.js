@@ -7,8 +7,8 @@ let io = require('socket.io')(http);
 // Routes
 require('../routes/index')(app, express);
 
-// Include RoomController
-const GameController = require("./RoomController");
+// Include Room
+const GameController = require("./Room");
 
 // Constants
 const MAX_GAME_PLAYERS = 5;
@@ -47,27 +47,31 @@ function assignRoom(playerSocketID) {
 
     players[playerSocketID] = {roomID, playerID};
 
-    return roomID;
+    return players[playerSocketID];
 
 }
 
 // Sockets
 io.on('connection', function (socket) {
 
-    socket.on('newPlayer', function () {
-        let roomID = assignRoom(socket.id.toString());
-        socket.emit('game_status', rooms[roomID].getGame());
+    socket.on('subscribe', function () {
+        let {roomID, playerID} = assignRoom(socket.id);
+
+        let gameStatus = rooms[roomID].getGame();
+        gameStatus.myID = playerID;
+
+        socket.emit('game_status', gameStatus);
     });
 
     socket.on('angle', function (angle) {
         //TODO @Samir55 check roomID is defined or not
 
         // Get player room id
-        let roomID = players[socket.id.toString()].roomID;
+        let roomID = players[socket.id].roomID;
 
-        console.log(angle);
         // rooms[roomID].checkAndApplyAction()
     });
+
 
 });
 

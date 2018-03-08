@@ -7,7 +7,7 @@ const GAME_HEIGHT = 733;
 const MAX_GEMS = 200;
 const COLORS = ["red", "green", "blue", "yellow", "orange", "purple", "pink"];
 
-class RoomController {
+class Room {
 
     constructor(id) {
         // Room ID
@@ -32,13 +32,13 @@ class RoomController {
         let x = Math.ceil(Math.random() * GAME_LENGTH);
         let y = Math.ceil(Math.random() * GAME_HEIGHT);
 
-        console.log("Add a new player  " + this.nextPlayerID + "in room " + this.id);
+        console.log("Add a new player  " + this.nextPlayerID + " in room " + this.id);
 
         let initialPosition = [x, y];
         let playerID = this.nextPlayerID++;
         let color = COLORS[playerID];
 
-        this.game.players.push(new Player(initialPosition, playerID, color));
+        this.game.players.push(new Player(playerID, initialPosition, color));
 
         return playerID;
     };
@@ -95,4 +95,4 @@ class RoomController {
 
 }
 
-module.exports = RoomController;
+module.exports = Room;
