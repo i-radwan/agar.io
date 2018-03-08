@@ -66,7 +66,7 @@ export default function (mousePosition) {
     };
 
     module.updatePlayer = function (playerObject) {
-        if (playerObject.removed) { // Gem has been eaten
+        if (playerObject.removed) { // Player is dead
             playerObject.canvasObject.remove();
         }
         else if (!playerObject.hasOwnProperty("canvasObject")) { // New gem generated -> Draw it
