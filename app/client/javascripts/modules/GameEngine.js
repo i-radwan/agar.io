@@ -28,8 +28,9 @@ export default function (gameStatus, serverGameStatus) {
     };
 
     module.updateGameStatus = function () {
-        // Update gameStatus by serverGameStatus
+        // If server status received
         if (gameStatus.status.env.serverResponseReceived) {
+            // Update gameStatus by serverGameStatus
             gameStatus.set(serverGameStatus);
 
             // Remove removed items from the UI

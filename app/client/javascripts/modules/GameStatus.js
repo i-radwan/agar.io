@@ -49,6 +49,7 @@ export default function () {
 
         // Iterate over the new players array
         let foundMyself = false;
+
         for (let idx = 0; idx < module.status.players.length && !foundMyself; idx++) {
             let player = module.status.players[idx];
 

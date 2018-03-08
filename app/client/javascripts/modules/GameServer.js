@@ -35,7 +35,7 @@ export default function (gameStatus, serverGameStatus) {
             console.log('Incoming game status:', receivedGameStatus);
 
             gameStatus.status.env.serverResponseReceived = true;
-            serverGameStatus = copyReceivedGameStatus(serverGameStatus, receivedGameStatus);
+            serverGameStatus = storeReceivedGameStatus(serverGameStatus, receivedGameStatus);
 
             // Start game
             if (!connectionEstablished) {
@@ -47,7 +47,7 @@ export default function (gameStatus, serverGameStatus) {
         });
     };
 
-    let copyReceivedGameStatus = function (serverGameStatus, receivedGameStatus) {
+    let storeReceivedGameStatus = function (serverGameStatus, receivedGameStatus) {
         delete serverGameStatus.gems;
         delete serverGameStatus.players;
 
