@@ -73,8 +73,6 @@ export default function (mousePosition) {
             playerObject.canvasObject = module.drawPlayer(playerObject);
         }
         else { // Player existed and still -> update radius
-            playerObject.canvasObject.left = playerObject.x;
-            playerObject.canvasObject.top = playerObject.y;
             playerObject.canvasObject.setRadius(playerObject.radius);
         }
     };

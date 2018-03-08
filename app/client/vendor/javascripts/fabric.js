@@ -10740,7 +10740,7 @@ fabric.Image.filters.BaseFilter.fromObject = function(object, callback) {
                     break;
 
                   case "diff":
-                  case "difference":
+                  case "distance":
                     data[i] = Math.abs(r - tr);
                     data[i + 1] = Math.abs(g - tg);
                     data[i + 2] = Math.abs(b - tb);

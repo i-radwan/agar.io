@@ -50,7 +50,7 @@ let gameStatus = {
             _id: 2,
             players: [
                 {
-                    x: 200,
+                    x: 20,
                     y: 300,
                     velocity: 2,
                     angle: 0.1, // Angle
@@ -96,7 +96,7 @@ io.on('connection', function (socket) {
 
         setTimeout(function () {
             socket.emit('game_status', gameStatus.rooms[1]);
-        }, 5000);
+        }, 3000);
     });
 
     socket.on('angle', function (angle) {
