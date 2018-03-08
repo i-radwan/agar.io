@@ -5,40 +5,101 @@
 export default function () {
     let module = {};
 
-    module.status = {};
+    module.status = {
+        env: {
+            scoreObject: {},
+            mousePosition: {
+                mouseX: window.innerWidth / 2,
+                mouseY: window.innerHeight / 2
+            },
+            serverResponseReceived: false
+        }
+    };
 
     module.init = function (serverGameStatus) {
-        module.status._env = {
-            scoreObject: {},
-            mouseX: window.innerWidth / 2,
-            mouseY: window.innerHeight / 2
-        };
-
-        module.status._me = {
+        // Initialize
+        module.status.me = {
             alive: true,
-            x: window.innerWidth / 2,
-            y: window.innerHeight / 2,
-            velocity: 3,
-            angle: 0.1, // Angle
-            color: "red",
-            radius: 20,
-            canvasObject: {},
-            name: "IAR",
-            score: 0
+            id: serverGameStatus.myID
         };
 
-        // Get server game status
-        module.status = Object.assign(module.status, serverGameStatus);
+        module.status.gems = [];
+        module.status.players = [];
+
+        // Set the local arrays
+        module.set(serverGameStatus);
     };
 
     /**
      * Update the game status
      */
-    module.set = function (receivedGameStatus) {
-        // ToDo check if things removed/added to remove/add to the canvas
-        module.status = Object.assign(module.status, receivedGameStatus);
+    module.set = function (serverGameStatus) {
+        syncGems(serverGameStatus);
+        syncPlayers(serverGameStatus);
 
-        // Update canvas objects
+        module.status.env.serverResponseReceived = false;
     };
+
+    let syncGems = function (serverGameStatus) {
+        syncArrays(module.status.gems, serverGameStatus.gems);
+    };
+
+    let syncPlayers = function (serverGameStatus) {
+        syncArrays(module.status.players, serverGameStatus.players);
+
+        // Iterate over the new players array
+        let foundMyself = false;
+        for (let idx = 0; idx < module.status.players.length && !foundMyself; idx++) {
+            let player = module.status.players[idx];
+
+            if (player.id === module.status.me.id) {
+                // Update myself
+                module.status.me = Object.assign(module.status.me, player);
+
+                // Remove myself from players array
+                module.status.players.splice(idx, 1);
+
+                foundMyself = true;
+            }
+        }
+
+        if (!foundMyself)
+            module.status.me.alive = false;
+    };
+
+    /**
+     * Sync two arrays
+     * @param local the array of local items
+     * @param remote the array of remote(server) items
+     */
+    let syncArrays = function (local, remote) {
+        let i = 0, j = 0, len = local.length;
+        while (i < len && j < remote.length) {
+            if (local[i].id === remote[j].id) { // Gem still exists
+                local[i] = Object.assign(local[i], remote[j]);
+                i++;
+                j++;
+            }
+            else if (local[i].id < remote[j].id) { // Local gem removed
+                local[i].removed = true;
+                i++;
+            }
+            else {
+                local.push(remote[j]);
+                j++;
+            }
+        }
+
+        while (i < len) {
+            local[i].removed = true;
+            i++;
+        }
+
+        while (j < remote.length) {
+            local.push(remote[j]);
+            j++;
+        }
+    };
+
     return module;
 };

@@ -13,7 +13,8 @@ let gameStatus = {
     rooms: [
         {
             _id: 1,
-            _players: [
+            myID : 2,
+            players: [
                 {
                     x: 200,
                     y: 300,
@@ -36,7 +37,7 @@ let gameStatus = {
                     score: 0
                 }
             ],
-            _gems: [
+            gems: [
                 {
                     x: 1000 / 2.6,
                     y: 1200 / 2.6,
@@ -47,7 +48,7 @@ let gameStatus = {
         },
         {
             _id: 2,
-            _players: [
+            players: [
                 {
                     x: 200,
                     y: 300,
@@ -70,11 +71,17 @@ let gameStatus = {
                     score: 0
                 }
             ],
-            _gems: [
+            gems: [
                 {
                     x: 1000 / 2.6,
                     y: 1200 / 2.6,
                     color: "blue",
+                    radius: 10
+                },
+                {
+                    x: 1000 / 1.6,
+                    y: 1200 / 1.6,
+                    color: "black",
                     radius: 10
                 }
             ]

@@ -2,7 +2,7 @@
  * Created by ibrahimradwan on 3/6/18.
  */
 
-export default function (gameStatus) {
+export default function () {
     let module = {};
 
     /**
@@ -22,6 +22,7 @@ export default function (gameStatus) {
         if (difference < 2)
             return;
 
+        // ToDo check if this if is required
         // Calculate mouse angle and move my player with the velocity
         if (target.x - myCircleCenterX === 0) { // Vertical direction
             player.canvasObject.top += Math.sign(target.y - myCircleCenterY) * player.velocity;

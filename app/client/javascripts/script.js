@@ -13,7 +13,7 @@ const GAME_FPS = 120;
 let game = {
     init: function () {
         game.gameStatus = GameStatus();
-        game.serverGameStatus = GameStatus();
+        game.serverGameStatus = {};
 
         // Establish server communication
         game.gameServer = GameServer(game.gameStatus, game.serverGameStatus);
@@ -39,7 +39,7 @@ let game = {
             game.gameEngine.drawGame();
 
             // Stop when dead
-            if (!game.gameStatus.status._me.alive)
+            if (!game.gameStatus.status.me.alive)
                 clearInterval(_intervalId);
         }, 1000 / GAME_FPS);
     }

@@ -7,7 +7,7 @@ const CANVAS_BACKGROUND_LINES_SEPARATION = 30;
 const CANVAS_ID = "canvas";
 const BACKGROUND_CANVAS_ID = "background_canvas";
 
-export default function (gameStatus) {
+export default function (mousePosition) {
     let module = {};
 
     let canvas = new fabric.Canvas(CANVAS_ID, {
@@ -29,7 +29,7 @@ export default function (gameStatus) {
     module.init = function () {
         config();
 
-        initDraw();
+        drawBackgroundLines();
     };
 
     /**
@@ -39,17 +39,46 @@ export default function (gameStatus) {
         canvas.renderAll();
     };
 
-    /**
-     * Initially draw objects/background on the fabric canvas
-     */
-    let initDraw = function () {
-        drawBackgroundLines();
-        drawGems();
-        drawPlayers();
-        drawMe();
-        drawScore();
+    module.drawGem = function (gemObject) {
+        return drawCircle(gemObject);
+    };
 
-        backgroundCanvas.renderAll();
+    module.drawPlayer = function (playerObject) {
+        return drawCircle(playerObject);
+    };
+
+    module.drawMe = function (myselfObject) {
+        return drawCircle(myselfObject);
+    };
+
+    module.drawScore = function () {
+        // ToDo: Draw score text
+    };
+
+    module.updateGem = function (gemObject) {
+        if (gemObject.removed) { // Gem has been eaten
+            gemObject.canvasObject.remove();
+        }
+        else if (!gemObject.hasOwnProperty(canvasObject)) { // New gem generated -> Draw it
+            gemObject.canvasObject = module.drawGem(gemObject);
+        }
+    };
+
+    module.updatePlayer = function (playerObject) {
+        if (playerObject.removed) { // Gem has been eaten
+            playerObject.canvasObject.remove();
+        }
+        else if (!playerObject.hasOwnProperty(canvasObject)) { // New gem generated -> Draw it
+            playerObject.canvasObject = module.drawPlayer(playerObject);
+        }
+        else { // Player existed and still -> Relocate
+            playerObject.canvasObject.left = playerObject.x;
+            playerObject.canvasObject.top = playerObject.y;
+        }
+    };
+
+    module.updateScore = function (scoresObject) {
+
     };
 
     let drawBackgroundLines = function () {
@@ -66,33 +95,12 @@ export default function (gameStatus) {
                 })
             );
         }
-    };
 
-    let drawGems = function () {
-        for (let i = 0; i < gameStatus.status._gems.length; i++) {
-            gameStatus.status._gems[i].canvasObject = drawCircle(gameStatus.status._gems[i]);
-            canvas.add(gameStatus.status._gems[i].canvasObject);
-        }
-    };
-
-    let drawPlayers = function () {
-        for (let i = 0; i < gameStatus.status._players.length; i++) {
-            gameStatus.status._players[i].canvasObject = drawCircle(gameStatus.status._players[i]);
-            canvas.add(gameStatus.status._players[i].canvasObject);
-        }
-    };
-
-    let drawMe = function () {
-        gameStatus.status._me.canvasObject = drawCircle(gameStatus.status._me);
-        canvas.add(gameStatus.status._me.canvasObject);
-    };
-
-    let drawScore = function () {
-        // ToDo: Draw score text
+        backgroundCanvas.renderAll();
     };
 
     let drawCircle = function (parameters) {
-        return new fabric.Circle({
+        let circle = new fabric.Circle({
             left: parameters.x,
             top: parameters.y,
             radius: parameters.radius,
@@ -103,13 +111,17 @@ export default function (gameStatus) {
             lockMovementY: true,
             selection: false
         });
+
+        canvas.add(circle);
+
+        return circle;
     };
 
     let config = function () {
         // Get mouse coordinates
         canvas.on('mouse:move', function (options) {
-            gameStatus.status._env.mouseX = options.e.layerX;
-            gameStatus.status._env.mouseY = options.e.layerY;
+            mousePosition.mouseX = options.e.layerX;
+            mousePosition.mouseY = options.e.layerY;
         });
     };
     return module;

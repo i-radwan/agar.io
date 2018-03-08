@@ -7,6 +7,6 @@ class Room {
      * Rooom constructor
      */
     constructor() {
-        this._players = [];
+        this.players = [];
     }
 }

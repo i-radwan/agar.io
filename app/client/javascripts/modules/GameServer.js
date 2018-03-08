@@ -16,12 +16,20 @@ export default function (gameStatus, serverGameStatus) {
         setupReceiver(startGame);
     };
 
+    /**
+     * Send game status to the server
+     */
+    module.sendStatus = function () {
+        _socket.emit('game_status', gameStatus);
+    };
+
     let setupReceiver = function (startGame) {
         _socket.on('game_status', function (receivedGameStatus) {
             console.log('Incoming game status:', receivedGameStatus);
 
-            serverGameStatus.set(receivedGameStatus);
-            gameStatus.set(serverGameStatus); // ToDo remove
+            console.log(gameStatus);
+            gameStatus.status.env.serverResponseReceived = true;
+            serverGameStatus = copyReceivedGameStatus(serverGameStatus, receivedGameStatus);
 
             // Start game
             if (!connectionEstablished) {
@@ -30,15 +38,14 @@ export default function (gameStatus, serverGameStatus) {
                 startGame();
                 connectionEstablished = true;
             }
-
         });
     };
 
-    /**
-     * Send game status to the server
-     */
-    module.sendStatus = function () {
-        _socket.emit('game_status', gameStatus);
+    let copyReceivedGameStatus = function (serverGameStatus, receivedGameStatus) {
+        delete serverGameStatus.gems;
+        delete serverGameStatus.players;
+
+        return Object.assign(serverGameStatus, receivedGameStatus);
     };
 
     return module;
