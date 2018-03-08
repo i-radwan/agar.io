@@ -5,6 +5,9 @@
 import PhysicsEngine from "./PhysicsEngine.js";
 import UIEngine from "./UIEngine.js";
 
+// Constants
+let FAST_FORWARD_SPEED = 50;
+
 export default function (gameStatus, serverGameStatus) {
     let module = {};
 
@@ -84,7 +87,7 @@ export default function (gameStatus, serverGameStatus) {
 
             // If player still not in position -> move him
             if (positionNotFixed)
-                physicsEngine.movePlayerToTarget(player, {x: player.x, y: player.y}, false);
+                physicsEngine.movePlayerToTarget(player, {x: player.x, y: player.y});
 
             gameStatus.status.env.fastForward |= positionNotFixed;
         });
@@ -127,7 +130,7 @@ export default function (gameStatus, serverGameStatus) {
                 // Take backup of original values to revert to them after getting to the right position
                 player.tmpVelocity = player.velocity;
                 player.tmpAngle = player.angle;
-                player.velocity = 50;
+                player.velocity = FAST_FORWARD_SPEED;
                 player.angle = angleAndDistance.angle;
                 player.fastForward = true;
             }

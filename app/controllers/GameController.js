@@ -20,7 +20,7 @@ let gameStatus = {
                     y: 300,
                     velocity: 2,
                     angle: 0.1, // Angle
-                    color: "yellow",
+                    color: "pink",
                     radius: 30,
                     name: "P1",
                     score: 10,
@@ -54,7 +54,7 @@ let gameStatus = {
                     y: 300,
                     velocity: 2,
                     angle: 0.1, // Angle
-                    color: "yellow",
+                    color: "pink",
                     radius: 15,
                     name: "P1",
                     score: 10,

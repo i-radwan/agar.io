@@ -20,7 +20,7 @@ export default function () {
         let distance = angleAndDistance.distance;
 
         // Check if cursor outside the circle (to avoid vibrations)
-        if (distance < 2)
+        if (distance < 0.1)
             return;
 
         // Calculate mouse angle and move my player with the velocity
@@ -31,20 +31,18 @@ export default function () {
     /**
      * Move some player normal movement (velocity and angle)
      * @param player the player to be moved.
-     * @param updatePosition enable updating user position (i.e. player.x, player.y)
      */
-    module.movePlayerNormally = function (player, updatePosition = true) {
+    module.movePlayerNormally = function (player) {
         // Move canvas object
-        movePlayer(player, player.velocity, updatePosition);
+        movePlayer(player, player.velocity, true);
     };
 
     /**
      * Move some player to target
      * @param player the player to be moved.
      * @param target the point to be moved to.
-     * @param updatePosition enable updating user position (i.e. player.x, player.y)
      */
-    module.movePlayerToTarget = function (player, target, updatePosition = true) {
+    module.movePlayerToTarget = function (player, target) {
         let velocity = player.velocity;
 
         let angleAndDistance = module.getAngleAndDistance({
@@ -55,7 +53,7 @@ export default function () {
         velocity = Math.min(angleAndDistance.distance, velocity);
 
         // Move canvas object
-        movePlayer(player, velocity, updatePosition);
+        movePlayer(player, velocity, false);
     };
 
     let movePlayer = function (player, velocity, updatePosition) {
