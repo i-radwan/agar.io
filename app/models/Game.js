@@ -1,26 +1,15 @@
-/**
- * Created by ibrahimradwan on 3/2/18.
- */
-
+/// Game (Room) model class
 class Game {
+
     /**
-     * Player constructor
+     * Game constructor
      */
-    constructor() {
-        this._rooms = [];
-
-        this.init();
+    constructor(id) {
+        this.id = id;
+        this.players = [];
+        this.gems = [];
     }
 
-    init() {
-
-    }
-
-    addRoom() {
-
-    }
-
-    removeRoom() {
-
-    }
 }
+
+module.exports = Game;
