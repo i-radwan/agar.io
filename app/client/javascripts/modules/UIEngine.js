@@ -4,6 +4,7 @@
 
 // Constants
 const CANVAS_BACKGROUND_LINES_SEPARATION = 30;
+const GEM_RADIUS = 10;
 const CANVAS_ID = "canvas";
 const BACKGROUND_CANVAS_ID = "background_canvas";
 
@@ -86,6 +87,24 @@ export default function (mousePosition) {
 
     module.updateScore = function (scoresObject) {
 
+    };
+
+    module.fixObjectsZIndex = function () {
+        // Create array of all lengths
+        let lengthsArray = [];
+        canvas.forEachObject(function (object) {
+            lengthsArray.push({r: object.radius, obj: object});
+        });
+
+        // Sort the array
+        lengthsArray.sort(function (a, b) {
+            return (a.r - b.r);
+        });
+
+        // Move the objects following the new order
+        lengthsArray.forEach(function (obj, idx) {
+            obj.obj.moveTo(idx);
+        });
     };
 
     let drawBackgroundLines = function () {

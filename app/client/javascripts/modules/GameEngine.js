@@ -64,6 +64,9 @@ export default function (gameStatus, serverGameStatus) {
 
         // Update myself
         uiEngine.updatePlayer(gameStatus.status.me);
+
+        // Fix z index of objects
+        uiEngine.fixObjectsZIndex();
     };
 
     let initGameDraw = function () {
@@ -79,6 +82,9 @@ export default function (gameStatus, serverGameStatus) {
 
         // Draw myself
         gameStatus.status.me.canvasObject = uiEngine.drawMe(gameStatus.status.me);
+
+        // Fix z index of objects
+        uiEngine.fixObjectsZIndex();
     };
 
     let config = function () {
