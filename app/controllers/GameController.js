@@ -98,6 +98,14 @@ io.on('connection', function (socket) {
             socket.emit('game_status', gameStatus.rooms[1]);
         }, 5000);
     });
+
+    socket.on('angle', function (angle) {
+        console.log("Angle", angle);
+    });
+
+    socket.on('game_status', function (playerGameStatus) {
+        console.log("GameStatus", playerGameStatus);
+    });
 });
 
 http.listen(3000, function () {

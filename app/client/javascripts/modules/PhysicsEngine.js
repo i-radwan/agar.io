@@ -23,9 +23,9 @@ export default function () {
             return;
 
         // Calculate mouse angle and move my player with the velocity
-        let angle = Math.atan2((target.y - myCircleCenterY), (target.x - myCircleCenterX));
-        player.canvasObject.top += Math.sin(angle) * player.velocity;
-        player.canvasObject.left += Math.cos(angle) * player.velocity;
+        player.angle = Math.atan2((target.y - myCircleCenterY), (target.x - myCircleCenterX));
+        player.canvasObject.top += Math.sin(player.angle) * player.velocity;
+        player.canvasObject.left += Math.cos(player.angle) * player.velocity;
 
         // Update position
         player.x = player.canvasObject.left;
