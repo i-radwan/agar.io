@@ -29,16 +29,7 @@ export default function (gameStatus, serverGameStatus) {
 
     module.updateGameStatus = function () {
         // If server status received
-        if (gameStatus.status.env.serverResponseReceived) {
-            // Update gameStatus by serverGameStatus
-            gameStatus.set(serverGameStatus);
-
-            // Update canvas objects
-            updateCanvasObjects();
-        }
-
-        // Check if fast forward is needed
-        checkIfFastForwardNeeded();
+        checkServerResponse();
 
         // Normal playing mode
         if (!gameStatus.status.env.fastForward) {
@@ -49,6 +40,18 @@ export default function (gameStatus, serverGameStatus) {
         }
     };
 
+    let checkServerResponse = function () {
+        if (gameStatus.status.env.serverResponseReceived) {
+            // Update gameStatus by serverGameStatus
+            gameStatus.set(serverGameStatus);
+
+            // Update canvas objects
+            updateCanvasObjects();
+        }
+
+        // Check if fast forward is needed
+        checkIfFastForwardNeeded();
+    };
 
     /**
      * Execute the game in normal mode
