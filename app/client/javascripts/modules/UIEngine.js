@@ -72,7 +72,7 @@ export default function (mousePosition) {
         else if (!playerObject.hasOwnProperty("canvasObject")) { // New gem generated -> Draw it
             playerObject.canvasObject = module.drawPlayer(playerObject);
         }
-        else { // Player existed and still -> Relocate
+        else { // Player existed and still -> update radius
             playerObject.canvasObject.left = playerObject.x;
             playerObject.canvasObject.top = playerObject.y;
             playerObject.canvasObject.setRadius(playerObject.radius);
@@ -96,8 +96,8 @@ export default function (mousePosition) {
         });
 
         // Move the objects following the new order
-        lengthsArray.forEach(function (obj, idx) {
-            obj.obj.moveTo(idx);
+        lengthsArray.forEach(function (object, idx) {
+            object.obj.moveTo(idx);
         });
     };
 

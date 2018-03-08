@@ -15,15 +15,16 @@ export default function () {
         let myCircleCenterX = player.canvasObject.getCenterPoint().x;
         let myCircleCenterY = player.canvasObject.getCenterPoint().y;
 
-        let difference = Math.sqrt(Math.pow(target.x - myCircleCenterX, 2) +
-            Math.pow(target.y - myCircleCenterY, 2));
+        let angleAndDifference = module.getAngleAndDifference({x: myCircleCenterX, y: myCircleCenterY}, target);
+
+        let difference = angleAndDifference.difference;
 
         // Check if cursor outside the circle (to avoid vibrations)
         if (difference < 2)
             return;
 
         // Calculate mouse angle and move my player with the velocity
-        player.angle = Math.atan2((target.y - myCircleCenterY), (target.x - myCircleCenterX));
+        player.angle = angleAndDifference.angle;
         player.canvasObject.top += Math.sin(player.angle) * player.velocity;
         player.canvasObject.left += Math.cos(player.angle) * player.velocity;
 
@@ -44,6 +45,18 @@ export default function () {
         // Update position
         player.x = player.canvasObject.left;
         player.y = player.canvasObject.top;
+    };
+
+    module.getAngleAndDifference = function (point1, point2) {
+        // Calculate difference
+        let difference = Math.sqrt(Math.pow(point2.x - point1.x, 2) +
+            Math.pow(point2.y - point1.y, 2));
+
+        // Return the angle and the difference
+        return {
+            difference: difference,
+            angle: Math.atan2((point2.y - point1.y), (point2.x - point1.x))
+        };
     };
 
     return module;
