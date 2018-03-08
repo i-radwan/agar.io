@@ -29,7 +29,7 @@ export default function () {
     };
 
     /**
-     * Move some player normal movement (velocity and angle)
+     * Move some player normal movement (player's velocity and angle)
      * @param player the player to be moved.
      */
     module.movePlayerNormally = function (player) {
@@ -56,6 +56,12 @@ export default function () {
         movePlayer(player, velocity, false);
     };
 
+    /**
+     * Move some player normal movement (velocity and angle)
+     * @param player the player to be moved.
+     * @param velocity the velocity in which player is moving.
+     * @param updatePosition{boolean} update player.x, player.y.
+     */
     let movePlayer = function (player, velocity, updatePosition) {
         // Move canvas object
         player.canvasObject.top += Math.sin(player.angle) * velocity;
