@@ -15,35 +15,75 @@ export default function () {
         let myCircleCenterX = player.canvasObject.getCenterPoint().x;
         let myCircleCenterY = player.canvasObject.getCenterPoint().y;
 
-        let difference = Math.sqrt(Math.pow(target.x - myCircleCenterX, 2) +
-            Math.pow(target.y - myCircleCenterY, 2));
+        let angleAndDistance = module.getAngleAndDistance({x: myCircleCenterX, y: myCircleCenterY}, target);
+
+        let distance = angleAndDistance.distance;
 
         // Check if cursor outside the circle (to avoid vibrations)
-        if (difference < 2)
+        if (distance < 0.1)
             return;
 
         // Calculate mouse angle and move my player with the velocity
-        let angle = Math.atan2((target.y - myCircleCenterY), (target.x - myCircleCenterX));
-        player.canvasObject.top += Math.sin(angle) * player.velocity;
-        player.canvasObject.left += Math.cos(angle) * player.velocity;
+        player.angle = angleAndDistance.angle;
+        movePlayer(player, Math.min(distance, player.velocity), true);
+    };
+
+    /**
+     * Move some player normal movement (player's velocity and angle)
+     * @param player the player to be moved.
+     */
+    module.movePlayerNormally = function (player) {
+        // Move canvas object
+        movePlayer(player, player.velocity, true);
+    };
+
+    /**
+     * Move some player to target
+     * @param player the player to be moved.
+     * @param target the point to be moved to.
+     */
+    module.movePlayerToTarget = function (player, target) {
+        let velocity = player.velocity;
+
+        let angleAndDistance = module.getAngleAndDistance({
+            x: player.canvasObject.left,
+            y: player.canvasObject.top
+        }, target);
+
+        velocity = Math.min(angleAndDistance.distance, velocity);
+
+        // Move canvas object
+        movePlayer(player, velocity, false);
+    };
+
+    /**
+     * Move some player normal movement (velocity and angle)
+     * @param player the player to be moved.
+     * @param velocity the velocity in which player is moving.
+     * @param updatePosition{boolean} update player.x, player.y.
+     */
+    let movePlayer = function (player, velocity, updatePosition) {
+        // Move canvas object
+        player.canvasObject.top += Math.sin(player.angle) * velocity;
+        player.canvasObject.left += Math.cos(player.angle) * velocity;
+
+        if (!updatePosition) return;
 
         // Update position
         player.x = player.canvasObject.left;
         player.y = player.canvasObject.top;
     };
 
-    /**
-     * Move some player normal movement (velocity and angle)
-     * @param player the player to be moved.
-     */
-    module.movePlayer = function (player) {
-        // Move canvas object
-        player.canvasObject.top += Math.sin(player.angle) * player.velocity;
-        player.canvasObject.left += Math.cos(player.angle) * player.velocity;
+    module.getAngleAndDistance = function (point1, point2) {
+        // Calculate distance
+        let distance = Math.sqrt(Math.pow(point2.x - point1.x, 2) +
+            Math.pow(point2.y - point1.y, 2));
 
-        // Update position
-        player.x = player.canvasObject.left;
-        player.y = player.canvasObject.top;
+        // Return the angle and the distance
+        return {
+            distance: distance,
+            angle: Math.atan2((point2.y - point1.y), (point2.x - point1.x))
+        };
     };
 
     return module;

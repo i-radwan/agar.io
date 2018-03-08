@@ -5,6 +5,9 @@
 import PhysicsEngine from "./PhysicsEngine.js";
 import UIEngine from "./UIEngine.js";
 
+// Constants
+let FAST_FORWARD_SPEED = 50;
+
 export default function (gameStatus, serverGameStatus) {
     let module = {};
 
@@ -29,14 +32,36 @@ export default function (gameStatus, serverGameStatus) {
 
     module.updateGameStatus = function () {
         // If server status received
+        checkServerResponse();
+
+        // Normal playing mode
+        if (!gameStatus.status.env.fastForward) {
+            executeNormalGameMode();
+        }
+        else { // Fast forward mode to catch up the server
+            executeFastForwardGameMode();
+        }
+    };
+
+    let checkServerResponse = function () {
         if (gameStatus.status.env.serverResponseReceived) {
             // Update gameStatus by serverGameStatus
             gameStatus.set(serverGameStatus);
 
-            // Remove removed items from the UI
+            // Update canvas objects
             updateCanvasObjects();
         }
 
+        // Check if fast forward is needed
+        checkIfFastForwardNeeded();
+    };
+
+    /**
+     * Execute the game in normal mode
+     * move the players depending on their velocity and angle
+     * move my circle to follow the mouse input
+     */
+    let executeNormalGameMode = function () {
         // Move my circle to follow the mouse
         physicsEngine.movePlayerToMouse(gameStatus.status.me, {
             x: gameStatus.status.env.mousePosition.mouseX,
@@ -45,7 +70,26 @@ export default function (gameStatus, serverGameStatus) {
 
         // Move players
         gameStatus.status.players.forEach(function (player) {
-            physicsEngine.movePlayer(player);
+            physicsEngine.movePlayerNormally(player);
+        });
+    };
+
+    /**
+     * Execute the game in fast forward mode
+     * stops user input and move the players, check if the players positions are fixed
+     */
+    let executeFastForwardGameMode = function () {
+        gameStatus.status.env.fastForward = false;
+
+        // Check if players (including me) are in position
+        gameStatus.status.players.concat(gameStatus.status.me).forEach(function (player) {
+            let positionNotFixed = checkToContinueFastForward(player);
+
+            // If player still not in position -> move him
+            if (positionNotFixed)
+                physicsEngine.movePlayerToTarget(player, {x: player.x, y: player.y});
+
+            gameStatus.status.env.fastForward |= positionNotFixed;
         });
     };
 
@@ -58,16 +102,70 @@ export default function (gameStatus, serverGameStatus) {
             uiEngine.updateGem(gem);
         });
 
-        // Update players
-        gameStatus.status.players.forEach(function (player) {
+        // Update players (including me)
+        gameStatus.status.players.concat(gameStatus.status.me).forEach(function (player) {
             uiEngine.updatePlayer(player);
         });
 
-        // Update myself
-        uiEngine.updatePlayer(gameStatus.status.me);
-
         // Fix z index of objects
         uiEngine.fixObjectsZIndex();
+    };
+
+    /**
+     * Check if any player requires to be fast forward moved to match status received from the server
+     */
+    let checkIfFastForwardNeeded = function () {
+        gameStatus.status.players.concat(gameStatus.status.me).forEach(function (player) {
+            let isFastForwardRequired = player.fastForward;
+
+            let angleAndDistance = physicsEngine.getAngleAndDistance({
+                x: player.canvasObject.left,
+                y: player.canvasObject.top
+            }, {x: player.x, y: player.y});
+
+            // Check
+            if (angleAndDistance.distance > player.velocity && !player.fastForward) {
+                isFastForwardRequired = true;
+
+                // Take backup of original values to revert to them after getting to the right position
+                player.tmpVelocity = player.velocity;
+                player.tmpAngle = player.angle;
+                player.velocity = FAST_FORWARD_SPEED;
+                player.angle = angleAndDistance.angle;
+                player.fastForward = true;
+            }
+
+            gameStatus.status.env.fastForward |= isFastForwardRequired;
+        });
+    };
+
+    /**
+     * Check if the player still needs fast forward mode
+     * @param player
+     * @returns {boolean} false if the player got to the required position received by the server
+     */
+    let checkToContinueFastForward = function (player) {
+        if (!player.fastForward) return false;
+
+        let angleAndDistance = physicsEngine.getAngleAndDistance({
+            x: player.canvasObject.left,
+            y: player.canvasObject.top
+        }, {x: player.x, y: player.y});
+
+
+        // Check if the error isn't large
+        if (angleAndDistance.distance <= player.tmpVelocity) {
+            player.angle = player.tmpAngle;
+            player.velocity = player.tmpVelocity;
+            player.fastForward = false;
+
+            delete player.tmpAngle;
+            delete player.tmpVelocity;
+
+            return false;
+        }
+
+        return true;
     };
 
     let initGameDraw = function () {
@@ -94,5 +192,6 @@ export default function (gameStatus, serverGameStatus) {
             e.preventDefault();
         });
     };
+
     return module;
 };

@@ -83,7 +83,7 @@ let server = {
     },
     
     simulateRooms: function () {
-        
+
         for (let i = 0; i < server.rooms.length; i++) {
             server.rooms[i].simulate();
         }

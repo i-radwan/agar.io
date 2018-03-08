@@ -12,7 +12,8 @@ export default function () {
                 mouseX: window.innerWidth / 2,
                 mouseY: window.innerHeight / 2
             },
-            serverResponseReceived: false
+            serverResponseReceived: false,
+            fastForward: false
         }
     };
 
@@ -86,7 +87,7 @@ export default function () {
                 i++;
             }
             else {
-                local.push(remote[j]);
+                local.push(Object.assign({}, remote[j]));
                 j++;
             }
         }
@@ -97,7 +98,7 @@ export default function () {
         }
 
         while (j < remote.length) {
-            local.push(remote[j]);
+            local.push(Object.assign({}, remote[j]));
             j++;
         }
     };

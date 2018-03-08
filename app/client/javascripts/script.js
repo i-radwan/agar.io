@@ -30,8 +30,9 @@ let game = {
 
         // Game loop
         let gameLoop = setInterval(function () {
-            // Send current state to the server
-            game.gameServer.sendStatus();
+            // Send current angle to the server
+            if (!game.gameStatus.status.env.fastForward)
+                game.gameServer.sendAngle();
 
             // Update the game status (My location, players, gems, score, ... etc)
             game.gameEngine.updateGameStatus();

@@ -66,15 +66,13 @@ export default function (mousePosition) {
     };
 
     module.updatePlayer = function (playerObject) {
-        if (playerObject.removed) { // Gem has been eaten
+        if (playerObject.removed) { // Player is dead
             playerObject.canvasObject.remove();
         }
         else if (!playerObject.hasOwnProperty("canvasObject")) { // New gem generated -> Draw it
             playerObject.canvasObject = module.drawPlayer(playerObject);
         }
-        else { // Player existed and still -> Relocate
-            playerObject.canvasObject.left = playerObject.x;
-            playerObject.canvasObject.top = playerObject.y;
+        else { // Player existed and still -> update radius
             playerObject.canvasObject.setRadius(playerObject.radius);
         }
     };
@@ -96,8 +94,8 @@ export default function (mousePosition) {
         });
 
         // Move the objects following the new order
-        lengthsArray.forEach(function (obj, idx) {
-            obj.obj.moveTo(idx);
+        lengthsArray.forEach(function (object, idx) {
+            object.obj.moveTo(idx);
         });
     };
 
