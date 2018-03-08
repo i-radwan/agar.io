@@ -37,26 +37,12 @@ export default function (gameStatus, serverGameStatus) {
         }
     };
 
+
     /**
-     * Update the objects on the canvas (after getting update from server)
+     * Execute the game in normal mode
+     * move the players depending on their velocity and angle
+     * move my circle to follow the mouse input
      */
-    let updateCanvasObjects = function () {
-        // Update gems
-        gameStatus.status.gems.forEach(function (gem) {
-            uiEngine.updateGem(gem);
-        });
-
-        // Update players (including me)
-        gameStatus.status.players.concat(gameStatus.status.me).forEach(function (player) {
-            uiEngine.updatePlayer(player);
-
-            gameStatus.status.env.fastForward |= playerFastForwardControl(player);
-        });
-
-        // Fix z index of objects
-        uiEngine.fixObjectsZIndex();
-    };
-
     let executeNormalGameMode = function () {
         // If server status received
         if (gameStatus.status.env.serverResponseReceived) {
@@ -81,12 +67,16 @@ export default function (gameStatus, serverGameStatus) {
         });
     };
 
+    /**
+     * Execute the game in fast forward mode
+     * stops user input and move the players, check if the players positions are fixed
+     */
     let executeFastForwardGameMode = function () {
         gameStatus.status.env.fastForward = false;
 
         // Check if players (including me) are in position
         gameStatus.status.players.concat(gameStatus.status.me).forEach(function (player) {
-            let positionNotFixed = playerFastForwardControl(player);
+            let positionNotFixed = checkToContinueFastForward(player);
 
             // If player still not in position -> move him
             if (positionNotFixed)
@@ -96,7 +86,57 @@ export default function (gameStatus, serverGameStatus) {
         });
     };
 
-    let playerFastForwardControl = function (player) {
+    /**
+     * Update the objects on the canvas (after getting update from server)
+     */
+    let updateCanvasObjects = function () {
+        // Update gems
+        gameStatus.status.gems.forEach(function (gem) {
+            uiEngine.updateGem(gem);
+        });
+
+        // Update players (including me)
+        gameStatus.status.players.concat(gameStatus.status.me).forEach(function (player) {
+            uiEngine.updatePlayer(player);
+
+            gameStatus.status.env.fastForward |= checkIfFastForwardNeeded(player);
+        });
+
+        // Fix z index of objects
+        uiEngine.fixObjectsZIndex();
+    };
+
+    /**
+     * Check if the given player requires to be fast forward moved to match status received from the server
+     * @param player
+     * @returns {boolean}
+     */
+    let checkIfFastForwardNeeded = function (player) {
+        let angleAndDistance = physicsEngine.getAngleAndDistance({
+            x: player.canvasObject.left,
+            y: player.canvasObject.top
+        }, {x: player.x, y: player.y});
+
+        if (angleAndDistance.distance <= player.velocity) return false;
+
+        // Take backup of original values to revert to them after getting to the right position
+        player.tmpVelocity = player.velocity;
+        player.tmpAngle = player.angle;
+        player.velocity = 50;
+        player.angle = angleAndDistance.angle;
+        player.fastForward = true;
+
+        return true;
+    };
+
+    /**
+     * Check if the player still needs fast forward mode
+     * @param player
+     * @returns {boolean} false if the player got to the required position received by the server
+     */
+    let checkToContinueFastForward = function (player) {
+        if (!player.fastForward) return false;
+
         let angleAndDistance = physicsEngine.getAngleAndDistance({
             x: player.canvasObject.left,
             y: player.canvasObject.top
@@ -104,31 +144,15 @@ export default function (gameStatus, serverGameStatus) {
 
 
         // Check if the error isn't large
-        if ((!player.hasOwnProperty("tmpVelocity") && angleAndDistance.distance <= player.velocity) ||
-            (player.hasOwnProperty("tmpVelocity") && angleAndDistance.distance <= player.tmpVelocity)) {
+        if (angleAndDistance.distance <= player.tmpVelocity) {
 
-            // Check if player was fast forwarding -> revert to original status
-            if (player.hasOwnProperty("tmpAngle")) {
-                player.angle = player.tmpAngle;
-                player.velocity = player.tmpVelocity;
+            player.angle = player.tmpAngle;
+            player.velocity = player.tmpVelocity;
+            player.fastForward = false;
 
-                delete player.tmpAngle;
-                delete player.tmpVelocity;
-            }
-
-            return false;
+            delete player.tmpAngle;
+            delete player.tmpVelocity;
         }
-
-        // Player still is not in position
-        if (player.hasOwnProperty("tmpVelocity")) return true;
-
-        // Take backup of original values to revert to it after getting to the right position
-        player.tmpVelocity = player.velocity;
-        player.tmpAngle = player.angle;
-        player.velocity = 50;
-        player.angle = angleAndDistance.angle;
-
-        console.log(player.color, angleAndDistance.distance, player.velocity, player.angle, player.tmpVelocity, player.tmpAngle);
 
         return true;
     };

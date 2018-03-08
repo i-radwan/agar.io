@@ -58,6 +58,18 @@ export default function () {
         movePlayer(player, velocity, updatePosition);
     };
 
+    let movePlayer = function (player, velocity, updatePosition) {
+        // Move canvas object
+        player.canvasObject.top += Math.sin(player.angle) * velocity;
+        player.canvasObject.left += Math.cos(player.angle) * velocity;
+
+        if (!updatePosition) return;
+
+        // Update position
+        player.x = player.canvasObject.left;
+        player.y = player.canvasObject.top;
+    };
+
     module.getAngleAndDistance = function (point1, point2) {
         // Calculate distance
         let distance = Math.sqrt(Math.pow(point2.x - point1.x, 2) +
@@ -70,16 +82,5 @@ export default function () {
         };
     };
 
-    let movePlayer = function (player, velocity, updatePosition) {
-        // Move canvas object
-        player.canvasObject.top += Math.sin(player.angle) * velocity;
-        player.canvasObject.left += Math.cos(player.angle) * velocity;
-
-        if (!updatePosition) return;
-
-        // Update position
-        player.x = player.canvasObject.left;
-        player.y = player.canvasObject.top;
-    };
     return module;
 };
