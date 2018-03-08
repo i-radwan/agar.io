@@ -28,6 +28,18 @@ export default function (gameStatus, serverGameStatus) {
     };
 
     module.updateGameStatus = function () {
+        // If server status received
+        if (gameStatus.status.env.serverResponseReceived) {
+            // Update gameStatus by serverGameStatus
+            gameStatus.set(serverGameStatus);
+
+            // Update canvas objects
+            updateCanvasObjects();
+        }
+
+        // Check if fast forward is needed
+        checkIfFastForwardNeeded();
+
         // Normal playing mode
         if (!gameStatus.status.env.fastForward) {
             executeNormalGameMode();
@@ -44,17 +56,6 @@ export default function (gameStatus, serverGameStatus) {
      * move my circle to follow the mouse input
      */
     let executeNormalGameMode = function () {
-        // If server status received
-        if (gameStatus.status.env.serverResponseReceived) {
-            // Update gameStatus by serverGameStatus
-            gameStatus.set(serverGameStatus);
-
-            // Remove removed items from the UI
-            updateCanvasObjects();
-        }
-
-        if (gameStatus.status.env.fastForward) return;
-
         // Move my circle to follow the mouse
         physicsEngine.movePlayerToMouse(gameStatus.status.me, {
             x: gameStatus.status.env.mousePosition.mouseX,
@@ -98,8 +99,6 @@ export default function (gameStatus, serverGameStatus) {
         // Update players (including me)
         gameStatus.status.players.concat(gameStatus.status.me).forEach(function (player) {
             uiEngine.updatePlayer(player);
-
-            gameStatus.status.env.fastForward |= checkIfFastForwardNeeded(player);
         });
 
         // Fix z index of objects
@@ -107,26 +106,31 @@ export default function (gameStatus, serverGameStatus) {
     };
 
     /**
-     * Check if the given player requires to be fast forward moved to match status received from the server
-     * @param player
-     * @returns {boolean}
+     * Check if any player requires to be fast forward moved to match status received from the server
      */
-    let checkIfFastForwardNeeded = function (player) {
-        let angleAndDistance = physicsEngine.getAngleAndDistance({
-            x: player.canvasObject.left,
-            y: player.canvasObject.top
-        }, {x: player.x, y: player.y});
+    let checkIfFastForwardNeeded = function () {
+        gameStatus.status.players.concat(gameStatus.status.me).forEach(function (player) {
+            let isFastForwardRequired = player.fastForward;
 
-        if (angleAndDistance.distance <= player.velocity) return false;
+            let angleAndDistance = physicsEngine.getAngleAndDistance({
+                x: player.canvasObject.left,
+                y: player.canvasObject.top
+            }, {x: player.x, y: player.y});
 
-        // Take backup of original values to revert to them after getting to the right position
-        player.tmpVelocity = player.velocity;
-        player.tmpAngle = player.angle;
-        player.velocity = 50;
-        player.angle = angleAndDistance.angle;
-        player.fastForward = true;
+            // Check
+            if (angleAndDistance.distance > player.velocity && !player.fastForward) {
+                isFastForwardRequired = true;
 
-        return true;
+                // Take backup of original values to revert to them after getting to the right position
+                player.tmpVelocity = player.velocity;
+                player.tmpAngle = player.angle;
+                player.velocity = 50;
+                player.angle = angleAndDistance.angle;
+                player.fastForward = true;
+            }
+
+            gameStatus.status.env.fastForward |= isFastForwardRequired;
+        });
     };
 
     /**
@@ -145,13 +149,14 @@ export default function (gameStatus, serverGameStatus) {
 
         // Check if the error isn't large
         if (angleAndDistance.distance <= player.tmpVelocity) {
-
             player.angle = player.tmpAngle;
             player.velocity = player.tmpVelocity;
             player.fastForward = false;
 
             delete player.tmpAngle;
             delete player.tmpVelocity;
+
+            return false;
         }
 
         return true;
