@@ -7,13 +7,13 @@ const GAME_HEIGHT = 733;
 const MAX_GEMS = 200;
 const COLORS = ["red", "green", "blue", "yellow", "orange", "purple", "pink"];
 
-class Room {
+class RoomController {
 
     constructor(id) {
-        // Room ID
+        // RoomController ID
         this.id = id;
 
-        // Room Game status
+        // RoomController Game status
         this.game = new Game();
 
         // Next available Gems & PlayerIDs
@@ -36,26 +36,39 @@ class Room {
 
         let initialPosition = [x, y];
         let playerID = this.nextPlayerID++;
-        let color = COLORS[playerID];
+        let color = COLORS[playerID % COLORS.length];
 
-        this.game.players.push(new Player(playerID, initialPosition, color));
+        this.game.players[playerID] = (new Player(initialPosition, color));
 
         return playerID;
     };
 
+
     /**
-     * Remove player
+     * Update player angle
+     * @param playerID
+     * @param angle
+     */
+    updatePlayerAngle(playerID, angle) {
+
+        this.game.players[playerID].angle = angle;
+
+    }
+
+
+    /**
+     * Kill player
      * @param playerID
      */
-    removePlayer(playerID) {
+    killPlayer(playerID) {
 
     };
 
     /**
      * Simulate game
      */
-    run() {
-
+    simulate() {
+        console.log("Simulating Room " + this.id);
     };
 
     /**
@@ -89,10 +102,10 @@ class Room {
      * Get game status
      * @returns {Game} game status
      */
-    getGame() {
+    getGameStatus() {
         return this.game;
     }
 
 }
 
-module.exports = Room;
+module.exports = RoomController;
