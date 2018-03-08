@@ -59,7 +59,7 @@ export default function (mousePosition) {
         if (gemObject.removed) { // Gem has been eaten
             gemObject.canvasObject.remove();
         }
-        else if (!gemObject.hasOwnProperty(canvasObject)) { // New gem generated -> Draw it
+        else if (!gemObject.hasOwnProperty("canvasObject")) { // New gem generated -> Draw it
             gemObject.canvasObject = module.drawGem(gemObject);
         }
     };
@@ -68,7 +68,7 @@ export default function (mousePosition) {
         if (playerObject.removed) { // Gem has been eaten
             playerObject.canvasObject.remove();
         }
-        else if (!playerObject.hasOwnProperty(canvasObject)) { // New gem generated -> Draw it
+        else if (!playerObject.hasOwnProperty("canvasObject")) { // New gem generated -> Draw it
             playerObject.canvasObject = module.drawPlayer(playerObject);
         }
         else { // Player existed and still -> Relocate

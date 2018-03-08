@@ -33,7 +33,7 @@ export default function (gameStatus, serverGameStatus) {
             gameStatus.set(serverGameStatus);
 
         // Remove removed items from the UI
-        // updateCanvasObjects();
+        updateCanvasObjects();
 
         // Move my circle to follow the mouse
         physicsEngine.movePlayerToMouse(gameStatus.status.me, {
