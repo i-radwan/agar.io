@@ -14,7 +14,7 @@ class RoomController {
         this.id = id;
 
         // RoomController Game status
-        this.game = new Game();
+        this.game = new Game(id);
 
         // Next available Gems & PlayerIDs
         this.nextGemID = 0;
@@ -38,7 +38,7 @@ class RoomController {
         let playerID = this.nextPlayerID++;
         let color = COLORS[playerID % COLORS.length];
 
-        this.game.players[playerID] = (new Player(initialPosition, color));
+        this.game.players[playerID] = (new Player(playerID, initialPosition, color));
 
         return playerID;
     };

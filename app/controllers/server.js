@@ -10,7 +10,7 @@ const GameController = require("./RoomController");
 require('../routes/index')(app, express);
 
 const MAX_GAME_PLAYERS = 5;
-const SERVER_SIMULATE_REPETITION = 250;
+const SERVER_SIMULATE_REPETITION = 3000;
 
 let server = {
     init: function () {
@@ -26,6 +26,7 @@ let server = {
             });
 
             socket.on("angle", function (angle) {
+                console.log("Recived angle update");
                 server.updatePlayerAngle(socket.id, angle);
             })
 
@@ -44,6 +45,7 @@ let server = {
      * Callback function called when a new player is connected to the game
      */
     assignNewPlayer: function (playerSocketID) {
+        console.log(playerSocketID);
         let roomID = -1;
 
         // Search for any game having a free slot
@@ -63,9 +65,9 @@ let server = {
 
         // Add the new player
         let playerID = server.rooms[roomID].addPlayer();
-
         server.players[playerSocketID] = {roomID, playerID};
 
+        // Prepare the game status
         let gameStatus = server.rooms[roomID].getGameStatus();
         gameStatus.myID = playerID;
 
@@ -74,7 +76,8 @@ let server = {
 
     updatePlayerAngle: function (playerSocketID, angle) {
         // Get player game room and his id in the room
-        [roomID, playerID] = server.players[playerSocketID];
+        console.log(server.players[playerSocketID]);
+        let {roomID, playerID} = server.players[playerSocketID];
 
         // TODO @Samir55 validate player and it's angle
 

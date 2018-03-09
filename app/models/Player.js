@@ -10,7 +10,7 @@ class Player {
      * @param color: object contains {r, g, b}
      * @param score: integer
      */
-    constructor(initPosition, color, score = 0, name = "") {
+    constructor(id, initPosition, color, score = 0, name = "") {
         this.x = initPosition[0];
         this.y = initPosition[1];
         this.velocity = INITIAL_VELOCITY;
@@ -19,6 +19,7 @@ class Player {
         this.radius = INITIAL_RADIUS;
         this.name = name;
         this.score = score;
+        this.id = id;
     }
 }
 
