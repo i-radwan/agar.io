@@ -45,6 +45,7 @@ let server = {
                 // Send to all players in the same room
                 io.in(roomID).emit('game_status', server.rooms[roomID].getGameStatus());
             })
+
         });
 
         http.listen(3000, function () {
@@ -119,6 +120,7 @@ let server = {
             let gameStatus = server.rooms[roomID].getGameStatus();
 
             io.in(roomID).emit('game_status', server.rooms[roomID].getGameStatus());
+            io.in(roomID).emit('leader_board', server.rooms[roomID].getLeaderBoard());
         }
 
     }

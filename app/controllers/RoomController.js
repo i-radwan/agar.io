@@ -2,21 +2,24 @@ const Game = require("../models/Game");
 const Gem = require("../models/Gem");
 const Player = require("../models/Player");
 
-const GAME_LENGTH = 500;
-const GAME_HEIGHT = 500;
-const MAX_GEMS = 10;
+const GAME_LENGTH = 1280;
+const GAME_HEIGHT = 576;
+const MAX_GEMS = 50;
 const COLORS = ["red", "green", "blue", "yellow", "orange", "purple", "pink"];
 
 class RoomController {
 
     constructor(id) {
-        // RoomController ID
+        // Room id
         this.id = id;
 
-        // RoomController Game status
+        // Room game status
         this.game = new Game(id);
 
-        // Next available Gems & PlayerIDs
+        // Room leader board
+        this.leaderBoard = [];
+
+        // Next available gems & player ids
         this.nextGemID = 0;
         this.nextPlayerID = 0;
 
@@ -32,13 +35,11 @@ class RoomController {
         let x = Math.ceil(Math.random() * GAME_LENGTH);
         let y = Math.ceil(Math.random() * GAME_HEIGHT);
 
-        let initialPosition = [x, y];
-        let playerID = this.nextPlayerID++;
-        let color = COLORS[playerID % COLORS.length];
+        this.game.players[this.nextPlayerID] = (new Player(
+            this.nextPlayerID, [x, y], COLORS[this.nextPlayerID % COLORS.length]
+        ));
 
-        this.game.players[playerID] = (new Player(playerID, initialPosition, color));
-
-        return playerID;
+        return this.nextPlayerID++;
     };
 
 
@@ -70,10 +71,12 @@ class RoomController {
             this.game.players[i].x += Math.cos(this.game.players[i].angle) * this.game.players[i].velocity;
         }
 
-        // Check gem eaten TODO In Engine.
+        // Check gem eaten & update score of the player TODO In Engine.
 
         // Check player is dead TODO In Engine.
 
+        // Add gems if needed
+        this.addGems();
     };
 
     /**
@@ -85,20 +88,19 @@ class RoomController {
         for (let i = this.game.gems.length; i <= MAX_GEMS; i++) {
 
             // Generate random positions.
-            let x = Math.ceil(Math.random() * GAME_LENGTH);
-            let y = Math.ceil(Math.random() * GAME_HEIGHT);
+            let x = Math.floor(Math.random() * GAME_LENGTH);
+            let y = Math.floor(Math.random() * GAME_HEIGHT);
 
-            // Chang colors TODO @Samir55.
-            let color = Math.floor(Math.random() * (COLORS.length));
+            let color = Math.floor(Math.random() * COLORS.length);
 
             this.game.gems.push(new Gem(this.nextGemID++, [x, y], COLORS[color], 1));
         }
     };
 
     /**
-     * Consume gems
+     * eat gems
      */
-    consumeGems() {
+    eatGem(playerID) {
 
     };
 
@@ -110,6 +112,12 @@ class RoomController {
         return this.game;
     }
 
+    /**
+     *
+     */
+    getLeaderBoard() {
+        return this.leaderBoard;
+    }
 }
 
 module.exports = RoomController;

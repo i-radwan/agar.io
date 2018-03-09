@@ -6,7 +6,7 @@ class Game {
      */
     constructor(id) {
         this._id = id;
-        this.players = [];
+        this.players = {};
         this.gems = [];
     }
 
