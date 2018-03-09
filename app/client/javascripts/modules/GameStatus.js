@@ -14,15 +14,13 @@ export default function () {
             },
             serverResponseReceived: false,
             fastForward: false
-        }
+        },
+        me: {}
     };
 
     module.init = function (serverGameStatus) {
         // Initialize
-        module.status.me = {
-            alive: true,
-            id: serverGameStatus.myID
-        };
+        module.status.me.alive = true;
 
         module.status.gems = [];
         module.status.players = [];
