@@ -1,6 +1,6 @@
 // Player model class
-const INITIAL_VELOCITY = 5;
-const INITIAL_RADIUS = 15;
+const INITIAL_VELOCITY = 0.3;
+const INITIAL_RADIUS = 22;
 
 class Player {
     /**

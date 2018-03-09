@@ -2,9 +2,9 @@ const Game = require("../models/Game");
 const Gem = require("../models/Gem");
 const Player = require("../models/Player");
 
-const GAME_LENGTH = 1280;
-const GAME_HEIGHT = 733;
-const MAX_GEMS = 200;
+const GAME_LENGTH = 500;
+const GAME_HEIGHT = 500;
+const MAX_GEMS = 10;
 const COLORS = ["red", "green", "blue", "yellow", "orange", "purple", "pink"];
 
 class RoomController {
@@ -32,8 +32,6 @@ class RoomController {
         let x = Math.ceil(Math.random() * GAME_LENGTH);
         let y = Math.ceil(Math.random() * GAME_HEIGHT);
 
-        console.log("Add a new player  " + this.nextPlayerID + " in room " + this.id);
-
         let initialPosition = [x, y];
         let playerID = this.nextPlayerID++;
         let color = COLORS[playerID % COLORS.length];
@@ -50,9 +48,7 @@ class RoomController {
      * @param angle
      */
     updatePlayerAngle(playerID, angle) {
-
         this.game.players[playerID].angle = angle;
-
     }
 
 
@@ -68,7 +64,16 @@ class RoomController {
      * Simulate game
      */
     simulate() {
-        console.log("Simulating Room " + this.id);
+        // Move players
+        for (let i = 0; i < this.game.players.length; i++) {
+            this.game.players[i].y += Math.sin(this.game.players[i].angle) * this.game.players[i].velocity;
+            this.game.players[i].x += Math.cos(this.game.players[i].angle) * this.game.players[i].velocity;
+        }
+
+        // Check gem eaten TODO In Engine.
+
+        // Check player is dead TODO In Engine.
+
     };
 
     /**
@@ -84,10 +89,9 @@ class RoomController {
             let y = Math.ceil(Math.random() * GAME_HEIGHT);
 
             // Chang colors TODO @Samir55.
-            // TODO @Samir55 Add gems id
             let color = Math.floor(Math.random() * (COLORS.length));
 
-            this.game.gems.push(new Gem([x, y], COLORS[color], 1));
+            this.game.gems.push(new Gem(this.nextGemID++, [x, y], COLORS[color], 1));
         }
     };
 

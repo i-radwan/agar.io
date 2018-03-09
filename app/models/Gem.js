@@ -8,11 +8,12 @@ class Gem {
      * @param color: object contains {r, g, b}
      * @param points: integer
      */
-    constructor(position, color, points) {
+    constructor(id, position, color, points) {
         this.x = position[0];
         this.y = position[1];
         this.color = color;
         this.radius = GEM_RADIUS;
+        this.id = id;
     }
 }
 

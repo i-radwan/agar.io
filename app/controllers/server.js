@@ -10,7 +10,8 @@ const GameController = require("./RoomController");
 require('../routes/index')(app, express);
 
 const MAX_GAME_PLAYERS = 5;
-const SERVER_SIMULATE_REPETITION = 3000;
+const SERVER_SIMULATE_RATE = 1000 / 120;
+const SERVER_UPDATE_RATE = 3000;
 
 let server = {
     init: function () {
@@ -22,14 +23,28 @@ let server = {
         io.on('connection', function (socket) {
 
             socket.on('subscribe', function () {
-                socket.emit('game_status', server.assignNewPlayer(socket.id));
+                let {roomID, playerID} = server.assignToRoom(socket.id);
+                console.log(roomID, playerID);
+
+                socket.join(roomID);
+
+                let gameStatus = server.rooms[roomID].getGameStatus();
+
+                // Send new player info , currently player id
+                socket.emit('new_player_info', playerID);
+
+                // Send to all players in the same room
+                io.in(roomID).emit('game_status', gameStatus);
             });
 
             socket.on("angle", function (angle) {
-                console.log("Recived angle update");
                 server.updatePlayerAngle(socket.id, angle);
-            })
 
+                let roomID = server.players[socket.id].roomID;
+
+                // Send to all players in the same room
+                io.in(roomID).emit('game_status', server.rooms[roomID].getGameStatus());
+            })
         });
 
         http.listen(3000, function () {
@@ -37,15 +52,17 @@ let server = {
         });
 
         // Simulate the rooms every certain time.
-        setInterval(server.simulateRooms, SERVER_SIMULATE_REPETITION);
+        setInterval(server.simulateRooms, SERVER_SIMULATE_RATE);
+
+        // Send all game status to all players in each room.
+        setInterval(server.notifyRooms, SERVER_UPDATE_RATE);
 
     },
 
     /**
      * Callback function called when a new player is connected to the game
      */
-    assignNewPlayer: function (playerSocketID) {
-        console.log(playerSocketID);
+    assignToRoom: function (playerSocketID) {
         let roomID = -1;
 
         // Search for any game having a free slot
@@ -67,29 +84,43 @@ let server = {
         let playerID = server.rooms[roomID].addPlayer();
         server.players[playerSocketID] = {roomID, playerID};
 
-        // Prepare the game status
-        let gameStatus = server.rooms[roomID].getGameStatus();
-        gameStatus.myID = playerID;
-
-        return gameStatus;
+        return {roomID, playerID};
     },
 
+    /**
+     *
+     * @param playerSocketID
+     * @param angle
+     */
     updatePlayerAngle: function (playerSocketID, angle) {
         // Get player game room and his id in the room
-        console.log(server.players[playerSocketID]);
         let {roomID, playerID} = server.players[playerSocketID];
 
         // TODO @Samir55 validate player and it's angle
 
-        // Update the player
         server.rooms[roomID].updatePlayerAngle(playerID, angle);
     },
-    
-    simulateRooms: function () {
 
+    /**
+     *
+     */
+    simulateRooms: function () {
         for (let i = 0; i < server.rooms.length; i++) {
             server.rooms[i].simulate();
         }
+    },
+
+    /**
+     *
+     */
+    notifyRooms: function () {
+        for (let i = 0; i < server.rooms.length; i++) {
+            let roomID = server.rooms[i].id;
+            let gameStatus = server.rooms[roomID].getGameStatus();
+
+            io.in(roomID).emit('game_status', server.rooms[roomID].getGameStatus());
+        }
+
     }
 
 };
