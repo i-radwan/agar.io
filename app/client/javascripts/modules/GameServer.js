@@ -8,12 +8,12 @@ export default function (gameStatus, serverGameStatus) {
     let _socket = io();
 
     module.init = function (startGame) {
+        setupReceivers(startGame);
+
         _socket.on('connect', function () {
             // Send subscription request
             _socket.emit('subscribe', {});
         });
-
-        setupReceiver(startGame);
     };
 
     /**
@@ -30,7 +30,7 @@ export default function (gameStatus, serverGameStatus) {
         _socket.emit('game_status', gameStatus);
     };
 
-    let setupReceiver = function (startGame) {]
+    let setupReceivers = function (startGame) {
         _socket.on('player_info', function (playerInfo) {
             console.log('Incoming player info:', playerInfo);
 
