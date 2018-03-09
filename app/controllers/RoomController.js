@@ -2,8 +2,8 @@ const Game = require("../models/Game");
 const Gem = require("../models/Gem");
 const Player = require("../models/Player");
 
-const GAME_LENGTH = 1280;
-const GAME_HEIGHT = 576;
+const GAME_LENGTH = 576;
+const GAME_HEIGHT = 1280;
 const MAX_GEMS = 50;
 const COLORS = ["red", "green", "blue", "yellow", "orange", "purple", "pink"];
 
@@ -48,7 +48,7 @@ class RoomController {
      * @param playerID
      * @param angle
      */
-    updatePlayerAngle(playerID, angle) {
+    setPlayerAngle(playerID, angle) {
         this.game.players[playerID].angle = angle;
     }
 

@@ -10,8 +10,8 @@ const GameController = require("./RoomController");
 require('../routes/index')(app, express);
 
 const MAX_GAME_PLAYERS = 5;
-const SERVER_SIMULATE_RATE = 1000 / 120;
-const SERVER_UPDATE_RATE = 3000;
+const SERVER_SIMULATE_RATE = 1000 / 110;
+const SERVER_SEND_RATE = 500;
 
 let server = {
     init: function () {
@@ -31,7 +31,9 @@ let server = {
                 let gameStatus = server.rooms[roomID].getGameStatus();
 
                 // Send new player info , currently player id
-                socket.emit('new_player_info', playerID);
+                let playerInfo = {};
+                playerInfo.id = playerID;
+                socket.emit('player_info', playerInfo);
 
                 // Send to all players in the same room
                 io.in(roomID).emit('game_status', gameStatus);
@@ -43,7 +45,7 @@ let server = {
                 let roomID = server.players[socket.id].roomID;
 
                 // Send to all players in the same room
-                io.in(roomID).emit('game_status', server.rooms[roomID].getGameStatus());
+                // io.in(roomID).emit('game_status', server.rooms[roomID].getGameStatus());
             })
 
         });
@@ -56,7 +58,7 @@ let server = {
         setInterval(server.simulateRooms, SERVER_SIMULATE_RATE);
 
         // Send all game status to all players in each room.
-        setInterval(server.notifyRooms, SERVER_UPDATE_RATE);
+        setInterval(server.updateRooms, SERVER_SEND_RATE);
 
     },
 
@@ -97,9 +99,7 @@ let server = {
         // Get player game room and his id in the room
         let {roomID, playerID} = server.players[playerSocketID];
 
-        // TODO @Samir55 validate player and it's angle
-
-        server.rooms[roomID].updatePlayerAngle(playerID, angle);
+        server.rooms[roomID].setPlayerAngle(playerID, angle);
     },
 
     /**
@@ -114,7 +114,7 @@ let server = {
     /**
      *
      */
-    notifyRooms: function () {
+    updateRooms: function () {
         for (let i = 0; i < server.rooms.length; i++) {
             let roomID = server.rooms[i].id;
             let gameStatus = server.rooms[roomID].getGameStatus();
