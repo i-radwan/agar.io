@@ -30,7 +30,13 @@ export default function (gameStatus, serverGameStatus) {
         _socket.emit('game_status', gameStatus);
     };
 
-    let setupReceiver = function (startGame) {
+    let setupReceiver = function (startGame) {]
+        _socket.on('player_info', function (playerInfo) {
+            console.log('Incoming player info:', playerInfo);
+
+            gameStatus.status.me.id = playerInfo.id;
+        });
+
         _socket.on('game_status', function (receivedGameStatus) {
             console.log('Incoming game status:', receivedGameStatus);
 
