@@ -1,12 +1,10 @@
+let gameConfig = require("./GameConfig")().gameConfig;
 const Game = require("./Game");
 const Gem = require("./Gem");
 const Player = require("./Player");
 
 // TODO @Samir55 move to config files
-const GAME_LENGTH = 400;
-const GAME_HEIGHT = 400;
 const EPSILON = 0.0001;
-const MAX_GEMS = 1;
 const COLORS = ["red", "green", "blue", "yellow", "orange", "purple", "pink"];
 
 class Room {
@@ -25,16 +23,6 @@ class Room {
         this.nextGemID = 0;
         this.nextPlayerID = 0;
 
-        // Add a small player not moving
-        let x = Math.ceil(Math.random() * GAME_LENGTH);
-        let y = Math.ceil(Math.random() * GAME_HEIGHT);
-
-        this.game.players[this.nextPlayerID] = (new Player(
-            this.nextPlayerID, [x, y], COLORS[this.nextPlayerID % COLORS.length], 0
-        ));
-
-        this.nextPlayerID++;
-
         // Add default gems
         this.addGems();
     }
@@ -45,8 +33,8 @@ class Room {
     addPlayer() {
         // TODO @Samir55 select using quad trees
         // Generate random position.
-        let x = Math.ceil(Math.random() * GAME_LENGTH);
-        let y = Math.ceil(Math.random() * GAME_HEIGHT);
+        let x = Math.ceil(Math.random() * gameConfig.gameLength);
+        let y = Math.ceil(Math.random() * gameConfig.gameHeight);
 
         this.game.players[this.nextPlayerID] = (new Player(
             this.nextPlayerID, [x, y], COLORS[this.nextPlayerID % COLORS.length]
@@ -59,8 +47,9 @@ class Room {
      * Kill player
      * @param playerID
      */
-    killPlayer(playerID) {
-
+    killPlayer(player) {
+        player.alive = false;
+        console.log("Player with color ", player.color, " has been Killed");
     };
 
     /**
@@ -77,9 +66,11 @@ class Room {
         // Check gem eaten & update score of the player
         for (let i = 0; i < this.game.players.length; i++) {
             let player = this.game.players[i];
+            if (!player.alive) continue;
+
             for (let j = 0; j < this.game.gems.length; j++) {
                 let gem = this.game.gems[j];
-                if (RoomController.playerAteGem(player, gem)) {
+                if (Room.playerAteGem(player, gem)) {
                     this.removeGem(player.id, j);
                 }
             }
@@ -90,33 +81,31 @@ class Room {
             let playerA = this.game.players[i];
             for (let j = i + 1; j < this.game.players.length; j++) {
                 let playerB = this.game.players[j];
-                if (RoomController.playerAtePlayer(playerA, playerB)) {
-                    playerA.score += playerB.score;
-                    playerA.radius += playerB.radius;
-                    playerB.alive = false;
-                } else if (RoomController.playerAtePlayer(playerB, playerA)) {
-                    playerB.score += playerA.score;
-                    playerB.radius += playerA.radius;
-                    playerA.alive = false;
+                if (Room.playerAtePlayer(playerA, playerB)) {
+                    playerA.incrementScore(playerB.score);
+                    this.killPlayer(playerB);
+                } else if (Room.playerAtePlayer(playerB, playerA)) {
+                    playerB.incrementScore(playerB.score);
+                    this.killPlayer(playerA);
                 }
             }
         }
 
         // Add new gems if needed
-        // this.addGems();
+        this.addGems();
     };
 
     /**
      * Add gems
      */
     addGems() {
-        if (this.game.gems.length >= MAX_GEMS) return;
+        if (this.game.gems.length >= gameConfig.roomMaxGems) return;
 
-        for (let i = this.game.gems.length; i < MAX_GEMS; i++) {
+        for (let i = this.game.gems.length; i < gameConfig.roomMaxGems; i++) {
 
             // Generate random positions.
-            let x = Math.floor(Math.random() * GAME_LENGTH);
-            let y = Math.floor(Math.random() * GAME_HEIGHT);
+            let x = Math.floor(Math.random() * gameConfig.gameLength);
+            let y = Math.floor(Math.random() * gameConfig.gameHeight);
 
             let color = Math.floor(Math.random() * COLORS.length);
 
@@ -125,24 +114,14 @@ class Room {
     };
 
     /**
-     * eat gems
+     * Eat gems
      */
     removeGem(playerID, index) {
         this.game.gems.splice(index, 1);
 
-        // TODO @Samir55 Refactor
         // Update player's score
         let player = this.game.players[playerID];
-        player.score += 1;
-
-        // Update player's size
-        player.radius += 5;
-
-        // Update player velocity
-        player.updateVelocity();
-
-        console.log(this.game.gems.length);
-
+        player.incrementScore(1);
     };
 
     /**
@@ -161,14 +140,17 @@ class Room {
     }
 
     /**
-     *
+     * Get players count
+     * @returns {Number}
      */
     getPlayersCount() {
         return this.game.players.length;
     }
 
     /**
-     *
+     * Check whether the player is alive or not
+     * @param playerID
+     * @returns {boolean}
      */
     isPlayerAlive(playerID) {
         return this.game.players[playerID].alive;
@@ -193,14 +175,19 @@ class Room {
         return (player.x - gem.x) * (player.x - gem.x) + (player.y - gem.y) * (player.y - gem.y) <= player.radius * player.radius;
     }
 
-
+    /**
+     * Check whether playerA has eaten playerB
+     * @param playerA
+     * @param playerB
+     * @returns {boolean}
+     */
     static playerAtePlayer(playerA, playerB) {
-        let distanceSquared = RoomController.calculateEuclidDistance(
+        let distanceSquared = Room.calculateEuclidDistance(
             {x: playerA.x, y: playerA.y}, {x: playerB.x, y: playerB.y});
 
         let radiiSumSquared = (playerA.radius + playerB.radius) * (playerA.radius + playerB.radius);
 
-        return radiiSumSquared - distanceSquared > EPSILON && RoomController.calculatePlayerArea(playerA) - 1.1 * RoomController.calculatePlayerArea(playerB) > EPSILON;
+        return radiiSumSquared - distanceSquared > EPSILON && Room.calculatePlayerArea(playerA) - 1.1 * Room.calculatePlayerArea(playerB) > EPSILON;
     }
 
     /**

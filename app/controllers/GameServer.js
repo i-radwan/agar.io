@@ -24,7 +24,7 @@ function GameServer(gameConfig) {
     let roomsExist = false;
     let nextRoomID = 0;
 
-    module.init = function (gameConfig) {
+    module.init = function () {
 
         __socket.on('connection', function (socket) {
 
@@ -46,10 +46,12 @@ function GameServer(gameConfig) {
 
         });
 
-        http.listen(3000, function () {
+        http.listen(gameConfig.port, function () {
             console.log('listening on *:3000');
         });
 
+        setInterval(module.runGameRooms, gameConfig.simulateRunRate);
+        setInterval(module.sendRoomsGameStatuses, gameConfig.sendGameStatusesRate);
 
     };
 
@@ -59,7 +61,7 @@ function GameServer(gameConfig) {
         // Search for any game having a free slot
         for (let room in gameRooms) {
             let gameRoom = gameRooms[room];
-            if (gameRoom.getPlayersCount() < 5) {
+            if (gameRoom.getPlayersCount() < gameConfig.roomMaxPlayers) {
                 roomID = gameRoom.id;
             }
         }
@@ -123,9 +125,9 @@ function GameServer(gameConfig) {
 
 module.exports = GameServer;
 
-// let gameConfig = {};
-// gameConfig['port'] = 3000;
-// gameConfig['roomMaxPlayers'] = 5;
 
-let gameServer = new GameServer(gameConfig);
+let GameConfig = require("../models/GameConfig");
+
+let gameServer = GameServer(GameConfig().gameConfig);
+
 gameServer.init();

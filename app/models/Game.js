@@ -3,6 +3,7 @@ class Game {
 
     /**
      * Game constructor
+     * @param id unique game id
      */
     constructor(id) {
         this._id = id;
