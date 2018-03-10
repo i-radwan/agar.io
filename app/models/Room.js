@@ -1,9 +1,8 @@
-let gameConfig = require("./GameConfig")().gameConfig;
+const gameConfig = require("../Configs/GameConfig")().gameConfig;
 const Game = require("./Game");
 const Gem = require("./Gem");
 const Player = require("./Player");
 
-// TODO @Samir55 move to config files
 const EPSILON = 0.0001;
 const COLORS = ["red", "green", "blue", "yellow", "orange", "purple", "pink"];
 
@@ -45,11 +44,10 @@ class Room {
 
     /**
      * Kill player
-     * @param playerID
+     * @param player
      */
     killPlayer(player) {
         player.alive = false;
-        console.log("Player with color ", player.color, " has been Killed");
     };
 
     /**

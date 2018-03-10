@@ -6,6 +6,7 @@ let app = express();
 let path = require('path');
 let http = require('http').Server(app);
 let io = require('socket.io')(http);
+const GameConfig = require("../Configs/GameConfig");
 
 // Routes
 require('../routes/index')(app, express);
@@ -125,9 +126,5 @@ function GameServer(gameConfig) {
 
 module.exports = GameServer;
 
-
-let GameConfig = require("../models/GameConfig");
-
 let gameServer = GameServer(GameConfig().gameConfig);
-
 gameServer.init();

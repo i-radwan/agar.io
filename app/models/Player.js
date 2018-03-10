@@ -1,5 +1,5 @@
 // Player model class
-let gameConfig = require("./GameConfig")().gameConfig;
+const gameConfig = require("../Configs/GameConfig")().gameConfig;
 
 class Player {
     /**
