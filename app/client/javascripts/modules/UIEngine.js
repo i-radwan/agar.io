@@ -9,7 +9,7 @@ const CANVAS_ID = "canvas";
 const BACKGROUND_CANVAS_ID = "background_canvas";
 
 
-export default function (mousePosition, p) {
+export default function (gameWidth, gameHeight) {
     let module = {};
 
     let canvasObjects = [];
@@ -25,9 +25,16 @@ export default function (mousePosition, p) {
     /**
      * Refresh the drawing due to game status update
      */
+    var scl = 1;
     module.draw = function () {
         // Clear everything
         background(0);
+
+        // Translate camera
+        scl = lerp(scl, 10000, 0.001);
+        // scale(0.001);
+        translate(-scl, -scl);
+        // console.log(scl);
 
         // Draw all objects
         for (let i = 0; i < canvasObjects.length; i++) {

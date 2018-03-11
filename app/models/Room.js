@@ -25,6 +25,7 @@ class Room {
         this.nextPlayerID = 0;
 
         // Create a quad tree to carry gems
+        // ToDo @SAMRA -> ALERT!! -> Note that the game coordinates are all normalized
         let quadTree = new QuadTree(0, new Rectangle(0, 0, gameConfig.gameLength, gameConfig.gameHeight));
 
         // Add default gems
@@ -36,9 +37,9 @@ class Room {
      */
     addPlayer() {
         // TODO @Samir55 select using quad trees
-        // Generate random position.
-        let x = Math.ceil(Math.random() * gameConfig.gameLength);
-        let y = Math.ceil(Math.random() * gameConfig.gameHeight);
+        // Generate random position. (normalized)
+        let x = Math.random() * 2;
+        let y = Math.random() * 2;
 
         this.game.players[this.nextPlayerID] = (new Player(
             this.nextPlayerID, [x, y], COLORS[this.nextPlayerID % COLORS.length]
@@ -56,8 +57,8 @@ class Room {
         for (let i = this.game.gems.length; i < gameConfig.roomMaxGems; i++) {
 
             // Generate random positions.
-            let x = Math.floor(Math.random() * gameConfig.gameLength);
-            let y = Math.floor(Math.random() * gameConfig.gameHeight);
+            let x = Math.random() * 2;
+            let y = Math.random() * 2;
 
             let color = Math.floor(Math.random() * COLORS.length);
 
@@ -94,10 +95,12 @@ class Room {
             let playerA = this.game.players[i];
             for (let j = i + 1; j < this.game.players.length; j++) {
                 let playerB = this.game.players[j];
+
                 if (Room.playerAtePlayer(playerA, playerB)) {
                     playerA.incrementScore(playerB.score);
                     this.killPlayer(playerB);
-                } else if (Room.playerAtePlayer(playerB, playerA)) {
+                }
+                else if (Room.playerAtePlayer(playerB, playerA)) {
                     playerB.incrementScore(playerB.score);
                     this.killPlayer(playerA);
                 }
