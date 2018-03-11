@@ -25,14 +25,22 @@ export default function (gameWidth, gameHeight) {
     /**
      * Refresh the drawing due to game status update
      */
+    var wid = 0, hig = 0;
     module.draw = function () {
+        push();
+        wid = lerp(wid, window.innerWidth/2, 0.01);
+        hig = lerp(hig, window.innerHeight/2, 0.01);
+        translate(wid, hig);
+
         // Clear everything
         background(0);
+        //console.log(window.innerWidth, window.innerHeight);
 
         // Draw all objects
         for (let i = 0; i < canvasObjects.length; i++) {
             canvasObjects[i].draw();
         }
+        pop();
     };
 
     module.drawGem = function (gemObject) {

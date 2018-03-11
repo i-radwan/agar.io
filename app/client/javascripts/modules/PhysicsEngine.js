@@ -15,7 +15,9 @@ export default function () {
         let myCircleCenterX = player.canvasObject.getCenterPoint().x;
         let myCircleCenterY = player.canvasObject.getCenterPoint().y;
 
-        let angleAndDistance = module.getAngleAndDistance({x: myCircleCenterX, y: myCircleCenterY}, target);
+        //TODO 3ed
+        //TO be changed when splitting happens (using get equivalent center)
+        let angleAndDistance = module.getAngleAndDistance({x: window.innerWidth/2, y: window.innerHeight/2}, target);
 
         let distance = angleAndDistance.distance;
 
