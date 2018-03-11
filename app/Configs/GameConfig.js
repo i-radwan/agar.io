@@ -16,6 +16,8 @@ function GameConfig () {
         gemRadius : 10,
         initialPlayerVelocity: 3,
         initialPlayerRadius: 30,
+        quadTreeNodeMaxObjects : 15,
+        quadTreeMaxLevels : 5,
     };
 
     return module;

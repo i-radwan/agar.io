@@ -6,12 +6,13 @@ let app = express();
 let path = require('path');
 let http = require('http').Server(app);
 let io = require('socket.io')(http);
+
+// Game modules
 const GameConfig = require("../Configs/GameConfig");
+const Room = require("../models/Room");
 
 // Routes
 require('../routes/index')(app, express);
-
-const Room = require("../models/Room");
 
 function GameServer(gameConfig) {
     let module = {};
@@ -48,7 +49,7 @@ function GameServer(gameConfig) {
         });
 
         http.listen(gameConfig.port, function () {
-            console.log('listening on *:3000');
+            console.log('listening on *: ', gameConfig.port);
         });
 
         setInterval(module.runGameRooms, gameConfig.simulateRunRate);
