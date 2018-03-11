@@ -81,7 +81,7 @@ export default function () {
                 j++;
             }
             else if (local[i].id < remote[j].id) { // Local gem removed
-                local[i].canvasObject.removed = true;
+                local[i].removed = true;
                 i++;
             }
             else {
@@ -91,7 +91,7 @@ export default function () {
         }
 
         while (i < len) {
-            local[i].canvasObject.removed = true;
+            local[i].removed = true;
             i++;
         }
 
