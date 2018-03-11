@@ -38,7 +38,7 @@ export default function (gameStatus, serverGameStatus) {
         });
 
         _socket.on('game_status', function (receivedGameStatus) {
-            console.log('Incoming game status:', receivedGameStatus);
+            // console.log('Incoming game status:', receivedGameStatus);
 
             gameStatus.status.env.serverResponseReceived = true;
             serverGameStatus = storeReceivedGameStatus(serverGameStatus, receivedGameStatus);
