@@ -61,7 +61,15 @@ export default function (mousePosition) {
             canvas.remove(gemObject.canvasObject);
         }
         else if (!gemObject.hasOwnProperty("canvasObject")) { // New gem generated -> Draw it
+            gemObject.x -= gemObject.radius;
+            gemObject.y -= gemObject.radius;
             gemObject.canvasObject = module.drawGem(gemObject);
+        }
+        else {
+            gemObject.x -= gemObject.radius;
+            gemObject.y -= gemObject.radius;
+            gemObject.canvasObject.left = gemObject.x;
+            gemObject.canvasObject.top = gemObject.y;
         }
     };
 
@@ -70,10 +78,17 @@ export default function (mousePosition) {
             canvas.remove(playerObject.canvasObject);
         }
         else if (!playerObject.hasOwnProperty("canvasObject")) { // New gem generated -> Draw it
+            playerObject.x -= playerObject.radius;
+            playerObject.y -= playerObject.radius;
             playerObject.canvasObject = module.drawPlayer(playerObject);
         }
         else { // Player existed and still -> update radius
             playerObject.canvasObject.setRadius(playerObject.radius);
+
+            playerObject.x -= playerObject.radius;
+            playerObject.y -= playerObject.radius;
+            playerObject.canvasObject.left = playerObject.x;
+            playerObject.canvasObject.top = playerObject.y;
         }
     };
 

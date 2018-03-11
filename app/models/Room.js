@@ -181,7 +181,7 @@ class Room {
      * @returns {boolean} true when the gem is in the player's blob and false otherwise
      */
     static playerAteGem(player, gem) {
-        return (player.x - gem.x) * (player.x - gem.x) + (player.y - gem.y) * (player.y - gem.y) <= player.radius * player.radius;
+        return (player.x - gem.x) * (player.x - gem.x) + (player.y - gem.y) * (player.y - gem.y) <= (player.radius + gem.radius) * (player.radius + gem.radius);
     }
 
     /**

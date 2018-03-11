@@ -15,7 +15,9 @@ export default function () {
             serverResponseReceived: false,
             fastForward: false
         },
-        me: {}
+        me: {
+            mouseAngle: 1
+        }
     };
 
     module.init = function (serverGameStatus) {
@@ -47,9 +49,7 @@ export default function () {
         syncArrays(module.status.players, serverGameStatus.players);
 
         // Iterate over the new players array
-        let foundMyself = false;
-
-        for (let idx = 0; idx < module.status.players.length && !foundMyself; idx++) {
+        for (let idx = 0; idx < module.status.players.length; idx++) {
             let player = module.status.players[idx];
 
             if (player.id === module.status.me.id) {
@@ -58,13 +58,8 @@ export default function () {
 
                 // Remove myself from players array
                 module.status.players.splice(idx, 1);
-
-                foundMyself = true;
             }
         }
-
-        if (!foundMyself)
-            module.status.me.alive = false;
     };
 
     /**

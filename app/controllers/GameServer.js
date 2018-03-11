@@ -37,7 +37,7 @@ function GameServer(gameConfig) {
             });
 
             // Updates player's angle
-            socket.on('player_info', function (angle) {
+            socket.on('angle', function (angle) {
                 module.setPlayerAngle(socket.id, angle);
             });
 
@@ -50,8 +50,6 @@ function GameServer(gameConfig) {
             socket.on('player_info', function (newPlayerInfo) {
                 module.setNewPlayerInfo(socket.id, newPlayerInfo);
             });
-
-
         });
 
         http.listen(gameConfig.port, function () {

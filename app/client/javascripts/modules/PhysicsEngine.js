@@ -24,8 +24,8 @@ export default function () {
             return;
 
         // Calculate mouse angle and move my player with the velocity
-        player.angle = angleAndDistance.angle;
-        movePlayer(player, Math.min(distance, player.velocity), true);
+        player.mouseAngle = angleAndDistance.angle;
+        // movePlayer(player, Math.min(distance, player.velocity), true);
     };
 
     /**

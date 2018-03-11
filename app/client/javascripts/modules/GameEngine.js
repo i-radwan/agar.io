@@ -69,7 +69,7 @@ export default function (gameStatus, serverGameStatus) {
         });
 
         // Move players
-        gameStatus.status.players.forEach(function (player) {
+        gameStatus.status.players.concat(gameStatus.status.me).forEach(function (player) {
             physicsEngine.movePlayerNormally(player);
         });
     };
