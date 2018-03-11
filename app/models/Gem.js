@@ -1,17 +1,24 @@
-/**
- * Created by ibrahimradwan on 3/2/18.
- */
+const gameConfig = require("../configs/GameConfig")().gameConfig;
 
+// Gem model class
 class Gem {
     /**
      * Gem constructor
-     * @param position: canvasObject contains {x, y}
-     * @param color: canvasObject contains {r, g, b}
+     * @param id The gem unique id in the game room
+     * @param position: object contains {x, y}
+     * @param color: object contains {r, g, b}
      * @param points: integer
      */
-    constructor(position, color, points) {
-        this._year = position;
-        this._color = color;
-        this._points = points;
+    constructor(id, position, color, points) {
+        this.id = id;
+
+        this.x = position[0];
+        this.y = position[1];
+
+        this.color = color;
+
+        this.radius = gameConfig.gemRadius;
     }
 }
+
+module.exports = Gem;

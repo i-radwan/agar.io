@@ -41,8 +41,8 @@ let game = {
             game.gameEngine.drawGame();
 
             // Stop when dead
-            if (!game.gameStatus.status.me.alive)
-                clearInterval(gameLoop);
+            // if (!game.gameStatus.status.me.alive)
+            //     clearInterval(gameLoop);
         }, 1000 / GAME_FPS);
 
         // Send game status loop
