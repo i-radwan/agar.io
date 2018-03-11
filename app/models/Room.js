@@ -169,6 +169,11 @@ class Room {
         this.game.players[playerID].angle = angle;
     }
 
+    setPlayerInfo(playerID, newPlayerInfo) {
+        this.game.players[playerID].x = newPlayerInfo.x;
+        this.game.players[playerID].y = newPlayerInfo.y;
+    }
+
     /**
      * Check if a gem has been eaten by a player
      * @param gem the gem object

@@ -46,6 +46,12 @@ function GameServer(gameConfig) {
                 module.interpolateGameStatus(socket.id);
             });
 
+            // 
+            socket.on('player_info', function (newPlayerInfo) {
+                module.setNewPlayerInfo(socket.id, newPlayerInfo);
+            });
+
+
         });
 
         http.listen(gameConfig.port, function () {
@@ -86,8 +92,8 @@ function GameServer(gameConfig) {
         let playerInfo = {};
         playerInfo.id = playerID;
 
-        console.log("Sent Player Info ", playerInfo);
-        console.log("Sent Initial game status ", gameRooms[roomID].getGameStatus());
+        // console.log("Sent Player Info ", playerInfo);
+        // console.log("Sent Initial game status ", gameRooms[roomID].getGameStatus());
         __socket.to(playerSocketID).emit('player_info', playerInfo);
         __socket.to(playerSocketID).emit('game_status', gameRooms[roomID].getGameStatus());
     };
@@ -100,6 +106,15 @@ function GameServer(gameConfig) {
             gameRooms[roomID].setPlayerAngle(playerID, angle);
         }
     };
+
+    module.setNewPlayerInfo = function (playerSocketID, newPlayerInfo) {
+        let playerID = gamePlayers[playerSocketID].playerID;
+        let roomID = gamePlayers[playerSocketID].roomID;
+
+        if (gameRooms[roomID].isPlayerAlive(playerID)) {
+            gameRooms[roomID].setPlayerInfo(playerID, newPlayerInfo);
+        }
+    }
 
     // TODO @Samir55
     module.interpolateGameStatus = function () {

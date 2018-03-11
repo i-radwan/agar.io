@@ -132,7 +132,7 @@ export default function (gameStatus, serverGameStatus) {
             }, {x: player.x, y: player.y});
 
             // Check
-            if (angleAndDistance.distance > 2 * player.velocity && !player.fastForward) {
+            if (angleAndDistance.distance > 2 *  player.velocity && !player.fastForward) {
                 isFastForwardRequired = true;
 
                 // Take backup of original values to revert to them after getting to the right position
