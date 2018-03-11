@@ -20,14 +20,18 @@ export default function (gameStatus, serverGameStatus) {
      * Send my angle to the server
      */
     module.sendAngle = function () {
-        _socket.emit('angle', gameStatus.status.me.angle);
+        _socket.emit('player_info', {
+            angle: gameStatus.status.me.angle,
+            x: gameStatus.status.me.x,
+            y: gameStatus.status.me.y
+        });
     };
 
     /**
      * Send game status to the server
      */
     module.sendStatus = function () {
-        _socket.emit('game_status', gameStatus);
+        // _socket.emit('game_status', gameStatus);
     };
 
     let setupReceivers = function (startGame) {
@@ -38,7 +42,7 @@ export default function (gameStatus, serverGameStatus) {
         });
 
         _socket.on('game_status', function (receivedGameStatus) {
-            console.log('Incoming game status:', receivedGameStatus);
+            // console.log('Incoming game status:', receivedGameStatus);
 
             gameStatus.status.env.serverResponseReceived = true;
             serverGameStatus = storeReceivedGameStatus(serverGameStatus, receivedGameStatus);
