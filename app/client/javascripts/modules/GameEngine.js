@@ -17,7 +17,7 @@ export default function (gameStatus, serverGameStatus) {
     module.init = function () {
         config();
 
-        physicsEngine = PhysicsEngine(gameStatus);
+        physicsEngine = PhysicsEngine();
 
         uiEngine = UIEngine(gameStatus.status.env.mousePosition);
         uiEngine.init(); // Initial drawing
