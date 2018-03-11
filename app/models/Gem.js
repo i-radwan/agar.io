@@ -1,4 +1,4 @@
-const gameConfig = require("../Configs/GameConfig")().gameConfig;
+const gameConfig = require("../configs/GameConfig")().gameConfig;
 
 // Gem model class
 class Gem {

@@ -8,7 +8,7 @@ let http = require('http').Server(app);
 let io = require('socket.io')(http);
 
 // Game modules
-const GameConfig = require("../Configs/GameConfig");
+const GameConfig = require("../configs/GameConfig");
 const Room = require("../models/Room");
 
 // Routes

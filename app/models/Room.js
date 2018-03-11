@@ -1,4 +1,4 @@
-const gameConfig = require("../Configs/GameConfig")().gameConfig;
+const gameConfig = require("../configs/GameConfig")().gameConfig;
 const Game = require("./Game");
 const Gem = require("./Gem");
 const Player = require("./Player");
