@@ -10,6 +10,8 @@ import GameServer from "./modules/GameServer.js";
 const GAME_FPS = 120;
 const SEND_ANGLE_TO_SERVER_RATE = 50; // milliseconds
 
+new p5();
+
 // Main game canvasObject
 let game = {
     init: function () {
@@ -30,11 +32,9 @@ let game = {
 
         // Game loop
         let gameLoop = setInterval(function () {
-
             // Update the game status (My location, players, gems, score, ... etc)
             game.gameEngine.updateGameStatus();
 
-            // Redraw the canvas
             game.gameEngine.drawGame();
 
             // Stop when dead
@@ -54,7 +54,6 @@ let game = {
     }
 };
 
-// Fire the game
 $(function () {
-    game.init();
+   game.init();
 });

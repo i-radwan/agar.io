@@ -8,47 +8,48 @@ const GEM_RADIUS = 10;
 const CANVAS_ID = "canvas";
 const BACKGROUND_CANVAS_ID = "background_canvas";
 
-export default function (mousePosition) {
+
+export default function (mousePosition, p) {
     let module = {};
 
-    let canvas = new fabric.Canvas(CANVAS_ID, {
-        width: window.innerWidth,
-        height: window.innerHeight,
-        backgroundColor: "transparent",
-        hoverCursor: "default",
-        selection: false
-    });
-
-    let backgroundCanvas = new fabric.StaticCanvas(BACKGROUND_CANVAS_ID, {
-        width: window.innerWidth,
-        height: window.innerHeight,
-        backgroundColor: "white",
-        hoverCursor: "none",
-        selection: false
-    });
+    let canvasObjects = [];
 
     module.init = function () {
-        config();
+        // Create canvas
+        createCanvas(window.innerWidth, window.innerHeight);
+        background(0);
 
-        drawBackgroundLines();
+        // drawBackgroundLines();
     };
 
     /**
      * Refresh the drawing due to game status update
      */
     module.draw = function () {
-        canvas.renderAll();
+        // Clear everything
+        background(0);
+
+        // Draw all objects
+        for (let i = 0; i < canvasObjects.length; i++) {
+            canvasObjects[i].draw();
+        }
     };
 
     module.drawGem = function (gemObject) {
+        gemObject.isBlob = false;
+
         return drawCircle(gemObject);
     };
 
     module.drawPlayer = function (playerObject) {
+        playerObject.isBlob = true;
+
         return drawCircle(playerObject);
     };
 
     module.drawMe = function (myselfObject) {
+        myselfObject.isBlob = true;
+
         return drawCircle(myselfObject);
     };
 
@@ -58,37 +59,28 @@ export default function (mousePosition) {
 
     module.updateGem = function (gemObject) {
         if (gemObject.removed) { // Gem has been eaten
-            canvas.remove(gemObject.canvasObject);
+            canvasObjects.splice(canvasObjects.indexOf(gemObject.canvasObject), 1);
         }
         else if (!gemObject.hasOwnProperty("canvasObject")) { // New gem generated -> Draw it
-            gemObject.x -= gemObject.radius;
-            gemObject.y -= gemObject.radius;
             gemObject.canvasObject = module.drawGem(gemObject);
         }
         else {
-            gemObject.x -= gemObject.radius;
-            gemObject.y -= gemObject.radius;
-            gemObject.canvasObject.left = gemObject.x;
-            gemObject.canvasObject.top = gemObject.y;
+            gemObject.canvasObject.x = gemObject.x;
+            gemObject.canvasObject.y = gemObject.y;
         }
     };
 
     module.updatePlayer = function (playerObject) {
         if (playerObject.removed) { // Player is dead
-            canvas.remove(playerObject.canvasObject);
+            canvasObjects.splice(canvasObjects.indexOf(playerObject.canvasObject), 1);
         }
         else if (!playerObject.hasOwnProperty("canvasObject")) { // New gem generated -> Draw it
-            playerObject.x -= playerObject.radius;
-            playerObject.y -= playerObject.radius;
             playerObject.canvasObject = module.drawPlayer(playerObject);
         }
         else { // Player existed and still -> update radius
             playerObject.canvasObject.setRadius(playerObject.radius);
-
-            playerObject.x -= playerObject.radius;
-            playerObject.y -= playerObject.radius;
-            playerObject.canvasObject.left = playerObject.x;
-            playerObject.canvasObject.top = playerObject.y;
+            playerObject.canvasObject.x = playerObject.x;
+            playerObject.canvasObject.y = playerObject.y;
         }
     };
 
@@ -97,20 +89,9 @@ export default function (mousePosition) {
     };
 
     module.fixObjectsZIndex = function () {
-        // Create array of all lengths
-        let lengthsArray = [];
-        canvas.forEachObject(function (object) {
-            lengthsArray.push({r: object.radius, obj: object});
-        });
-
         // Sort the array
-        lengthsArray.sort(function (a, b) {
-            return (a.r - b.r);
-        });
-
-        // Move the objects following the new order
-        lengthsArray.forEach(function (object, idx) {
-            object.obj.moveTo(idx);
+        canvasObjects.sort(function (a, b) {
+            return (a.radius - b.radius);
         });
     };
 
@@ -135,29 +116,30 @@ export default function (mousePosition) {
     };
 
     let drawCircle = function (parameters) {
-        let circle = new fabric.Circle({
-            left: parameters.x,
-            top: parameters.y,
+        let circle = {
+            x: parameters.x,
+            y: parameters.y,
             radius: parameters.radius,
-            fill: parameters.color,
-            hasControls: false,
-            hasBorders: false,
-            lockMovementX: true,
-            lockMovementY: true,
-            selection: false
-        });
+            color: parameters.color,
+            isBlob: parameters.isBlob,
 
-        canvas.add(circle);
+            draw: function () {
+                fill(this.color);
+                ellipse(this.x, this.y, this.radius * 2, this.radius * 2);
+            },
+            setRadius: function (r) {
+                this.radius = r;
+            },
+            getCenterPoint: function () {
+                return createVector(this.x, this.y);
+            }
+        };
+
+        circle.draw();
+
+        canvasObjects.push(circle);
 
         return circle;
-    };
-
-    let config = function () {
-        // Get mouse coordinates
-        canvas.on('mouse:move', function (options) {
-            mousePosition.mouseX = options.e.layerX;
-            mousePosition.mouseY = options.e.layerY;
-        });
     };
 
     return module;

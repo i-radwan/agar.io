@@ -11,9 +11,3 @@ body {
     height: 100%;
     overflow: hidden;
 }
-
-canvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-}

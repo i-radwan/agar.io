@@ -7,8 +7,8 @@ export default function (gameStatus, serverGameStatus) {
     let connectionEstablished = false;
     let _socket = io();
 
-    module.init = function (startGame) {
-        setupReceivers(startGame);
+    module.init = function (setupGameEngine) {
+        setupReceivers(setupGameEngine);
 
         _socket.on('connect', function () {
             // Send subscription request
@@ -38,7 +38,7 @@ export default function (gameStatus, serverGameStatus) {
         });
 
         _socket.on('game_status', function (receivedGameStatus) {
-            // console.log('Incoming game status:', receivedGameStatus);
+            console.log('Incoming game status:', receivedGameStatus);
 
             gameStatus.status.env.serverResponseReceived = true;
             serverGameStatus = storeReceivedGameStatus(serverGameStatus, receivedGameStatus);

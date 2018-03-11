@@ -41,6 +41,10 @@ export default function (gameStatus, serverGameStatus) {
         else { // Fast forward mode to catch up the server
             executeFastForwardGameMode();
         }
+
+        // Update mouse positions
+        gameStatus.status.env.mousePosition.mouseX = mouseX;
+        gameStatus.status.env.mousePosition.mouseY = mouseY;
     };
 
     let checkServerResponse = function () {
@@ -53,7 +57,7 @@ export default function (gameStatus, serverGameStatus) {
         }
 
         // Check if fast forward is needed
-        // checkIfFastForwardNeeded();
+        checkIfFastForwardNeeded();
     };
 
     /**
@@ -127,12 +131,12 @@ export default function (gameStatus, serverGameStatus) {
             let isFastForwardRequired = player.fastForward;
 
             let angleAndDistance = physicsEngine.getAngleAndDistance({
-                x: player.canvasObject.left,
-                y: player.canvasObject.top
+                x: player.canvasObject.x,
+                y: player.canvasObject.y
             }, {x: player.x, y: player.y});
 
             // Check
-            if (angleAndDistance.distance > 2 *  player.velocity && !player.fastForward) {
+            if (angleAndDistance.distance > 2 * player.velocity && !player.fastForward) {
                 isFastForwardRequired = true;
 
                 // Take backup of original values to revert to them after getting to the right position
@@ -156,8 +160,8 @@ export default function (gameStatus, serverGameStatus) {
         if (!player.fastForward) return false;
 
         let angleAndDistance = physicsEngine.getAngleAndDistance({
-            x: player.canvasObject.left,
-            y: player.canvasObject.top
+            x: player.canvasObject.x,
+            y: player.canvasObject.y
         }, {x: player.x, y: player.y});
 
 
