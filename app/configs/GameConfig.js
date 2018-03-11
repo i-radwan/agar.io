@@ -13,9 +13,9 @@ function GameConfig() {
         roomMaxGems: 50,
         simulateRunRate: 1000 / 300,
         sendGameStatusesRate: 50,
-        gemRadius: 0.0001,
-        initialPlayerVelocity: 0.0001,
-        initialPlayerRadius: 50,
+        gemRadius: 10,
+        initialPlayerVelocity: 1,
+        initialPlayerRadius: 30,
         quadTreeNodeMaxObjects: 15,
         quadTreeMaxLevels: 5,
     };

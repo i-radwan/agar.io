@@ -32,19 +32,19 @@ export default function (gameStatus, serverGameStatus) {
 
     module.updateGameStatus = function () {
         // If server status received
-        // checkServerResponse();
+        checkServerResponse();
 
         // Normal playing mode
-        // if (!gameStatus.status.env.fastForward) {
-        //     executeNormalGameMode();
-        // }
-        // else { // Fast forward mode to catch up the server
-        //     executeFastForwardGameMode();
-        // }
-        //
-        // // Update mouse positions
-        // gameStatus.status.env.mousePosition.mouseX = mouseX;
-        // gameStatus.status.env.mousePosition.mouseY = mouseY;
+        if (!gameStatus.status.env.fastForward) {
+            executeNormalGameMode();
+        }
+        else { // Fast forward mode to catch up the server
+            executeFastForwardGameMode();
+        }
+
+        // Update mouse positions
+        gameStatus.status.env.mousePosition.mouseX = mouseX;
+        gameStatus.status.env.mousePosition.mouseY = mouseY;
     };
 
     let checkServerResponse = function () {

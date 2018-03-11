@@ -38,7 +38,7 @@ class Player {
     incrementScore(value) {
         this.score += value;
 
-        // this.radius += value * 0.3;
+        this.radius += value * 0.3;
 
         this.velocity = Math.max(0.2, 3.000873 - 0.00291 * this.radius);
     }
