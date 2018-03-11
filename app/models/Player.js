@@ -11,7 +11,7 @@ class Player {
      * @param color: object contains {r, g, b}
      * @param score: integer
      */
-    constructor(id, initPosition, color, velocity = gameConfig.initialPlayerVelocity, score = 1, name = "") {
+    constructor(id, initPosition, color, velocity = gameConfig.initialPlayerVelocity, score = 1.0, name = "") {
         this.x = initPosition[0];
         this.y = initPosition[1];
         this.velocity = velocity;
@@ -36,7 +36,7 @@ class Player {
      * Increment player's score by value and update player's size and speed in accordance
      */
     incrementScore(value) {
-        this.score = value;
+        this.score += value;
 
         this.radius += value * 0.3;
 

@@ -2,6 +2,8 @@ const gameConfig = require("../Configs/GameConfig")().gameConfig;
 const Game = require("./Game");
 const Gem = require("./Gem");
 const Player = require("./Player");
+const QuadTree = require("./QuadTree");
+const Rectangle = require("./Rectangle");
 
 const EPSILON = 0.0001;
 const COLORS = ["red", "green", "blue", "yellow", "orange", "purple", "pink"];
@@ -21,6 +23,9 @@ class Room {
         // Next available gems & player ids
         this.nextGemID = 0;
         this.nextPlayerID = 0;
+
+        // Create a quad tree to carry gems
+        let quadTree = new QuadTree(0, new Rectangle(0, 0, gameConfig.gameLength, gameConfig.gameHeight));
 
         // Add default gems
         this.addGems();
@@ -43,11 +48,21 @@ class Room {
     };
 
     /**
-     * Kill player
-     * @param player
+     * Add gems
      */
-    killPlayer(player) {
-        player.alive = false;
+    addGems() {
+        if (this.game.gems.length >= gameConfig.roomMaxGems) return;
+
+        for (let i = this.game.gems.length; i < gameConfig.roomMaxGems; i++) {
+
+            // Generate random positions.
+            let x = Math.floor(Math.random() * gameConfig.gameLength);
+            let y = Math.floor(Math.random() * gameConfig.gameHeight);
+
+            let color = Math.floor(Math.random() * COLORS.length);
+
+            this.game.gems.push(new Gem(this.nextGemID++, [x, y], COLORS[color], 1));
+        }
     };
 
     /**
@@ -94,24 +109,6 @@ class Room {
     };
 
     /**
-     * Add gems
-     */
-    addGems() {
-        if (this.game.gems.length >= gameConfig.roomMaxGems) return;
-
-        for (let i = this.game.gems.length; i < gameConfig.roomMaxGems; i++) {
-
-            // Generate random positions.
-            let x = Math.floor(Math.random() * gameConfig.gameLength);
-            let y = Math.floor(Math.random() * gameConfig.gameHeight);
-
-            let color = Math.floor(Math.random() * COLORS.length);
-
-            this.game.gems.push(new Gem(this.nextGemID++, [x, y], COLORS[color], 1));
-        }
-    };
-
-    /**
      * Eat gems
      */
     removeGem(playerID, index) {
@@ -120,6 +117,14 @@ class Room {
         // Update player's score
         let player = this.game.players[playerID];
         player.incrementScore(1);
+    };
+
+    /**
+     * Kill player
+     * @param player
+     */
+    killPlayer(player) {
+        player.alive = false;
     };
 
     /**
@@ -134,6 +139,7 @@ class Room {
      * Get the top (currently 5) players.
      */
     getLeaderBoard() {
+
         return this.leaderBoard;
     }
 

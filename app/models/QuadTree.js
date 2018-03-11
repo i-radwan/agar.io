@@ -2,7 +2,7 @@
  * Created by ASamir on 3/11/18.
  */
 const gameConfig = require("../Configs/GameConfig")().gameConfig;
-const Rectangle = require("Rectangle");
+const Rectangle = require("./Rectangle");
 
 // Quad tree class
 class QuadTree {
@@ -113,7 +113,11 @@ class QuadTree {
         }
     }
 
-
+    /**
+     * Get near bodies to a certain body
+     * @param body the body in question
+     * @returns {Array} array having all near bodies to the one in question
+     */
     getNearBodies(body) {
         let index = this.getIndex(body);
         let nearBodies = this.bodies;
@@ -131,7 +135,7 @@ class QuadTree {
                 }
             }
         }
-        
+
         return nearBodies;
     }
 

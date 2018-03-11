@@ -86,6 +86,8 @@ function GameServer(gameConfig) {
         let playerInfo = {};
         playerInfo.id = playerID;
 
+        console.log("Sent Player Info ", playerInfo);
+        console.log("Sent Initial game status ", gameRooms[roomID].getGameStatus());
         __socket.to(playerSocketID).emit('player_info', playerInfo);
         __socket.to(playerSocketID).emit('game_status', gameRooms[roomID].getGameStatus());
     };
@@ -126,6 +128,3 @@ function GameServer(gameConfig) {
 }
 
 module.exports = GameServer;
-
-let gameServer = GameServer(GameConfig().gameConfig);
-gameServer.init();
