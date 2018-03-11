@@ -7,12 +7,17 @@ const CANVAS_BACKGROUND_LINES_SEPARATION = 30;
 const GEM_RADIUS = 10;
 const CANVAS_ID = "canvas";
 const BACKGROUND_CANVAS_ID = "background_canvas";
+const MAX_ZOOM_THRESHOLD = 50;
+const MIN_ZOOM_THRESHOLD = 30;
+const START_BLOB_RADIUS = 30;
 
 
 export default function (gameWidth, gameHeight) {
     let module = {};
 
     let canvasObjects = [];
+    let mainPlayer;
+    let zoom = 1, targetZoom = 1;
 
     module.init = function () {
         // Create canvas
@@ -25,12 +30,17 @@ export default function (gameWidth, gameHeight) {
     /**
      * Refresh the drawing due to game status update
      */
-    var wid = 0, hig = 0;
     module.draw = function () {
         push();
-        wid = lerp(wid, window.innerWidth/2, 0.01);
-        hig = lerp(hig, window.innerHeight/2, 0.01);
-        translate(wid, hig);
+        translate(window.innerWidth/2, window.innerHeight / 2);
+
+        if ((targetZoom * mainPlayer.radius) > MAX_ZOOM_THRESHOLD || (targetZoom * mainPlayer.radius) < MIN_ZOOM_THRESHOLD)
+            targetZoom = START_BLOB_RADIUS / mainPlayer.radius;
+
+        zoom = lerp(zoom, targetZoom, 0.05);
+        scale(zoom);
+
+        translate(-mainPlayer.x, -mainPlayer.y);
 
         // Clear everything
         background(0);
@@ -58,7 +68,7 @@ export default function (gameWidth, gameHeight) {
     module.drawMe = function (myselfObject) {
         myselfObject.isBlob = true;
 
-        return drawCircle(myselfObject);
+        return mainPlayer = drawCircle(myselfObject);
     };
 
     module.drawScore = function () {
