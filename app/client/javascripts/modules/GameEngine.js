@@ -53,7 +53,7 @@ export default function (gameStatus, serverGameStatus) {
         }
 
         // Check if fast forward is needed
-        checkIfFastForwardNeeded();
+        // checkIfFastForwardNeeded();
     };
 
     /**
@@ -98,13 +98,21 @@ export default function (gameStatus, serverGameStatus) {
      */
     let updateCanvasObjects = function () {
         // Update gems
-        gameStatus.status.gems.forEach(function (gem) {
+        gameStatus.status.gems.forEach(function (gem, idx) {
             uiEngine.updateGem(gem);
+
+            if (gem.removed) {
+                gameStatus.status.gems.splice(idx, 1);
+            }
         });
 
         // Update players (including me)
-        gameStatus.status.players.concat(gameStatus.status.me).forEach(function (player) {
+        gameStatus.status.players.concat(gameStatus.status.me).forEach(function (player, idx) {
             uiEngine.updatePlayer(player);
+
+            if (player.removed) {
+                gameStatus.status.players.splice(idx, 1);
+            }
         });
 
         // Fix z index of objects
