@@ -1,6 +1,8 @@
 /**
  * Created by ibrahimradwan on 3/6/18.
  */
+// Constants
+const MOVEMENT_INTERPOLATION_FACTOR = 0.5;
 
 export default function () {
     let module = {};
@@ -33,17 +35,9 @@ export default function () {
      * @param target the point to be moved to.
      */
     module.movePlayerToTarget = function (player, target) {
-        let velocity = player.velocity;
-
-        let angleAndDistance = module.getAngleAndDistance({
-            x: player.canvasObject.x,
-            y: player.canvasObject.y
-        }, target);
-
-        velocity = Math.min(angleAndDistance.distance, velocity);
-
-        // Move canvas object
-        movePlayer(player, velocity, false);
+        // Interpolate user location until we reach target
+        player.canvasObject.x = lerp(player.canvasObject.x, target.x, MOVEMENT_INTERPOLATION_FACTOR);
+        player.canvasObject.y = lerp(player.canvasObject.y, target.y, MOVEMENT_INTERPOLATION_FACTOR);
     };
 
     /**

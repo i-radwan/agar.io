@@ -48,16 +48,24 @@ export default function (gameStatus, serverGameStatus) {
     };
 
     let checkServerResponse = function () {
+        // if (gameStatus.status.env.fastForward) {
+        //     console.log(123);
+        //     return;
+        // } // ToDo
+
         if (gameStatus.status.env.serverResponseReceived) {
             // Update gameStatus by serverGameStatus
             gameStatus.set(serverGameStatus);
+
+            console.log(Math.sqrt(Math.pow(gameStatus.status.me.x - gameStatus.status.me.canvasObject.x, 2)
+                + Math.pow(gameStatus.status.me.y - gameStatus.status.me.canvasObject.y, 2)));
 
             // Update canvas objects
             updateCanvasObjects();
         }
 
         // Check if fast forward is needed
-        checkIfFastForwardNeeded();
+        // checkIfFastForwardNeeded();
     };
 
     /**
@@ -136,15 +144,8 @@ export default function (gameStatus, serverGameStatus) {
             }, {x: player.x, y: player.y});
 
             // Check
-            if (angleAndDistance.distance > 2 * player.velocity && !player.fastForward) {
-                isFastForwardRequired = true;
-
-                // Take backup of original values to revert to them after getting to the right position
-                player.tmpVelocity = player.velocity;
-                player.tmpAngle = player.angle;
-                player.velocity = FAST_FORWARD_SPEED;
-                player.angle = angleAndDistance.angle;
-                player.fastForward = true;
+            if (angleAndDistance.distance > player.velocity && !player.fastForward) {
+                player.fastForward = isFastForwardRequired = true;
             }
 
             gameStatus.status.env.fastForward |= isFastForwardRequired;
@@ -164,20 +165,8 @@ export default function (gameStatus, serverGameStatus) {
             y: player.canvasObject.y
         }, {x: player.x, y: player.y});
 
-
         // Check if the error isn't large
-        if (angleAndDistance.distance <= player.tmpVelocity) {
-            player.angle = player.tmpAngle;
-            player.velocity = player.tmpVelocity;
-            player.fastForward = false;
-
-            delete player.tmpAngle;
-            delete player.tmpVelocity;
-
-            return false;
-        }
-
-        return true;
+        return player.fastForward = !(angleAndDistance.distance <= player.velocity);
     };
 
     let initGameDraw = function () {

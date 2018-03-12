@@ -7,6 +7,7 @@ const CANVAS_BACKGROUND_LINES_SEPARATION = 30;
 const MAX_ZOOM_THRESHOLD = 50;
 const MIN_ZOOM_THRESHOLD = 30;
 const START_BLOB_RADIUS = 30;
+const MOVEMENT_INTERPOLATION_FACTOR = 0.5;
 
 export default function (gameWidth, gameHeight) {
     let module = {};
@@ -79,10 +80,6 @@ export default function (gameWidth, gameHeight) {
         else if (!gemObject.hasOwnProperty("canvasObject")) { // New gem generated -> Draw it
             gemObject.canvasObject = module.drawGem(gemObject);
         }
-        else {
-            gemObject.canvasObject.x = gemObject.x;
-            gemObject.canvasObject.y = gemObject.y;
-        }
     };
 
     module.updatePlayer = function (playerObject) {
@@ -94,8 +91,8 @@ export default function (gameWidth, gameHeight) {
         }
         else { // Player existed and still -> update radius
             playerObject.canvasObject.setRadius(playerObject.radius);
-            playerObject.canvasObject.x = playerObject.x;
-            playerObject.canvasObject.y = playerObject.y;
+            playerObject.canvasObject.x = lerp(playerObject.canvasObject.x, playerObject.x, MOVEMENT_INTERPOLATION_FACTOR);
+            playerObject.canvasObject.y = lerp(playerObject.canvasObject.y, playerObject.y, MOVEMENT_INTERPOLATION_FACTOR);
         }
     };
 
@@ -158,7 +155,7 @@ export default function (gameWidth, gameHeight) {
                 ellipse(this.x, this.y, this.radius * 2, this.radius * 2);
             },
             setRadius: function (r) {
-                this.radius = r;
+                this.radius = lerp(this.radius, r, MOVEMENT_INTERPOLATION_FACTOR);
             },
             getCenterPoint: function () {
                 return createVector(this.x, this.y);
