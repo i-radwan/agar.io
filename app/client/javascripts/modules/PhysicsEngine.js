@@ -11,12 +11,7 @@ export default function () {
      * @param target object contains the targeted x, y coordinates
      */
     module.movePlayerToMouse = function (player, target) {
-        // Get my circle center
-        let myCircleCenterX = player.canvasObject.getCenterPoint().x;
-        let myCircleCenterY = player.canvasObject.getCenterPoint().y;
-
-        //TODO 3ed
-        //TO be changed when splitting happens (using get equivalent center)
+        // To be changed when splitting happens (using get equivalent center)
         let angleAndDistance = module.getAngleAndDistance({x: window.innerWidth/2, y: window.innerHeight/2}, target);
 
         let distance = angleAndDistance.distance;

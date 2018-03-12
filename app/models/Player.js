@@ -40,9 +40,9 @@ class Player {
 
         this.radius += value * 0.3;
 
-        this.velocity = Math.max(0.2, 3.000873 - 0.00291 * this.radius);
+        this.velocity = Math.max(gameConfig.lowestPlayerVelocity,
+            gameConfig.initialPlayerVelocity - 0.00291 * this.radius);
     }
-
 }
 
 module.exports = Player;

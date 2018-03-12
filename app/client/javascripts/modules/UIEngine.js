@@ -4,9 +4,6 @@
 
 // Constants
 const CANVAS_BACKGROUND_LINES_SEPARATION = 30;
-const GEM_RADIUS = 10;
-const CANVAS_ID = "canvas";
-const BACKGROUND_CANVAS_ID = "background_canvas";
 const MAX_ZOOM_THRESHOLD = 50;
 const MIN_ZOOM_THRESHOLD = 30;
 const START_BLOB_RADIUS = 30;
@@ -32,19 +29,31 @@ export default function (gameWidth, gameHeight) {
      */
     module.draw = function () {
         push();
+
+        //
+        // Camera setup
+        //
+
+        // Translate camera to screen center
         translate(window.innerWidth/2, window.innerHeight / 2);
 
+        // Scaling (interpolated)
         if ((targetZoom * mainPlayer.radius) > MAX_ZOOM_THRESHOLD || (targetZoom * mainPlayer.radius) < MIN_ZOOM_THRESHOLD)
             targetZoom = START_BLOB_RADIUS / mainPlayer.radius;
 
         zoom = lerp(zoom, targetZoom, 0.05);
         scale(zoom);
 
+        // Translate camera to player center
         translate(-mainPlayer.x, -mainPlayer.y);
+
+
+        //
+        // Drawing
+        //
 
         // Clear everything
         background(0);
-        //console.log(window.innerWidth, window.innerHeight);
 
         // Draw all objects
         for (let i = 0; i < canvasObjects.length; i++) {
