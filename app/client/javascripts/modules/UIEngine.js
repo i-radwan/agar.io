@@ -25,6 +25,13 @@ export default function (gameWidth, gameHeight) {
         canvas.elt.style.width = '100%';
         canvas.elt.style.height = '100%';
 
+        // correctly disables touch on mobile devices
+        document.getElementById(canvas.elt.id).addEventListener('touchmove', function(e) {
+
+            e.preventDefault();
+
+        }, false);
+
         // Remove strokes
         strokeWeight(0);
 
