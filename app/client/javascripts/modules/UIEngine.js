@@ -8,7 +8,6 @@ const MAX_ZOOM_THRESHOLD = 50;
 const MIN_ZOOM_THRESHOLD = 30;
 const START_BLOB_RADIUS = 30;
 
-
 export default function (gameWidth, gameHeight) {
     let module = {};
 
@@ -19,7 +18,9 @@ export default function (gameWidth, gameHeight) {
     module.init = function () {
         // Create canvas
         createCanvas(window.innerWidth, window.innerHeight);
-        background(0);
+
+        // Remove strokes
+        strokeWeight(0);
 
         // drawBackgroundLines();
     };
@@ -30,27 +31,8 @@ export default function (gameWidth, gameHeight) {
     module.draw = function () {
         push();
 
-        //
         // Camera setup
-        //
-
-        // Translate camera to screen center
-        translate(window.innerWidth/2, window.innerHeight / 2);
-
-        // Scaling (interpolated)
-        if ((targetZoom * mainPlayer.radius) > MAX_ZOOM_THRESHOLD || (targetZoom * mainPlayer.radius) < MIN_ZOOM_THRESHOLD)
-            targetZoom = START_BLOB_RADIUS / mainPlayer.radius;
-
-        zoom = lerp(zoom, targetZoom, 0.05);
-        scale(zoom);
-
-        // Translate camera to player center
-        translate(-mainPlayer.x, -mainPlayer.y);
-
-
-        //
-        // Drawing
-        //
+        setupCamera();
 
         // Clear everything
         background(0);
@@ -59,6 +41,7 @@ export default function (gameWidth, gameHeight) {
         for (let i = 0; i < canvasObjects.length; i++) {
             canvasObjects[i].draw();
         }
+
         pop();
     };
 
@@ -122,18 +105,33 @@ export default function (gameWidth, gameHeight) {
         });
     };
 
+    let setupCamera = function () {
+        // Translate camera to screen center
+        translate(width / 2, height / 2);
+
+        // Scaling (interpolated)
+        if ((targetZoom * mainPlayer.radius) > MAX_ZOOM_THRESHOLD || (targetZoom * mainPlayer.radius) < MIN_ZOOM_THRESHOLD)
+            targetZoom = START_BLOB_RADIUS / mainPlayer.radius;
+
+        zoom = lerp(zoom, targetZoom, 0.05);
+        scale(zoom * Math.sqrt((width * height) / (2000 * 1000)));
+
+        // Translate camera to player center
+        translate(-mainPlayer.x, -mainPlayer.y);
+    };
+
     let drawBackgroundLines = function () {
         // Draw background lines
         for (
             let i = CANVAS_BACKGROUND_LINES_SEPARATION;
-            i <= Math.max(window.innerWidth, window.innerHeight) - CANVAS_BACKGROUND_LINES_SEPARATION;
+            i <= Math.max(width, height) - CANVAS_BACKGROUND_LINES_SEPARATION;
             i += CANVAS_BACKGROUND_LINES_SEPARATION
         ) {
             backgroundCanvas.add(
-                new fabric.Line([i, 0, i, window.innerHeight], {
+                new fabric.Line([i, 0, i, height], {
                     stroke: '#eee'
                 }),
-                new fabric.Line([0, i, window.innerWidth, i], {
+                new fabric.Line([0, i, width, i], {
                     stroke: '#eee'
                 })
             );

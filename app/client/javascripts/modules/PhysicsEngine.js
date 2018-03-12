@@ -16,10 +16,6 @@ export default function () {
 
         let distance = angleAndDistance.distance;
 
-        // Check if cursor outside the circle (to avoid vibrations)
-        if (distance < 0.1)
-            return;
-
         // Calculate mouse angle and move my player with the velocity
         player.mouseAngle = angleAndDistance.angle;
         movePlayer(player, Math.min(distance, player.velocity), true);

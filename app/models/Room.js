@@ -38,8 +38,8 @@ class Room {
     addPlayer() {
         // TODO @Samir55 select using quad trees
         // Generate random position. (normalized)
-        let x = Math.ceil(Math.random() * gameConfig.gameLength);
-        let y = Math.ceil(Math.random() * gameConfig.gameHeight);
+        let x = ((Math.random() * 2 - 1) * gameConfig.gameLength);
+        let y = ((Math.random() * 2 - 1) * gameConfig.gameHeight);
 
         this.game.players[this.nextPlayerID] = (new Player(
             this.nextPlayerID, [x, y], COLORS[this.nextPlayerID % COLORS.length]
@@ -57,8 +57,8 @@ class Room {
         for (let i = this.game.gems.length; i < gameConfig.roomMaxGems; i++) {
 
             // Generate random positions.
-            let x = Math.floor(Math.random() * gameConfig.gameLength);
-            let y = Math.floor(Math.random() * gameConfig.gameHeight);
+            let x = ((Math.random() * 2 - 1) * gameConfig.gameLength);
+            let y = ((Math.random() * 2 - 1) * gameConfig.gameHeight);
 
             let color = Math.floor(Math.random() * COLORS.length);
 
