@@ -66,8 +66,8 @@ export default function (gameStatus, serverGameStatus) {
      * move my circle to follow the mouse input
      */
     let executeNormalGameMode = function () {
-        // Move my circle to follow the mouse
-        physicsEngine.movePlayerToMouse(gameStatus.status.me, {
+        // Get mouse angle
+        physicsEngine.getMouseAngle(gameStatus.status.me, {
             x: gameStatus.status.env.mousePosition.mouseX,
             y: gameStatus.status.env.mousePosition.mouseY
         });

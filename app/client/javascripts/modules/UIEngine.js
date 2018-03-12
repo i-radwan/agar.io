@@ -23,6 +23,11 @@ export default function (gameWidth, gameHeight) {
         strokeWeight(0);
 
         // drawBackgroundLines();
+
+        // Stop scrolling for mobile devices
+        $('body').bind('touchmove', function (e) {
+            e.preventDefault()
+        });
     };
 
     /**

@@ -10,15 +10,12 @@ export default function () {
      * @param player the player to be moved
      * @param target object contains the targeted x, y coordinates
      */
-    module.movePlayerToMouse = function (player, target) {
+    module.getMouseAngle = function (player, target) {
         // To be changed when splitting happens (using get equivalent center)
         let angleAndDistance = module.getAngleAndDistance({x: window.innerWidth/2, y: window.innerHeight/2}, target);
 
-        let distance = angleAndDistance.distance;
-
         // Calculate mouse angle and move my player with the velocity
         player.mouseAngle = angleAndDistance.angle;
-        movePlayer(player, Math.min(distance, player.velocity), true);
     };
 
     /**
