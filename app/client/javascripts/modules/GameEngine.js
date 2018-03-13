@@ -57,8 +57,8 @@ export default function (gameStatus, serverGameStatus) {
             // Update gameStatus by serverGameStatus
             gameStatus.set(serverGameStatus);
 
-            console.log(Math.sqrt(Math.pow(gameStatus.status.me.x - gameStatus.status.me.canvasObject.x, 2)
-                + Math.pow(gameStatus.status.me.y - gameStatus.status.me.canvasObject.y, 2)));
+            //console.log(Math.sqrt(Math.pow(gameStatus.status.me.x - gameStatus.status.me.canvasObject.x, 2)
+            //    + Math.pow(gameStatus.status.me.y - gameStatus.status.me.canvasObject.y, 2)));
 
             // Update canvas objects
             updateCanvasObjects();

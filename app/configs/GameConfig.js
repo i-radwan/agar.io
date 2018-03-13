@@ -13,9 +13,9 @@ function GameConfig() {
         gameLength: GAME_SIZE * SCALE_FACTOR,
         gameHeight: GAME_SIZE * SCALE_FACTOR, // ToDo: Be careful Mr. SAMRA, we don't how this thing works, we may face a nuclear war if you just thought to removing this line cuz it's exactly as the above one... 🙄
         roomMaxPlayers: 5,
-        roomMaxGems: 1000,
+        roomMaxGems: 300,
         simulateRunRate: 1000 / 120,
-        sendGameStatusesRate: 40,
+        sendGameStatusesRate: 100,
         gemRadius: 10 * SCALE_FACTOR,
         lowestPlayerVelocity: 0.2 * SCALE_FACTOR,
         initialPlayerVelocity: 3 * SCALE_FACTOR,
