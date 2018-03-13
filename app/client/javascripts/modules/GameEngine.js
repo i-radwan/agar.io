@@ -5,9 +5,6 @@
 import PhysicsEngine from "./PhysicsEngine.js";
 import UIEngine from "./UIEngine.js";
 
-// Constants
-let FAST_FORWARD_SPEED = 50;
-
 export default function (gameStatus, serverGameStatus) {
     let module = {};
 
