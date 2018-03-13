@@ -18,29 +18,12 @@ export default function (gameWidth, gameHeight) {
 
     module.init = function () {
         // Create canvas
-        const canvas = createCanvas(window.innerWidth, window.innerHeight);
-        //console.log(canvasElt);
-
-        // For framerate optimization ? https://forum.processing.org/two/discussion/11462/help-in-p5-js-performance-improvement-on-mobile-devices
-        canvas.elt.style.width = '100%';
-        canvas.elt.style.height = '100%';
-
-        // correctly disables touch on mobile devices
-        document.getElementById(canvas.elt.id).addEventListener('touchmove', function(e) {
-
-            e.preventDefault();
-
-        }, false);
+        makeCanvas();
 
         // Remove strokes
         strokeWeight(0);
 
         // drawBackgroundLines();
-
-        // Stop scrolling for mobile devices
-        $('body').bind('touchmove', function (e) {
-            e.preventDefault()
-        });
     };
 
     /**
@@ -179,6 +162,26 @@ export default function (gameWidth, gameHeight) {
         canvasObjects.push(circle);
 
         return circle;
+    };
+
+    /**
+     * Use p5js createCanvas function to create function
+     * @return canvas object
+     */
+    let makeCanvas = function () {
+        let canvas = createCanvas(window.innerWidth, window.innerHeight);
+        //console.log(canvasElt);
+
+        // For framerate optimization ? https://forum.processing.org/two/discussion/11462/help-in-p5-js-performance-improvement-on-mobile-devices
+        canvas.elt.style.width = '100%';
+        canvas.elt.style.height = '100%';
+
+        // Correctly disables touch on mobile devices
+        document.getElementById(canvas.elt.id).addEventListener('touchmove', function (e) {
+            e.preventDefault();
+        }, false);
+
+        return canvas;
     };
 
     return module;
