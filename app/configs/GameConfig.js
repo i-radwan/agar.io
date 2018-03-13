@@ -15,7 +15,7 @@ function GameConfig() {
         roomMaxPlayers: 5,
         roomMaxGems: 1000,
         simulateRunRate: 1000 / 120,
-        sendGameStatusesRate: 340,
+        sendGameStatusesRate: 40,
         gemRadius: 10 * SCALE_FACTOR,
         lowestPlayerVelocity: 0.2 * SCALE_FACTOR,
         initialPlayerVelocity: 3 * SCALE_FACTOR,
