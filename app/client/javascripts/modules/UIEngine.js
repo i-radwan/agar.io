@@ -3,17 +3,17 @@
  */
 
 // Constants
-const CANVAS_BACKGROUND_LINES_SEPARATION = 30;
 const MAX_ZOOM_THRESHOLD = 50;
 const MIN_ZOOM_THRESHOLD = 30;
 const START_BLOB_RADIUS = 30;
 const MOVEMENT_INTERPOLATION_FACTOR = 0.5;
+const MAX_BLOB_WABBLE_RADIUS_OFFSET = 1 / 5;
 
-export default function (gameWidth, gameHeight) {
+export default function () {
     let module = {};
 
     let canvasObjects = [];
-    let mainPlayer;
+    let mainPlayerCanvasObject;
     let zoom = 1, targetZoom = 1;
 
     module.init = function () {
@@ -22,8 +22,6 @@ export default function (gameWidth, gameHeight) {
 
         // Remove strokes
         strokeWeight(0);
-
-        // drawBackgroundLines();
     };
 
     /**
@@ -32,7 +30,7 @@ export default function (gameWidth, gameHeight) {
     module.draw = function () {
         push();
 
-        // Camera setup
+        // Camera setup and translating to user location
         setupCamera();
 
         // Clear everything
@@ -46,43 +44,57 @@ export default function (gameWidth, gameHeight) {
         pop();
     };
 
-    module.drawGem = function (gemObject) {
-        gemObject.isBlob = false;
-
-        return drawCircle(gemObject);
+    module.addGem = function (gemObject) {
+        return attachCircle(gemObject, drawCircle);
     };
 
-    module.drawPlayer = function (playerObject) {
-        playerObject.isBlob = true;
+    module.addPlayer = function (playerObject) {
+        let circle = attachCircle(playerObject, drawBlob);
 
-        return drawCircle(playerObject);
+        // Set blob attributes
+        circle.yOffset = 0; // Used for noise
+        circle.strokeColor = 255;
+
+        return circle;
     };
 
-    module.drawMe = function (myselfObject) {
-        myselfObject.isBlob = true;
+    module.addMainPlayer = function (myselfObject) {
+        mainPlayerCanvasObject = attachCircle(myselfObject, drawBlob);
 
-        return mainPlayer = drawCircle(myselfObject);
+        // Set blob attributes
+        mainPlayerCanvasObject.yOffset = 0;
+        mainPlayerCanvasObject.strokeColor = 255;
+
+        return mainPlayerCanvasObject;
     };
 
     module.drawScore = function () {
         // ToDo: Draw score text
     };
 
+    /**
+     * Update gem canvas object to follow the updates in the gemObject
+     * @param gemObject
+     */
     module.updateGem = function (gemObject) {
         if (gemObject.removed) { // Gem has been eaten
             canvasObjects.splice(canvasObjects.indexOf(gemObject.canvasObject), 1);
         }
         else if (!gemObject.hasOwnProperty("canvasObject")) { // New gem generated -> Draw it
-            gemObject.canvasObject = module.drawGem(gemObject);
+            gemObject.canvasObject = module.addGem(gemObject);
         }
     };
 
+    /**
+     * Update player canvas object to follow the updates in the playerObject
+     * @param playerObject
+     */
     module.updatePlayer = function (playerObject) {
         if (playerObject.removed) { // Player is dead
             canvasObjects.splice(canvasObjects.indexOf(playerObject.canvasObject), 1);
         }
         else if (!playerObject.hasOwnProperty("canvasObject")) { // New gem generated -> Draw it
-            playerObject.canvasObject = module.drawPlayer(playerObject);
+            playerObject.canvasObject = module.addPlayer(playerObject);
         }
         else { // Player existed and still -> update radius
             playerObject.canvasObject.setRadius(playerObject.radius);
@@ -91,10 +103,10 @@ export default function (gameWidth, gameHeight) {
         }
     };
 
-    module.updateScore = function (scoresObject) {
-
-    };
-
+    /**
+     * Sort the canvas objects array (the order in which the objects are drawn),
+     * such that smaller items are drawn first (to be beneath the larger items)
+     */
     module.fixObjectsZIndex = function () {
         // Sort the array
         canvasObjects.sort(function (a, b) {
@@ -102,52 +114,45 @@ export default function (gameWidth, gameHeight) {
         });
     };
 
+    /**
+     * Setup canvas camera:
+     * Translate to screen center
+     * Scale with the required scale
+     * Translate back to make the player @ screen center
+     */
     let setupCamera = function () {
         // Translate camera to screen center
-        translate(width / 2, height / 2);
+        translate(window.innerWidth / 2, window.innerHeight / 2);
 
         // Scaling (interpolated)
-        if ((targetZoom * mainPlayer.radius) > MAX_ZOOM_THRESHOLD || (targetZoom * mainPlayer.radius) < MIN_ZOOM_THRESHOLD)
-            targetZoom = START_BLOB_RADIUS / mainPlayer.radius;
+        if ((targetZoom * mainPlayerCanvasObject.radius) > MAX_ZOOM_THRESHOLD || (targetZoom * mainPlayerCanvasObject.radius) < MIN_ZOOM_THRESHOLD)
+            targetZoom = START_BLOB_RADIUS / mainPlayerCanvasObject.radius;
 
         zoom = lerp(zoom, targetZoom, 0.05);
-        scale(zoom * Math.sqrt((width * height) / (2000 * 1000)));
+        scale(zoom * Math.sqrt((window.innerWidth * window.innerHeight) / (2000 * 1000)));
 
         // Translate camera to player center
-        translate(-mainPlayer.x, -mainPlayer.y);
+        translate(-mainPlayerCanvasObject.x, -mainPlayerCanvasObject.y);
     };
 
-    let drawBackgroundLines = function () {
-        // Draw background lines
-        for (
-            let i = CANVAS_BACKGROUND_LINES_SEPARATION;
-            i <= Math.max(width, height) - CANVAS_BACKGROUND_LINES_SEPARATION;
-            i += CANVAS_BACKGROUND_LINES_SEPARATION
-        ) {
-            backgroundCanvas.add(
-                new fabric.Line([i, 0, i, height], {
-                    stroke: '#eee'
-                }),
-                new fabric.Line([0, i, width, i], {
-                    stroke: '#eee'
-                })
-            );
-        }
-
-        backgroundCanvas.renderAll();
-    };
-
-    let drawCircle = function (parameters) {
+    /**
+     * Attach a new circle to canvas and return the object pointing to it
+     * @param parameters {{x, y, radius, color}}
+     * @param drawFunction
+     * @return {{x, y, radius: (*|number), color: (*|string|string|string|string|string), draw: draw, setRadius: setRadius, getCenterPoint: getCenterPoint}}
+     */
+    let attachCircle = function (parameters, drawFunction) {
         let circle = {
             x: parameters.x,
             y: parameters.y,
             radius: parameters.radius,
             color: parameters.color,
-            isBlob: parameters.isBlob,
 
+            /**
+             * Function called each frame to draw the object
+             */
             draw: function () {
-                fill(this.color);
-                ellipse(this.x, this.y, this.radius * 2, this.radius * 2);
+                drawFunction(this);
             },
             setRadius: function (r) {
                 this.radius = lerp(this.radius, r, MOVEMENT_INTERPOLATION_FACTOR);
@@ -157,22 +162,77 @@ export default function (gameWidth, gameHeight) {
             }
         };
 
-        circle.draw();
-
+        // Push to canvas objects
         canvasObjects.push(circle);
 
         return circle;
     };
 
     /**
-     * Use p5js createCanvas function to create function
+     * Draw normal circle
+     * @param circle
+     */
+    let drawCircle = function (circle) {
+        fill(circle.color);
+        ellipse(circle.x, circle.y, circle.radius * 2, circle.radius * 2);
+    };
+
+    /**
+     * Draw 2 circles and give the nice noisy effect
+     * @param blob
+     */
+    let drawBlob = function (blob) {
+        // Draw the large noisy circle
+        drawNoisyCircle(blob, blob.radius * (1 + MAX_BLOB_WABBLE_RADIUS_OFFSET), blob.strokeColor);
+
+        // Draw the small noisy circle
+        drawNoisyCircle(blob, blob.radius, blob.color);
+
+        // Increase yOffset for the animation effect
+        blob.yOffset += 0.01;
+    };
+
+    /**
+     * Draw noisy circle to form the blob (1 blob = 2 noisy circles
+     * @param blob object used to get attributes of the blob
+     * @param radius the radius of this circle (has to be passed in because it may differ from the blob radius)
+     * @param color the circle filling color
+     */
+    let drawNoisyCircle = function (blob, radius, color) {
+        push();
+        beginShape();
+
+        // Fill the drawing with the required color
+        fill(color);
+
+        let r = radius;
+        let xOffset = 0;
+
+        for (let theta = 0; theta < TWO_PI - 0.1; theta += 0.1) {
+            // Make radius with ± noise
+            let rad = map(noise(xOffset, blob.yOffset), 0, 1, r, r * ( 1 + MAX_BLOB_WABBLE_RADIUS_OFFSET));
+
+            // Add the vertex of the circle
+            let x = blob.x + rad * Math.cos(theta);
+            let y = blob.y + rad * Math.sin(theta);
+            vertex(x, y);
+
+            // Increase the xOffset to get another noisy pattern in the next loop (for the blob animation)
+            xOffset += 0.1;
+        }
+
+        endShape();
+        pop();
+    };
+
+    /**
+     * Use p5js createCanvas function to create canvas and configure it
      * @return canvas object
      */
     let makeCanvas = function () {
         let canvas = createCanvas(window.innerWidth, window.innerHeight);
-        //console.log(canvasElt);
 
-        // For framerate optimization ? https://forum.processing.org/two/discussion/11462/help-in-p5-js-performance-improvement-on-mobile-devices
+        // For frame-rate optimization ? https://forum.processing.org/two/discussion/11462/help-in-p5-js-performance-improvement-on-mobile-devices
         canvas.elt.style.width = '100%';
         canvas.elt.style.height = '100%';
 

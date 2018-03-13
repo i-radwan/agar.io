@@ -10,10 +10,6 @@ export default function () {
             scoreObject: {},
             gameWidth: 4 * window.innerWidth,
             gameHeight: 4 * window.innerHeight,
-            mousePosition: {
-                mouseX: window.innerWidth / 2,
-                mouseY: window.innerHeight / 2
-            },
             serverResponseReceived: false,
             fastForward: false
         },

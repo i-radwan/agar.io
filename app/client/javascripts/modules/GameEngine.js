@@ -19,11 +19,11 @@ export default function (gameStatus, serverGameStatus) {
 
         physicsEngine = PhysicsEngine();
 
-        uiEngine = UIEngine(gameStatus.status.env.gameWidth, gameStatus.status.env.gameHeight);
+        uiEngine = UIEngine();
         uiEngine.init(); // Initial drawing
 
         // Draw initial game status
-        initGameDraw();
+        initGameCanvasObjects();
     };
 
     module.drawGame = function () {
@@ -34,51 +34,8 @@ export default function (gameStatus, serverGameStatus) {
         // If server status received
         checkServerResponse();
 
-        // Normal playing mode
-        if (!gameStatus.status.env.fastForward) {
-            executeNormalGameMode();
-        }
-        else { // Fast forward mode to catch up the server
-            executeFastForwardGameMode();
-        }
-
-        // Update mouse positions
-        gameStatus.status.env.mousePosition.mouseX = mouseX;
-        gameStatus.status.env.mousePosition.mouseY = mouseY;
-    };
-
-    let checkServerResponse = function () {
-        // if (gameStatus.status.env.fastForward) {
-        //     console.log(123);
-        //     return;
-        // } // ToDo
-
-        if (gameStatus.status.env.serverResponseReceived) {
-            // Update gameStatus by serverGameStatus
-            gameStatus.set(serverGameStatus);
-
-            //console.log(Math.sqrt(Math.pow(gameStatus.status.me.x - gameStatus.status.me.canvasObject.x, 2)
-            //    + Math.pow(gameStatus.status.me.y - gameStatus.status.me.canvasObject.y, 2)));
-
-            // Update canvas objects
-            updateCanvasObjects();
-        }
-
-        // Check if fast forward is needed
-        // checkIfFastForwardNeeded();
-    };
-
-    /**
-     * Execute the game in normal mode
-     * move the players depending on their velocity and angle
-     * move my circle to follow the mouse input
-     */
-    let executeNormalGameMode = function () {
         // Get mouse angle
-        physicsEngine.getMouseAngle(gameStatus.status.me, {
-            x: gameStatus.status.env.mousePosition.mouseX,
-            y: gameStatus.status.env.mousePosition.mouseY
-        });
+        physicsEngine.getMouseAngle(gameStatus.status.me, {x: mouseX, y: mouseY});
 
         // Move players
         gameStatus.status.players.concat(gameStatus.status.me).forEach(function (player) {
@@ -87,22 +44,16 @@ export default function (gameStatus, serverGameStatus) {
     };
 
     /**
-     * Execute the game in fast forward mode
-     * stops user input and move the players, check if the players positions are fixed
+     * Check if server has sent new updates, and update the canvas objects if response is received
      */
-    let executeFastForwardGameMode = function () {
-        gameStatus.status.env.fastForward = false;
+    let checkServerResponse = function () {
+        if (gameStatus.status.env.serverResponseReceived) {
+            // Update gameStatus by serverGameStatus
+            gameStatus.set(serverGameStatus);
 
-        // Check if players (including me) are in position
-        gameStatus.status.players.concat(gameStatus.status.me).forEach(function (player) {
-            let positionNotFixed = checkToContinueFastForward(player);
-
-            // If player still not in position -> move him
-            if (positionNotFixed)
-                physicsEngine.movePlayerToTarget(player, {x: player.x, y: player.y});
-
-            gameStatus.status.env.fastForward |= positionNotFixed;
-        });
+            // Update canvas objects
+            updateCanvasObjects();
+        }
     };
 
     /**
@@ -131,57 +82,19 @@ export default function (gameStatus, serverGameStatus) {
         uiEngine.fixObjectsZIndex();
     };
 
-    /**
-     * Check if any player requires to be fast forward moved to match status received from the server
-     */
-    let checkIfFastForwardNeeded = function () {
-        gameStatus.status.players.concat(gameStatus.status.me).forEach(function (player) {
-            let isFastForwardRequired = player.fastForward;
-
-            let angleAndDistance = physicsEngine.getAngleAndDistance({
-                x: player.canvasObject.x,
-                y: player.canvasObject.y
-            }, {x: player.x, y: player.y});
-
-            // Check
-            if (angleAndDistance.distance > player.velocity && !player.fastForward) {
-                player.fastForward = isFastForwardRequired = true;
-            }
-
-            gameStatus.status.env.fastForward |= isFastForwardRequired;
-        });
-    };
-
-    /**
-     * Check if the player still needs fast forward mode
-     * @param player
-     * @returns {boolean} false if the player got to the required position received by the server
-     */
-    let checkToContinueFastForward = function (player) {
-        if (!player.fastForward) return false;
-
-        let angleAndDistance = physicsEngine.getAngleAndDistance({
-            x: player.canvasObject.x,
-            y: player.canvasObject.y
-        }, {x: player.x, y: player.y});
-
-        // Check if the error isn't large
-        return player.fastForward = !(angleAndDistance.distance <= player.velocity);
-    };
-
-    let initGameDraw = function () {
+    let initGameCanvasObjects = function () {
         // Draw gems
         for (let i = 0; i < gameStatus.status.gems.length; i++) {
-            gameStatus.status.gems[i].canvasObject = uiEngine.drawGem(gameStatus.status.gems[i]);
+            gameStatus.status.gems[i].canvasObject = uiEngine.addGem(gameStatus.status.gems[i]);
         }
 
         // Draw players
         for (let i = 0; i < gameStatus.status.players.length; i++) {
-            gameStatus.status.players[i].canvasObject = uiEngine.drawPlayer(gameStatus.status.players[i]);
+            gameStatus.status.players[i].canvasObject = uiEngine.addPlayer(gameStatus.status.players[i]);
         }
 
         // Draw myself
-        gameStatus.status.me.canvasObject = uiEngine.drawMe(gameStatus.status.me);
+        gameStatus.status.me.canvasObject = uiEngine.addMainPlayer(gameStatus.status.me);
 
         // Fix z index of objects
         uiEngine.fixObjectsZIndex();

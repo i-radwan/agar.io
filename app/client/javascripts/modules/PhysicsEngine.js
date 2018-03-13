@@ -14,7 +14,10 @@ export default function () {
      */
     module.getMouseAngle = function (player, target) {
         // To be changed when splitting happens (using get equivalent center)
-        let angleAndDistance = module.getAngleAndDistance({x: window.innerWidth/2, y: window.innerHeight/2}, target);
+        let angleAndDistance = module.getAngleAndDistance({
+            x: window.innerWidth / 2,
+            y: window.innerHeight / 2
+        }, target);
 
         // Calculate mouse angle and move my player with the velocity
         player.mouseAngle = angleAndDistance.angle;
