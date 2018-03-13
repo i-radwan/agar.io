@@ -38,7 +38,7 @@ class Player {
     incrementScore(value) {
         this.score += value;
 
-        // this.radius += value * 0.3;
+        this.radius += value * gameConfig.scaleFactor;
 
         this.velocity = Math.max(gameConfig.lowestPlayerVelocity,
             gameConfig.initialPlayerVelocity - 0.00291 * this.radius);

@@ -10,10 +10,9 @@ function GameConfig() {
 
     module.gameConfig = {
         port: 3000,
-        gameLength: GAME_SIZE * SCALE_FACTOR,
-        gameHeight: GAME_SIZE * SCALE_FACTOR, // ToDo: Be careful Mr. SAMRA, we don't how this thing works, we may face a nuclear war if you just thought to removing this line cuz it's exactly as the above one... 🙄
+        gameSize: GAME_SIZE * SCALE_FACTOR,
         roomMaxPlayers: 5,
-        roomMaxGems: 300,
+        roomMaxGems: 1300,
         simulateRunRate: 1000 / 120,
         sendGameStatusesRate: 40,
         gemRadius: 10 * SCALE_FACTOR,
@@ -22,6 +21,7 @@ function GameConfig() {
         initialPlayerRadius: 30 * SCALE_FACTOR,
         quadTreeNodeMaxObjects: 15,
         quadTreeMaxLevels: 5,
+        scaleFactor: SCALE_FACTOR
     };
 
     return module;
