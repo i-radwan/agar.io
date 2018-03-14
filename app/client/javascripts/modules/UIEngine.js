@@ -98,8 +98,6 @@ export default function () {
         }
         else { // Player existed and still -> update radius
             playerObject.canvasObject.setRadius(playerObject.radius);
-            playerObject.canvasObject.x = lerp(playerObject.canvasObject.x, playerObject.x, MOVEMENT_INTERPOLATION_FACTOR);
-            playerObject.canvasObject.y = lerp(playerObject.canvasObject.y, playerObject.y, MOVEMENT_INTERPOLATION_FACTOR);
         }
     };
 

@@ -12,7 +12,7 @@ function GameConfig() {
         port: 3000,
         gameSize: GAME_SIZE * SCALE_FACTOR,
         roomMaxPlayers: 5,
-        roomMaxGems: 1300,
+        roomMaxGems: 300,
         simulateRunRate: 1000 / 120,
         sendGameStatusesRate: 40,
         gemRadius: 10 * SCALE_FACTOR,

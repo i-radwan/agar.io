@@ -2,7 +2,7 @@
  * Created by ibrahimradwan on 3/6/18.
  */
 // Constants
-const MOVEMENT_INTERPOLATION_FACTOR = 0.5;
+const MOVEMENT_INTERPOLATION_FACTOR = 0.1;
 
 export default function () {
     let module = {};
@@ -28,8 +28,14 @@ export default function () {
      * @param player the player to be moved.
      */
     module.movePlayerNormally = function (player) {
-        // Move canvas object
-        movePlayer(player, player.velocity, true);
+        if (Math.abs(player.x - player.canvasObject.x) < player.velocity &&
+            Math.abs(player.y - player.canvasObject.y) < player.velocity) {
+            // Move canvas object
+            movePlayer(player, player.velocity, true);
+        }
+        else {
+            module.movePlayerToTarget(player, {x: player.x, y: player.y});
+        }
     };
 
     /**
