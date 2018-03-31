@@ -68,12 +68,12 @@ export default function () {
     let syncArrays = function (local, remote) {
         let i = 0, j = 0, len = local.length;
         while (i < len && j < remote.length) {
-            if (local[i].id === remote[j].id) { // Gem still exists
+            if (local[i].id === remote[j].id) { // Object still exists
                 local[i] = Object.assign(local[i], remote[j]);
                 i++;
                 j++;
             }
-            else if (local[i].id < remote[j].id) { // Local gem removed
+            else if (local[i].id < remote[j].id) { // Object gem removed
                 local[i].removed = true;
                 i++;
             }
