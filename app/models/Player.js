@@ -11,13 +11,13 @@ class Player {
      * @param color: object contains {r, g, b}
      * @param score: integer
      */
-    constructor(id, initPosition, color, velocity = gameConfig.initialPlayerVelocity, score = 1.0, name = "") {
+    constructor(id, initPosition, color, velocity = gameConfig.INITIAL_PLAYER_SPEED, score = 1.0, name = "") {
         this.x = initPosition[0];
         this.y = initPosition[1];
         this.velocity = velocity;
         this.angle = 0;
         this.color = color;
-        this.radius = gameConfig.initialPlayerRadius;
+        this.radius = gameConfig.INITIAL_PLAYER_RADIUS;
         this.name = name;
         this.score = score;
         this.id = id;
@@ -38,10 +38,10 @@ class Player {
     incrementScore(value) {
         this.score += value;
 
-        this.radius += value * gameConfig.scaleFactor;
+        this.radius += value * gameConfig.SCALE_FACTOR;
 
-        this.velocity = Math.max(gameConfig.lowestPlayerVelocity,
-            gameConfig.initialPlayerVelocity - 0.00291 * this.radius);
+        this.velocity = Math.max(gameConfig.LOWEST_PLAYER_SPEED,
+            gameConfig.INITIAL_PLAYER_SPEED - 0.00291 * this.radius);
     }
 }
 
