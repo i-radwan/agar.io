@@ -8,7 +8,7 @@ import GameServer from "./modules/GameServer.js";
 
 // Constants
 const GAME_FPS = 120;
-const SEND_ANGLE_TO_SERVER_RATE = 50; // milliseconds
+const SEND_ANGLE_TO_SERVER_RATE = 40; // milliseconds
 
 new p5();
 
@@ -30,17 +30,24 @@ let game = {
         game.gameEngine = GameEngine(game.gameStatus, game.serverGameStatus);
         game.gameEngine.init();
 
-        // Game loop
-        let gameLoop = setInterval(function () {
-            // Update the game status (My location, players, gems, score, ... etc)
-            game.gameEngine.updateGameStatus();
-
+        // Graphics loop
+        let gameGraphicsLoop = setInterval(function () {
             game.gameEngine.drawGame();
 
             // Stop when dead
             if (!game.gameStatus.status.me.alive)
-                clearInterval(gameLoop);
-        }, 1000 / GAME_FPS);
+                clearInterval(gameGraphicsLoop);
+        }, 0);
+
+        // Physics loop
+        let gamePhysicsLoop = setInterval(function () {
+            // Update the game status (My location, players, gems, score, ... etc) and physics
+            game.gameEngine.updateGameStatus();
+
+            // Stop when dead
+            if (!game.gameStatus.status.me.alive)
+                clearInterval(gamePhysicsLoop);
+        }, 10);
 
         // Send game status loop
         let sendAngleLoop = setInterval(function () {
@@ -50,10 +57,10 @@ let game = {
 
             if (!game.gameStatus.status.me.alive)
                 clearInterval(sendAngleLoop);
-        }, SEND_ANGLE_TO_SERVER_RATE);
+        }, 5);
     }
 };
 
 $(function () {
-   game.init();
+    game.init();
 });
