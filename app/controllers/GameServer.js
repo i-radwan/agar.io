@@ -41,15 +41,16 @@ function GameServer(gameConfig) {
                 module.setPlayerAngle(socket.id, angle);
             });
 
-            // Interpolate the server and the client game statuses
-            socket.on('game_status', function () {
-                module.interpolateGameStatus(socket.id);
-            });
-
-            // 
+            // Send player info for the first time he join
             socket.on('player_info', function (newPlayerInfo) {
                 module.setNewPlayerInfo(socket.id, newPlayerInfo);
             });
+
+            // Remove player on disconnection
+            socket.on('disconnect', function () {
+                module.removePlayer(socket.id);
+            })
+
         });
 
         http.listen(gameConfig.PORT, function () {
@@ -120,10 +121,14 @@ function GameServer(gameConfig) {
             gameRooms[roomID].setPlayerInfo(playerID, newPlayerInfo);
         }
     };
+    
+    module.removePlayer = function (playerSocketID) {
+        let playerID = gamePlayers[playerSocketID].playerID;
+        let roomID = gamePlayers[playerSocketID].roomID;
 
-    // TODO @Samir55
-    module.interpolateGameStatus = function () {
-
+        if (gameRooms[roomID].isPlayerAlive(playerID)) {
+            gameRooms[roomID].killPlayer(playerID);
+        }
     };
 
     module.runGameRooms = function () {
@@ -153,7 +158,6 @@ function GameServer(gameConfig) {
             gameRoom.addGems();
         }
     };
-
 
     module.sendRoomsLeaderBoards = function () {
         // Loop over all game rooms and send leader board

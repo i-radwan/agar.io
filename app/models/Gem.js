@@ -7,9 +7,8 @@ class Gem {
      * @param id The gem unique id in the game room
      * @param position: object contains {x, y}
      * @param color: object contains {r, g, b}
-     * @param points: integer
      */
-    constructor(id, position, color, points) {
+    constructor(id, position, color) {
         this.id = id;
 
         this.x = position[0];

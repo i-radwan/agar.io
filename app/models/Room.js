@@ -24,9 +24,16 @@ class Room {
         this.nextGemID = 0;
         this.nextPlayerID = 0;
 
+        // The newly added gems to be sent and the deleted gems indices
+        this.deletedGemsIDs = [];
+        this.newGems = {};
+
+        // The killed players IDs.
+        this.killedPlayersIDs = [];
+
         // Create a quad tree to carry gems
         // ToDo @SAMRA -> ALERT!! -> Note that the game coordinates are all normalized
-        let quadTree = new QuadTree(0, new Rectangle(0, 0, gameConfig.GAME_SIZE, gameConfig.gameHeight));
+        let quadTree = new QuadTree(0, new Rectangle(0, 0, gameConfig.GAME_SIZE, gameConfig.GAME_SIZE));
 
         // Add default gems
         this.addGems();
@@ -62,7 +69,8 @@ class Room {
 
             let color = Math.floor(Math.random() * COLORS.length);
 
-            this.game.gems.push(new Gem(this.nextGemID++, [x, y], COLORS[color], 1));
+            this.game.gems[this.nextGemID] = new Gem(this.nextGemID, [x, y], COLORS[color], 1);
+            this.newGems[this.nextGemID++] = this.game.gems[this.nextGemID];
         }
     };
 
@@ -71,42 +79,50 @@ class Room {
      */
     simulate() {
         // Move players
-        for (let i = 0; i < this.game.players.length; i++) {
-            this.game.players[i].movePlayer();
-        }
-
+        // for (let playerID in this.game.players) {
+        //     if (!this.game.players.hasOwnProperty(playerID)) continue;
+        //     this.game.players[playerID].movePlayer();
+        // }
 
         // TODO @Samir55 check using quad trees
         // Check gem eaten & update score of the player
-        for (let i = 0; i < this.game.players.length; i++) {
-            let player = this.game.players[i];
+        for (let playerID in this.game.players) {
+            if (!this.game.players.hasOwnProperty(playerID)) continue;
+
+            let player = this.game.players[playerID];
             if (!player.alive) continue;
 
-            for (let j = 0; j < this.game.gems.length; j++) {
-                let gem = this.game.gems[j];
+            for (let gemID in this.game.gems) {
+                if (!this.game.gems.hasOwnProperty(gemID)) continue;
+                let gem = this.game.gems[gemID];
+
                 if (Room.playerAteGem(player, gem)) {
-                    this.removeGem(player.id, j);
+                    this.removeGem(player.id, gemID);
                 }
             }
         }
 
         // Check player is killed
-        for (let i = 0; i < this.game.players.length; i++) {
-            let playerA = this.game.players[i];
+        for (let playerAID in this.game.players) {
+            if (!this.game.players.hasOwnProperty(playerAID)) continue;
+
+            let playerA = this.game.players[playerAID];
             if (!playerA.alive) continue;
 
-            for (let j = i + 1; j < this.game.players.length; j++) {
-                let playerB = this.game.players[j];
+            for (let playerBID in this.game.players) {
+                if (!this.game.players.hasOwnProperty(playerBID)) continue;
+                if (playerBID === playerAID) continue;
 
+                let playerB = this.game.players[playerBID];
                 if (!playerB.alive) continue;
 
                 if (Room.playerAtePlayer(playerA, playerB)) {
                     playerA.incrementScore(playerB.score);
-                    this.killPlayer(playerB);
+                    this.killPlayer(playerB.id);
                 }
                 else if (Room.playerAtePlayer(playerB, playerA)) {
                     playerB.incrementScore(playerB.score);
-                    this.killPlayer(playerA);
+                    this.killPlayer(playerA.id);
                 }
             }
         }
@@ -115,8 +131,10 @@ class Room {
     /**
      * Eat gems
      */
-    removeGem(playerID, index) {
-        this.game.gems.splice(index, 1);
+    removeGem(playerID, gemID) {
+        delete this.game.gems[gemID];
+
+        this.deletedGemsIDs.push(gemID);
 
         // Update player's score
         let player = this.game.players[playerID];
@@ -125,18 +143,34 @@ class Room {
 
     /**
      * Kill player
-     * @param player
+     * @param playerID
      */
-    killPlayer(player) {
-        player.alive = false;
+    killPlayer(playerID) {
+        delete this.game.players[playerID];
+
+        this.killedPlayersIDs.push(playerID);
     };
 
     /**
      * Get current game status
-     * @returns {Game} game status
+     * @returns {{_id: *, Players: *, killedPlayersIDs: Array, newGems: ( []|*), deletedGemsIDs: Array}}
      */
     getGameStatus() {
-        return this.game;
+        let gameStatus = {
+            _id: this.game._id,
+            Players: this.game.players,
+            killedPlayersIDs: this.killedPlayersIDs,
+            newGems: this.newGems,
+            deletedGemsIDs: this.deletedGemsIDs
+        };
+
+        gameStatus = JSON.stringify(gameStatus);
+
+        this.killedPlayersIDs = [];
+        this.deletedGemsIDs = [];
+        this.newGems = {};
+
+        return gameStatus;
     }
 
     /**
