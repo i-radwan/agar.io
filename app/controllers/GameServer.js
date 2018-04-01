@@ -65,6 +65,9 @@ function GameServer(gameConfig) {
         // Send room statuses to clients
         setInterval(module.sendRoomsGameStatuses, gameConfig.SEND_GAME_STATUSES_RATE);
 
+        // Send room leader boards to clients
+        setInterval(module.sendRoomsLeaderBoards, gameConfig.SEND_LEADER_BOARD_RATE);
+
     };
 
     module.addNewPlayer = function (playerSocketID) {
@@ -96,8 +99,6 @@ function GameServer(gameConfig) {
         let playerInfo = {};
         playerInfo.id = playerID;
 
-        // console.log("Sent Player Info ", playerInfo);
-        // console.log("Sent Initial game status ", gameRooms[roomID].getGameStatus());
         __socket.to(playerSocketID).emit('player_info', playerInfo);
         __socket.to(playerSocketID).emit('game_status', gameRooms[roomID].getGameStatus());
     };
@@ -118,7 +119,7 @@ function GameServer(gameConfig) {
         if (gameRooms[roomID].isPlayerAlive(playerID)) {
             gameRooms[roomID].setPlayerInfo(playerID, newPlayerInfo);
         }
-    }
+    };
 
     // TODO @Samir55
     module.interpolateGameStatus = function () {
@@ -150,6 +151,15 @@ function GameServer(gameConfig) {
         for (let room in gameRooms) {
             let gameRoom = gameRooms[room];
             gameRoom.addGems();
+        }
+    };
+
+
+    module.sendRoomsLeaderBoards = function () {
+        // Loop over all game rooms and send leader board
+        for (let room in gameRooms) {
+            let gameRoom = gameRooms[room];
+            __socket.in(gameRoom.id).emit('game_leader_board', gameRoom.getLeaderBoard());
         }
     };
 
