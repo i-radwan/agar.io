@@ -38,7 +38,6 @@ let game = {
 
             game.gameStatus.status.env.graphicsFrameDelta = Date.now() - now;
 
-            console.log(game.gameStatus.status.env.graphicsFrameDelta);
             // Stop when dead
             if (!game.gameStatus.status.me.alive)
                 clearInterval(gameGraphicsLoop);

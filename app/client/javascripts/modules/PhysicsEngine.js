@@ -28,14 +28,15 @@ export default function () {
      * @param player the player to be moved.
      */
     module.movePlayerNormally = function (player) {
-        if (Math.abs(player.x - player.canvasObject.x) < player.velocity &&
-            Math.abs(player.y - player.canvasObject.y) < player.velocity) {
+        if (dist(player.x, player.y, player.canvasObject.x, player.canvasObject.y) < player.radius) {
             // Move canvas object
+            movePlayer(player, player.velocity, true);
+            console.log(player.color, 1);
         }
         else {
-            // module.movePlayerToTarget(player, {x: player.x, y: player.y});
+            console.log(player.color, 2);
+            module.movePlayerToTarget(player, {x: player.x, y: player.y});
         }
-        movePlayer(player, player.velocity, true);
     };
 
     /**
