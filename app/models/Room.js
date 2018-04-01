@@ -93,8 +93,12 @@ class Room {
         // Check player is killed
         for (let i = 0; i < this.game.players.length; i++) {
             let playerA = this.game.players[i];
+            if (!playerA.alive) continue;
+
             for (let j = i + 1; j < this.game.players.length; j++) {
                 let playerB = this.game.players[j];
+
+                if (!playerB.alive) continue;
 
                 if (Room.playerAtePlayer(playerA, playerB)) {
                     playerA.incrementScore(playerB.score);
