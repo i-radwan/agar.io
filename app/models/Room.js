@@ -69,31 +69,35 @@ class Room {
     /**
      * Simulate single player
      */
-    simulatePlayer(playerID) {
+    simulatePlayer(playerID, angle) {
         let player = this.game.players[playerID];
 
-        // Move player
-        player.movePlayer();
+        for (let i = 0; i < angle.length; i++) {
+            this.setPlayerAngle(playerID, angle[i]);
 
-        // Check gem eaten & update score of the player
-        for (let j = 0; j < this.game.gems.length; j++) {
-            let gem = this.game.gems[j];
-            if (Room.playerAteGem(player, gem)) {
-                this.removeGem(player.id, j);
+            // Move player
+            player.movePlayer();
+
+            // Check gem eaten & update score of the player
+            for (let j = 0; j < this.game.gems.length; j++) {
+                let gem = this.game.gems[j];
+                if (Room.playerAteGem(player, gem)) {
+                    this.removeGem(player.id, j);
+                }
             }
-        }
 
-        // Check player is killed
-        for (let j = 0; j < this.game.players.length; j++) {
-            let playerB = this.game.players[j];
+            // Check player is killed
+            for (let j = 0; j < this.game.players.length; j++) {
+                let playerB = this.game.players[j];
 
-            if (Room.playerAtePlayer(player, playerB)) {
-                player.incrementScore(playerB.score);
-                this.killPlayer(playerB);
-            }
-            else if (Room.playerAtePlayer(playerB, player)) {
-                playerB.incrementScore(playerB.score);
-                this.killPlayer(player);
+                if (Room.playerAtePlayer(player, playerB)) {
+                    player.incrementScore(playerB.score);
+                    this.killPlayer(playerB);
+                }
+                else if (Room.playerAtePlayer(playerB, player)) {
+                    playerB.incrementScore(playerB.score);
+                    this.killPlayer(player);
+                }
             }
         }
     };

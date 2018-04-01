@@ -47,7 +47,7 @@ let game = {
             // Stop when dead
             if (!game.gameStatus.status.me.alive)
                 clearInterval(gamePhysicsLoop);
-        }, 1000 / 40);
+        }, 1000 / 120);
 
         // Send game status loop
         let sendAngleLoop = setInterval(function () {
@@ -56,7 +56,7 @@ let game = {
 
             if (!game.gameStatus.status.me.alive)
                 clearInterval(sendAngleLoop);
-        }, 1000 / 40);
+        }, (1000 / 120) * 4);
     }
 };
 

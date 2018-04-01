@@ -14,7 +14,7 @@ export default function () {
             fastForward: false
         },
         me: {
-            mouseAngle: 0
+            mouseAngle: []
         }
     };
 

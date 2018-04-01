@@ -20,7 +20,7 @@ export default function () {
         }, target);
 
         // Calculate mouse angle and move my player with the velocity
-        player.mouseAngle = angleAndDistance.angle;
+        player.mouseAngle.push(angleAndDistance.angle);
     };
 
     /**
@@ -31,11 +31,11 @@ export default function () {
         if (Math.abs(player.x - player.canvasObject.x) < player.velocity &&
             Math.abs(player.y - player.canvasObject.y) < player.velocity) {
             // Move canvas object
-            movePlayer(player, player.velocity, true);
         }
         else {
-            module.movePlayerToTarget(player, {x: player.x, y: player.y});
+            // module.movePlayerToTarget(player, {x: player.x, y: player.y});
         }
+        movePlayer(player, player.velocity, true);
     };
 
     /**

@@ -102,8 +102,8 @@ function GameServer(gameConfig) {
         let roomID = gamePlayers[playerSocketID].roomID;
 
         if (gameRooms[roomID].isPlayerAlive(playerID)) {
-            gameRooms[roomID].setPlayerAngle(playerID, angle);
-            gameRooms[roomID].simulatePlayer(playerID);
+            // gameRooms[roomID].setPlayerAngle(playerID, angle[angle.length - 1]);
+            gameRooms[roomID].simulatePlayer(playerID, angle);
         }
     };
 

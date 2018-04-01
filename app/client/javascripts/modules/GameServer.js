@@ -20,7 +20,8 @@ export default function (gameStatus, serverGameStatus) {
      * Send my angle to the server
      */
     module.sendAngle = function () {
-        _socket.emit('angle', gameStatus.status.me.mouseAngle);
+        _socket.emit('angle', gameStatus.status.me.mouseAngle.slice(-Math.min(4, gameStatus.status.me.mouseAngle.length)));
+        gameStatus.status.me.mouseAngle = [];
     };
 
     /**
