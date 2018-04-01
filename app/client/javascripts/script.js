@@ -32,12 +32,17 @@ let game = {
 
         // Graphics loop
         let gameGraphicsLoop = setInterval(function () {
+            let now = Date.now();
+
             game.gameEngine.drawGame();
 
+            game.gameStatus.status.env.graphicsFrameDelta = Date.now() - now;
+
+            console.log(game.gameStatus.status.env.graphicsFrameDelta);
             // Stop when dead
             if (!game.gameStatus.status.me.alive)
                 clearInterval(gameGraphicsLoop);
-        }, 10);
+        }, game.gameStatus.status.env.graphicsFrameDelta);
 
         // Physics loop
         let gamePhysicsLoop = setInterval(function () {

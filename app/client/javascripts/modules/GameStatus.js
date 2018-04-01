@@ -11,7 +11,8 @@ export default function () {
             gameWidth: 4 * window.innerWidth,
             gameHeight: 4 * window.innerHeight,
             serverResponseReceived: false,
-            fastForward: false
+            fastForward: false,
+            graphicsFrameDelta: 10
         },
         me: {
             mouseAngle: []
