@@ -106,9 +106,6 @@ class Room {
                 }
             }
         }
-
-        // Add new gems if needed
-        this.addGems();
     };
 
     /**
