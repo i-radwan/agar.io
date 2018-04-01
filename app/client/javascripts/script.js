@@ -37,7 +37,7 @@ let game = {
             // Stop when dead
             if (!game.gameStatus.status.me.alive)
                 clearInterval(gameGraphicsLoop);
-        }, 0);
+        }, 10);
 
         // Physics loop
         let gamePhysicsLoop = setInterval(function () {
@@ -47,17 +47,16 @@ let game = {
             // Stop when dead
             if (!game.gameStatus.status.me.alive)
                 clearInterval(gamePhysicsLoop);
-        }, 10);
+        }, 1000 / 40);
 
         // Send game status loop
         let sendAngleLoop = setInterval(function () {
             // Send current angle to the server
-            if (!game.gameStatus.status.env.fastForward)
-                game.gameServer.sendAngle();
+            game.gameServer.sendAngle();
 
             if (!game.gameStatus.status.me.alive)
                 clearInterval(sendAngleLoop);
-        }, 5);
+        }, 1000 / 40);
     }
 };
 

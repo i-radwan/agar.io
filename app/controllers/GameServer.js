@@ -38,7 +38,8 @@ function GameServer(gameConfig) {
 
             // Updates player's angle
             socket.on('angle', function (angle) {
-                module.setPlayerAngle(socket.id, angle);
+                // module.setPlayerAngle(socket.id, angle);
+                module.updatePlayerPosition(socket.id, angle);
             });
 
             // Interpolate the server and the client game statuses
@@ -56,7 +57,7 @@ function GameServer(gameConfig) {
             console.log('listening on *: ', gameConfig.port);
         });
 
-        setInterval(module.runGameRooms, gameConfig.simulateRunRate);
+        // setInterval(module.runGameRooms, gameConfig.simulateRunRate);
         setInterval(module.sendRoomsGameStatuses, gameConfig.sendGameStatusesRate);
 
     };
@@ -96,6 +97,16 @@ function GameServer(gameConfig) {
         __socket.to(playerSocketID).emit('game_status', gameRooms[roomID].getGameStatus());
     };
 
+    module.updatePlayerPosition = function (playerSocketID, angle) {
+        let playerID = gamePlayers[playerSocketID].playerID;
+        let roomID = gamePlayers[playerSocketID].roomID;
+
+        if (gameRooms[roomID].isPlayerAlive(playerID)) {
+            gameRooms[roomID].setPlayerAngle(playerID, angle);
+            gameRooms[roomID].simulatePlayer(playerID);
+        }
+    };
+
     module.setPlayerAngle = function (playerSocketID, angle) {
         let playerID = gamePlayers[playerSocketID].playerID;
         let roomID = gamePlayers[playerSocketID].roomID;
@@ -112,7 +123,7 @@ function GameServer(gameConfig) {
         if (gameRooms[roomID].isPlayerAlive(playerID)) {
             gameRooms[roomID].setPlayerInfo(playerID, newPlayerInfo);
         }
-    }
+    };
 
     // TODO @Samir55
     module.interpolateGameStatus = function () {
