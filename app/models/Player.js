@@ -22,6 +22,7 @@ class Player {
         this.score = score;
         this.id = id;
         this.alive = true;
+        this.lastAngleTimeStamp = 0;
     }
 
     /**

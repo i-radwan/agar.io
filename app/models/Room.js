@@ -72,8 +72,11 @@ class Room {
     simulatePlayer(playerID, angle) {
         let player = this.game.players[playerID];
 
+        if (!this.checkAngles(angle)) return;
+
         for (let i = 0; i < angle.length; i++) {
-            this.setPlayerAngle(playerID, angle[i]);
+            // Set user angle
+            this.setPlayerAngle(playerID, angle[i].angle);
 
             // Move player
             player.movePlayer();
@@ -100,6 +103,35 @@ class Room {
                 }
             }
         }
+    };
+
+    checkAngles(angle, lastAngleTimeStamp) {
+        // Check if all angles are sent in ascending order
+        for (let i = 1; i < angle.length; i++) {
+            if (angle[i].timestamp < angle[i - 1].timestamp) {
+                // ToDo cheating
+                return false;
+            }
+        }
+
+        // Check if sending angles faster than sending rate
+        if (angle[0].timestamp - lastAngleTimeStamp < (1000 / 120) * 3) {
+            // ToDo cheating
+            return false;
+        }
+        // Tries to send valid angles by going to future
+        if (angle[angle.length - 1].timestamp > Date.now()) {
+            // ToDo cheating
+            return false;
+        }
+
+        // Check if the angles are sent very early (bad connection)
+        if (Date.now() - angle[0].timestamp > 1000) {
+            // ToDo bad connection
+            return false;
+        }
+
+        return true;
     };
 
     /**
