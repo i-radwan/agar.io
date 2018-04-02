@@ -72,7 +72,8 @@ class Room {
     simulatePlayer(playerID, angle) {
         let player = this.game.players[playerID];
 
-        if (!this.checkAngles(angle)) return;
+        // ToDo uncomment this check
+        // if (!this.checkAngles(angle)) return;
 
         for (let i = 0; i < angle.length; i++) {
             // Set user angle

@@ -30,7 +30,7 @@ export default function () {
     module.movePlayerNormally = function (player) {
         if (dist(player.x, player.y, player.canvasObject.x, player.canvasObject.y) < player.radius) {
             // Move canvas object
-            movePlayer(player, player.velocity, true);
+            movePlayer(player, player.velocity);
         }
         else {
             module.movePlayerToTarget(player, {x: player.x, y: player.y});
@@ -54,16 +54,10 @@ export default function () {
      * @param velocity the velocity in which player is moving.
      * @param updatePosition{boolean} update player.x, player.y.
      */
-    let movePlayer = function (player, velocity, updatePosition) {
+    let movePlayer = function (player, velocity) {
         // Move canvas object
         player.canvasObject.x += Math.cos(player.angle) * velocity;
         player.canvasObject.y += Math.sin(player.angle) * velocity;
-
-        if (!updatePosition) return;
-
-        // Update position
-        player.x = player.canvasObject.x;
-        player.y = player.canvasObject.y;
     };
 
     module.getAngleAndDistance = function (point1, point2) {
