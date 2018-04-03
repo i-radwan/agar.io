@@ -9,6 +9,7 @@ import GameServer from "./modules/GameServer.js";
 // Constants
 const GAME_FPS = 120;
 const SEND_ANGLE_TO_SERVER_RATE = 40; // milliseconds
+const UPDATE_PHYSICS_THRESHOLD = 10;
 
 new p5();
 
@@ -30,30 +31,30 @@ let game = {
         game.gameEngine = GameEngine(game.gameStatus, game.serverGameStatus);
         game.gameEngine.init();
 
-        // Send initial angles
-        game.gameStatus.status.me.mouseAngle = [{angle:0, timestamp: 0}, {angle:0, timestamp: 0}, {angle:0, timestamp: 0}, {angle:0, timestamp: 0}];
-        game.gameServer.sendAngle();
-
         // Graphics loop
+        let lag = 0, now = window.performance.now();
         let gameGraphicsLoop = function () {
+            let elapsed = window.performance.now() - now;
+            now = window.performance.now();
+            lag += elapsed;
+
+            while(lag >= UPDATE_PHYSICS_THRESHOLD) {
+                // Update the game status (My location, players, gems, score, ... etc) and physics
+                game.gameEngine.updateGameStatus();
+
+                lag -= UPDATE_PHYSICS_THRESHOLD;
+            }
+
             game.gameEngine.drawGame();
+
+            game.gameStatus.status.env.graphicsFrameDelta = Date.now() - now;
 
             // Stop when dead
             if (game.gameStatus.status.me.alive)
-                window.requestAnimationFrame(gameGraphicsLoop);
+                requestAnimationFrame(gameGraphicsLoop);
         };
 
-        window.requestAnimationFrame(gameGraphicsLoop);
-
-        // Physics loop
-        let gamePhysicsLoop = setInterval(function () {
-            // Update the game status (My location, players, gems, score, ... etc) and physics
-            game.gameEngine.updateGameStatus();
-
-            // Stop when dead
-            if (!game.gameStatus.status.me.alive)
-                clearInterval(gamePhysicsLoop);
-        }, 1000 / 120);
+        requestAnimationFrame(gameGraphicsLoop);
 
         // Send game status loop
         let sendAngleLoop = setInterval(function () {
@@ -62,7 +63,7 @@ let game = {
 
             if (!game.gameStatus.status.me.alive)
                 clearInterval(sendAngleLoop);
-        }, (1000 / 1200) * 4);
+        }, (1000 / 120) * 4);
     }
 };
 
