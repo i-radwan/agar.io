@@ -33,7 +33,7 @@ let game = {
 
         // Graphics loop
         let lag = 0, now = window.performance.now();
-        let gameGraphicsLoop = setInterval(function () {
+        let gameGraphicsLoop = function () {
             let elapsed = window.performance.now() - now;
             now = window.performance.now();
             lag += elapsed;
@@ -53,7 +53,10 @@ let game = {
             if (!game.gameStatus.status.me.alive)
                 clearInterval(gameGraphicsLoop);
 
-        }, game.gameStatus.status.env.graphicsFrameDelta);
+            requestAnimationFrame(gameGraphicsLoop);
+        };
+
+        requestAnimationFrame(gameGraphicsLoop);
 
         // Send game status loop
         let sendAngleLoop = setInterval(function () {
