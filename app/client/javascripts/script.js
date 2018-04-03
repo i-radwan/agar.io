@@ -30,6 +30,10 @@ let game = {
         game.gameEngine = GameEngine(game.gameStatus, game.serverGameStatus);
         game.gameEngine.init();
 
+        // Send initial angles
+        game.gameStatus.status.me.mouseAngle = [{angle:0, timestamp: 0}, {angle:0, timestamp: 0}, {angle:0, timestamp: 0}, {angle:0, timestamp: 0}];
+        game.gameServer.sendAngle();
+
         // Graphics loop
         let gameGraphicsLoop = function () {
             game.gameEngine.drawGame();
