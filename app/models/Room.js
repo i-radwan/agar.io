@@ -41,7 +41,7 @@ class Room {
         let x = ((Math.random() * 2 - 1) * gameConfig.gameSize);
         let y = ((Math.random() * 2 - 1) * gameConfig.gameSize);
 
-        // x = y = 0;
+        x = y = 0;
 
         this.game.players[this.nextPlayerID] = (new Player(
             this.nextPlayerID, [x, y], COLORS[this.nextPlayerID % COLORS.length]

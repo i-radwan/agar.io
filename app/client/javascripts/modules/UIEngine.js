@@ -3,22 +3,27 @@
  */
 
 // Constants
+const STARS_COUNT = 1000;
 const MAX_ZOOM_THRESHOLD = 50;
 const MIN_ZOOM_THRESHOLD = 30;
 const START_BLOB_RADIUS = 30;
-const MOVEMENT_INTERPOLATION_FACTOR = 0.5;
+const MOVEMENT_INTERPOLATION_FACTOR = 0.2;
 const MAX_BLOB_WABBLE_RADIUS_OFFSET = 1 / 5;
 
 export default function () {
     let module = {};
 
     let canvasObjects = [];
+    let stars = [];
     let mainPlayerCanvasObject;
     let zoom = 1, targetZoom = 1;
 
     module.init = function () {
         // Create canvas
         makeCanvas();
+
+        // Fill stars
+        fillStars();
 
         // Remove strokes
         strokeWeight(0);
@@ -35,6 +40,9 @@ export default function () {
 
         // Clear everything
         background(0);
+
+        // Draw stars
+        drawStars();
 
         // Draw all objects
         for (let i = 0; i < canvasObjects.length; i++) {
@@ -240,6 +248,33 @@ export default function () {
         }, false);
 
         return canvas;
+    };
+
+    /**
+     * Add stars to background
+     */
+    let drawStars = function () {
+        let n = STARS_COUNT - 1;
+
+        while (n--) {
+            drawCircle(stars[n]);
+        }
+    };
+
+    /**
+     * Fill stars array
+     */
+    let fillStars = function () {
+        let n = STARS_COUNT;
+
+        while (n--) {
+            stars.push({
+                x: ((Math.random() * 2 - 1) * 2),
+                y: ((Math.random() * 2 - 1) * 2),
+                color: "white",
+                radius: 0.00133
+            });
+        }
     };
 
     return module;
