@@ -31,17 +31,15 @@ let game = {
         game.gameEngine.init();
 
         // Graphics loop
-        let gameGraphicsLoop = setInterval(function () {
-            let now = Date.now();
-
+        let gameGraphicsLoop = function () {
             game.gameEngine.drawGame();
 
-            game.gameStatus.status.env.graphicsFrameDelta = Date.now() - now;
-
             // Stop when dead
-            if (!game.gameStatus.status.me.alive)
-                clearInterval(gameGraphicsLoop);
-        }, game.gameStatus.status.env.graphicsFrameDelta);
+            if (game.gameStatus.status.me.alive)
+                window.requestAnimationFrame(gameGraphicsLoop);
+        };
+
+        window.requestAnimationFrame(gameGraphicsLoop);
 
         // Physics loop
         let gamePhysicsLoop = setInterval(function () {

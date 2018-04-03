@@ -12,7 +12,7 @@ export default function () {
             gameHeight: 4 * window.innerHeight,
             serverResponseReceived: false,
             fastForward: false,
-            graphicsFrameDelta: 10
+            graphicsFrameDelta: 0
         },
         me: {
             mouseAngle: []
