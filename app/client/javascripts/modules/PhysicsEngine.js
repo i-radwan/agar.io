@@ -62,8 +62,9 @@ export default function () {
         if (!updatePosition) return;
 
         // Update position
-        player.x = player.canvasObject.x;
-        player.y = player.canvasObject.y;
+        //ToDo @IAR Why do we change the server xD ?
+        //player.x = player.canvasObject.x;
+        //player.y = player.canvasObject.y;
     };
 
     module.getAngleAndDistance = function (point1, point2) {

@@ -186,6 +186,26 @@ export default function () {
         // Draw the small noisy circle
         drawNoisyCircle(blob, blob.radius, blob.color);
 
+
+        //Draw My center and Server Center (Debugging)
+        if (blob.hasOwnProperty("ServerCenterX")) {
+            let serverCenterCircle = {
+                color: "white",
+                x: blob.ServerCenterX,
+                y: blob.ServerCenterY,
+                radius: 0.1 * blob.radius
+            };
+            let centerCircle = {
+                color: "black",
+                x: blob.x,
+                y: blob.y,
+                radius: 0.1 * blob.radius
+            };
+
+            drawCircle(centerCircle);
+            drawCircle(serverCenterCircle);
+        }
+
         // Increase yOffset for the animation effect
         blob.yOffset += 0.01;
     };
