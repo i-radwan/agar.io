@@ -106,7 +106,8 @@ class Room {
     };
 
     checkAngles(angle, lastAngleTimeStamp) {
-        // Check if all angles are sent in ascending order
+        //ToDo
+        /*// Check if all angles are sent in ascending order
         for (let i = 1; i < angle.length; i++) {
             if (angle[i].timestamp < angle[i - 1].timestamp) {
                 // ToDo cheating
@@ -129,7 +130,7 @@ class Room {
         if (Date.now() - angle[0].timestamp > 1000) {
             // ToDo bad connection
             return false;
-        }
+        }*/
 
         return true;
     };

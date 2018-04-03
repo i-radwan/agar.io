@@ -9,6 +9,7 @@ import GameServer from "./modules/GameServer.js";
 // Constants
 const GAME_FPS = 120;
 const SEND_ANGLE_TO_SERVER_RATE = 40; // milliseconds
+const UPDATE_PHYSICS_THRESHOLD = 10;
 
 new p5();
 
@@ -31,8 +32,18 @@ let game = {
         game.gameEngine.init();
 
         // Graphics loop
+        let lag = 0, now = window.performance.now();
         let gameGraphicsLoop = setInterval(function () {
-            let now = Date.now();
+            let elapsed = window.performance.now() - now;
+            now = window.performance.now();
+            lag += elapsed;
+
+            while(lag >= UPDATE_PHYSICS_THRESHOLD) {
+                // Update the game status (My location, players, gems, score, ... etc) and physics
+                game.gameEngine.updateGameStatus();
+
+                lag -= UPDATE_PHYSICS_THRESHOLD;
+            }
 
             game.gameEngine.drawGame();
 
@@ -41,17 +52,8 @@ let game = {
             // Stop when dead
             if (!game.gameStatus.status.me.alive)
                 clearInterval(gameGraphicsLoop);
+
         }, game.gameStatus.status.env.graphicsFrameDelta);
-
-        // Physics loop
-        let gamePhysicsLoop = setInterval(function () {
-            // Update the game status (My location, players, gems, score, ... etc) and physics
-            game.gameEngine.updateGameStatus();
-
-            // Stop when dead
-            if (!game.gameStatus.status.me.alive)
-                clearInterval(gamePhysicsLoop);
-        }, 1000 / 120);
 
         // Send game status loop
         let sendAngleLoop = setInterval(function () {
