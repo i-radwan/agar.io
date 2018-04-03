@@ -9,7 +9,7 @@ import GameServer from "./modules/GameServer.js";
 // Constants
 const GAME_FPS = 120;
 const SEND_ANGLE_TO_SERVER_RATE = 40; // milliseconds
-const UPDATE_PHYSICS_THRESHOLD = 10;
+const UPDATE_PHYSICS_THRESHOLD = 15;
 
 new p5();
 
@@ -33,7 +33,7 @@ let game = {
 
         // Graphics loop
         let lag = 0, now = window.performance.now();
-        let gameGraphicsLoop = setInterval(function () {
+        let gameGraphicsLoop = function () {
             let elapsed = window.performance.now() - now;
             now = window.performance.now();
             lag += elapsed;
@@ -50,10 +50,11 @@ let game = {
             game.gameStatus.status.env.graphicsFrameDelta = Date.now() - now;
 
             // Stop when dead
-            if (!game.gameStatus.status.me.alive)
-                clearInterval(gameGraphicsLoop);
+            if (game.gameStatus.status.me.alive)
+                requestAnimationFrame(gameGraphicsLoop);
+        };
 
-        }, game.gameStatus.status.env.graphicsFrameDelta);
+        requestAnimationFrame(gameGraphicsLoop);
 
         // Send game status loop
         let sendAngleLoop = setInterval(function () {
