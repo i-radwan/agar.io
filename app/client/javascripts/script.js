@@ -63,7 +63,7 @@ let game = {
 
             if (!game.gameStatus.status.me.alive)
                 clearInterval(sendAngleLoop);
-        }, (1000 / 120) * 4);
+        }, (1000 / 120) * 10);
     }
 };
 

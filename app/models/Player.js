@@ -23,14 +23,15 @@ class Player {
         this.id = id;
         this.alive = true;
         this.lastAngleTimeStamp = 0;
+        this.lastReceivedAngleID = -1;
     }
 
     /**
      * Move player
      */
     movePlayer() {
-        this.y += Math.sin(this.angle) * this.velocity;
         this.x += Math.cos(this.angle) * this.velocity;
+        this.y += Math.sin(this.angle) * this.velocity;
     }
 
     /**

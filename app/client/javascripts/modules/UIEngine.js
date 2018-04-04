@@ -24,7 +24,7 @@ export default function () {
         makeCanvas();
 
         // Fill stars
-        // fillStars();
+        fillStars();
 
         // Remove strokes
         strokeWeight(0);
@@ -51,7 +51,7 @@ export default function () {
         background(0);
 
         // Draw stars
-        // drawStars();
+        drawStars();
 
         // Draw all objects
         for (let i = 0; i < gameObjects.length; i++) {
@@ -228,7 +228,7 @@ export default function () {
             };
 
             drawCircle(centerCircle);
-            // drawCircle(serverCenterCircle);
+            drawCircle(serverCenterCircle);
         }
 
         // Increase yOffset for the animation effect

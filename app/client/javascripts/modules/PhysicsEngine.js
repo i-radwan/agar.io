@@ -19,8 +19,14 @@ export default function () {
             y: window.innerHeight / 2
         }, target);
 
+        if (player.lerping) return;
+
         // Calculate mouse angle and move my player with the velocity
-        player.mouseAngle.push({angle: angleAndDistance.angle, timestamp: Date.now()});
+        player.mouseAngle[player.mouseAngle.length - 1].angles.push({
+            angle: angleAndDistance.angle,
+            timestamp: Date.now()
+        });
+        player.anglesBufferSize++;
     };
 
     /**
@@ -28,13 +34,15 @@ export default function () {
      * @param player the player to be moved.
      */
     module.movePlayerNormally = function (player, isMe) {
-        if (dist(player.x, player.y, player.canvasObject.x, player.canvasObject.y) < player.radius && isMe) {
+        if (!isMe || !player.lerping) {
             // Move canvas object
             movePlayer(player, player.velocity);
+            if (isMe)
+                console.log("Nor");
         }
         else {
-            if(isMe)
-            console.log("LERP");
+            if (isMe)
+                console.log("LERP");
             module.movePlayerToTarget(player, {x: player.x, y: player.y});
         }
     };

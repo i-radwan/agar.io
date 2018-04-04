@@ -15,6 +15,8 @@ const Room = require("../models/Room");
 require('../routes/index')(app, express);
 
 function GameServer(gameConfig) {
+    let count = {};
+
     let module = {};
 
     // All game players and all game rooms
@@ -37,9 +39,9 @@ function GameServer(gameConfig) {
             });
 
             // Updates player's angle
-            socket.on('angle', function (angle) {
+            socket.on('angle', function (anglesBuffer) {
                 // module.setPlayerAngle(socket.id, angle);
-                module.updatePlayerPosition(socket.id, angle);
+                module.updatePlayerPosition(socket.id, anglesBuffer);
             });
 
             // Interpolate the server and the client game statuses
@@ -97,13 +99,14 @@ function GameServer(gameConfig) {
         __socket.to(playerSocketID).emit('game_status', gameRooms[roomID].getGameStatus());
     };
 
-    module.updatePlayerPosition = function (playerSocketID, angle) {
+    module.updatePlayerPosition = function (playerSocketID, anglesBuffer) {
         let playerID = gamePlayers[playerSocketID].playerID;
         let roomID = gamePlayers[playerSocketID].roomID;
 
         if (gameRooms[roomID].isPlayerAlive(playerID)) {
             // gameRooms[roomID].setPlayerAngle(playerID, angle[angle.length - 1]);
-            gameRooms[roomID].simulatePlayer(playerID, angle);
+            gameRooms[roomID].game.players[playerID].lastReceivedAngleID = anglesBuffer.id;
+            gameRooms[roomID].simulatePlayer(playerID, anglesBuffer.angles);
         }
     };
 

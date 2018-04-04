@@ -15,7 +15,11 @@ export default function () {
             graphicsFrameDelta: 0
         },
         me: {
-            mouseAngle: []
+            mouseAngle: [{id: 0, angles: []}],
+            anglesBufferSize: 0,
+            lastAngleID: 0,
+            lastReceivedAngleID: -1,
+            lerping: false
         }
     };
 
@@ -52,11 +56,51 @@ export default function () {
             let player = module.status.players[idx];
 
             if (player.id === module.status.me.id) {
+                let flag = (module.status.me.lastReceivedAngleID === player.lastReceivedAngleID);
+
+                let tmpLastReceivedAngleID = module.status.me.lastReceivedAngleID;
+
                 // Update myself
                 module.status.me = Object.assign(module.status.me, player);
 
                 // Remove myself from players array
                 module.status.players.splice(idx, 1);
+
+                console.log("PRE", module.status.me.anglesBufferSize, player.lastReceivedAngleID, module.status.me.mouseAngle[0].id, module.status.me.lastAngleID - 1);
+
+                if (flag) continue;
+
+                console.log("POST", module.status.me.anglesBufferSize, player.lastReceivedAngleID, module.status.me.mouseAngle[0].id, module.status.me.lastAngleID - 1);
+
+                while (player.lastReceivedAngleID > module.status.me.mouseAngle[0].id && module.status.me.mouseAngle.length > 2) {
+                    console.log("TT", player.lastReceivedAngleID, module.status.me.mouseAngle[0].id);
+
+                    module.status.me.anglesBufferSize -= module.status.me.mouseAngle[0].angles.length;
+                    module.status.me.mouseAngle.splice(0, 1);
+                }
+
+                // Check for anglesBuffer
+                if (module.status.me.mouseAngle[0].id === player.lastReceivedAngleID) {
+                    console.log("Remove", module.status.me.mouseAngle.splice(0, 1)[0].id);
+
+                    module.status.me.anglesBufferSize -= module.status.me.mouseAngle[0].angles.length;
+
+                    module.status.me.lerping = false;
+                }
+                else if (!module.status.me.lerping) {
+                    console.log("Flush");
+                    module.status.me.mouseAngle = module.status.me.mouseAngle.splice(-2, 2);
+
+                    // Calculate new size
+                    let size = 0;
+                    for (let i = 0; i < module.status.me.mouseAngle.length; i++) {
+                        size += module.status.me.mouseAngle[i].angles.length;
+                    }
+                    module.status.me.anglesBufferSize = size;
+
+                    module.status.me.lerping = true;
+                    module.status.me.lastReceivedAngleID = tmpLastReceivedAngleID;
+                }
             }
         }
     };
