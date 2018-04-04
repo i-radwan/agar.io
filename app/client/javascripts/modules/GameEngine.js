@@ -91,7 +91,7 @@ export default function (gameStatus, serverGameStatus) {
 
         // Draw players
         for (let i = 0; i < gameStatus.status.players.length; i++) {
-            gameStatus.status.players[i].canvasObject = uiEngine.addPlayer(gameStatus.status.players[i]);
+            uiEngine.addPlayer(gameStatus.status.players[i]);
         }
 
         // Draw myself

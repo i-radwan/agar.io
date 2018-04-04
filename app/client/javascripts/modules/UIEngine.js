@@ -3,7 +3,7 @@
  */
 
 // Constants
-const STARS_COUNT = 1000;
+const STARS_COUNT = 100;
 const MAX_ZOOM_THRESHOLD = 50;
 const MIN_ZOOM_THRESHOLD = 30;
 const START_BLOB_RADIUS = 30;
@@ -13,7 +13,7 @@ const MAX_BLOB_WABBLE_RADIUS_OFFSET = 1 / 5;
 export default function () {
     let module = {};
 
-    let canvasObjects = [];
+    let gameObjects = [];
     let stars = [];
     let mainPlayerCanvasObject;
     let zoom = 1, targetZoom = 1;
@@ -23,7 +23,7 @@ export default function () {
         makeCanvas();
 
         // Fill stars
-        //fillStars();
+        fillStars();
 
         // Remove strokes
         strokeWeight(0);
@@ -42,11 +42,11 @@ export default function () {
         background(0);
 
         // Draw stars
-        //drawStars();
+        drawStars();
 
         // Draw all objects
-        for (let i = 0; i < canvasObjects.length; i++) {
-            canvasObjects[i].draw();
+        for (let i = 0; i < gameObjects.length; i++) {
+            gameObjects[i].canvasObject.draw();
         }
 
         pop();
@@ -86,7 +86,7 @@ export default function () {
      */
     module.updateGem = function (gemObject) {
         if (gemObject.removed) { // Gem has been eaten
-            canvasObjects.splice(canvasObjects.indexOf(gemObject.canvasObject), 1);
+            gameObjects.splice(gameObjects.indexOf(gemObject), 1);
         }
         else if (!gemObject.hasOwnProperty("canvasObject")) { // New gem generated -> Draw it
             gemObject.canvasObject = module.addGem(gemObject);
@@ -99,7 +99,7 @@ export default function () {
      */
     module.updatePlayer = function (playerObject) {
         if (playerObject.removed) { // Player is dead
-            canvasObjects.splice(canvasObjects.indexOf(playerObject.canvasObject), 1);
+            gameObjects.splice(gameObjects.indexOf(playerObject), 1);
         }
         else if (!playerObject.hasOwnProperty("canvasObject")) { // New gem generated -> Draw it
             playerObject.canvasObject = module.addPlayer(playerObject);
@@ -115,7 +115,7 @@ export default function () {
      */
     module.fixObjectsZIndex = function () {
         // Sort the array
-        canvasObjects.sort(function (a, b) {
+        gameObjects.sort(function (a, b) {
             return (a.radius - b.radius);
         });
     };
@@ -143,16 +143,16 @@ export default function () {
 
     /**
      * Attach a new circle to canvas and return the object pointing to it
-     * @param parameters {{x, y, radius, color}}
+     * @param object {{x, y, radius, color}}
      * @param drawFunction
      * @return {{x, y, radius: (*|number), color: (*|string|string|string|string|string), draw: draw, setRadius: setRadius, getCenterPoint: getCenterPoint}}
      */
-    let attachCircle = function (parameters, drawFunction) {
+    let attachCircle = function (object, drawFunction) {
         let circle = {
-            x: parameters.x,
-            y: parameters.y,
-            radius: parameters.radius,
-            color: parameters.color,
+            x: object.x,
+            y: object.y,
+            radius: object.radius,
+            color: object.color,
 
             /**
              * Function called each frame to draw the object
@@ -167,9 +167,10 @@ export default function () {
                 return createVector(this.x, this.y);
             }
         };
+        object.canvasObject = circle;
 
         // Push to canvas objects
-        canvasObjects.push(circle);
+        gameObjects.push(object);
 
         return circle;
     };
@@ -292,7 +293,7 @@ export default function () {
                 x: ((Math.random() * 2 - 1) * 2),
                 y: ((Math.random() * 2 - 1) * 2),
                 color: "white",
-                radius: 0.00133
+                radius: 0.03133
             });
         }
     };
