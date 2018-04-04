@@ -9,6 +9,7 @@ const MIN_ZOOM_THRESHOLD = 30;
 const START_BLOB_RADIUS = 30;
 const MOVEMENT_INTERPOLATION_FACTOR = 0.2;
 const MAX_BLOB_WABBLE_RADIUS_OFFSET = 1 / 5;
+const UPDATE_PHYSICS_THRESHOLD = 15;
 
 export default function () {
     let module = {};
@@ -23,7 +24,7 @@ export default function () {
         makeCanvas();
 
         // Fill stars
-        fillStars();
+        // fillStars();
 
         // Remove strokes
         strokeWeight(0);
@@ -32,7 +33,15 @@ export default function () {
     /**
      * Refresh the drawing due to game status update
      */
-    module.draw = function () {
+    module.draw = function (lag) {
+        // Apply some physics to handle lag
+        for (let i = 0; i < gameObjects.length; i++) {
+            if (gameObjects[i].hasOwnProperty("velocity")) {
+                gameObjects[i].canvasObject.x += Math.cos(gameObjects[i].angle) * gameObjects[i].velocity * (lag / UPDATE_PHYSICS_THRESHOLD);
+                gameObjects[i].canvasObject.y += Math.sin(gameObjects[i].angle) * gameObjects[i].velocity * (lag / UPDATE_PHYSICS_THRESHOLD);
+            }
+        }
+
         push();
 
         // Camera setup and translating to user location
@@ -42,11 +51,18 @@ export default function () {
         background(0);
 
         // Draw stars
-        drawStars();
+        // drawStars();
 
         // Draw all objects
         for (let i = 0; i < gameObjects.length; i++) {
+            // Draw object
             gameObjects[i].canvasObject.draw();
+
+            // Revert the applied physics
+            if (gameObjects[i].hasOwnProperty("velocity")) {
+                gameObjects[i].canvasObject.x -= Math.cos(gameObjects[i].angle) * gameObjects[i].velocity * (lag / UPDATE_PHYSICS_THRESHOLD);
+                gameObjects[i].canvasObject.y -= Math.sin(gameObjects[i].angle) * gameObjects[i].velocity * (lag / UPDATE_PHYSICS_THRESHOLD);
+            }
         }
 
         pop();
@@ -212,7 +228,7 @@ export default function () {
             };
 
             drawCircle(centerCircle);
-            drawCircle(serverCenterCircle);
+            // drawCircle(serverCenterCircle);
         }
 
         // Increase yOffset for the animation effect
@@ -293,7 +309,7 @@ export default function () {
                 x: ((Math.random() * 2 - 1) * 2),
                 y: ((Math.random() * 2 - 1) * 2),
                 color: "white",
-                radius: 0.03133
+                radius: 0.00133
             });
         }
     };

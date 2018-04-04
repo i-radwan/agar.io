@@ -33,6 +33,8 @@ export default function () {
             movePlayer(player, player.velocity);
         }
         else {
+            if(isMe)
+            console.log("LERP");
             module.movePlayerToTarget(player, {x: player.x, y: player.y});
         }
     };

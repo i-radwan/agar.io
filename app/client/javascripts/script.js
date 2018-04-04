@@ -45,9 +45,9 @@ let game = {
                 lag -= UPDATE_PHYSICS_THRESHOLD;
             }
 
-            game.gameEngine.drawGame();
+            game.gameEngine.drawGame(lag);
 
-            game.gameStatus.status.env.graphicsFrameDelta = Date.now() - now;
+            game.gameStatus.status.env.graphicsFrameDelta = window.performance.now() - now;
 
             // Stop when dead
             if (game.gameStatus.status.me.alive)
