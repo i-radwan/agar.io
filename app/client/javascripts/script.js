@@ -9,7 +9,7 @@ import GameServer from "./modules/GameServer.js";
 // Constants
 const GAME_FPS = 120;
 const SEND_ANGLE_TO_SERVER_RATE = 40; // milliseconds
-const UPDATE_PHYSICS_THRESHOLD = 10;
+const UPDATE_PHYSICS_THRESHOLD = 15;
 
 new p5();
 

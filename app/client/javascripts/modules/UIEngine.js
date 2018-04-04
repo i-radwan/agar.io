@@ -23,7 +23,7 @@ export default function () {
         makeCanvas();
 
         // Fill stars
-        fillStars();
+        //fillStars();
 
         // Remove strokes
         strokeWeight(0);
@@ -42,7 +42,7 @@ export default function () {
         background(0);
 
         // Draw stars
-        drawStars();
+        //drawStars();
 
         // Draw all objects
         for (let i = 0; i < canvasObjects.length; i++) {
