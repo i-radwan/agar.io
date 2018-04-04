@@ -48,6 +48,10 @@ export default function (gameStatus, serverGameStatus) {
             // Update gameStatus by serverGameStatus
             gameStatus.set(serverGameStatus);
 
+            //Update Server Center (Debugging)
+            gameStatus.status.me.canvasObject.ServerCenterX = gameStatus.status.me.x;
+            gameStatus.status.me.canvasObject.ServerCenterY = gameStatus.status.me.y;
+
             // Update canvas objects
             updateCanvasObjects();
         }
@@ -92,6 +96,10 @@ export default function (gameStatus, serverGameStatus) {
 
         // Draw myself
         gameStatus.status.me.canvasObject = uiEngine.addMainPlayer(gameStatus.status.me);
+
+        //Set Server Center (Debugging)
+        gameStatus.status.me.canvasObject.ServerCenterX = gameStatus.status.me.x;
+        gameStatus.status.me.canvasObject.ServerCenterY = gameStatus.status.me.y;
 
         // Fix z index of objects
         uiEngine.fixObjectsZIndex();

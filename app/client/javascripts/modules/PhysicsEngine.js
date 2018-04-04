@@ -58,6 +58,23 @@ export default function () {
         // Move canvas object
         player.canvasObject.x += Math.cos(player.angle) * velocity;
         player.canvasObject.y += Math.sin(player.angle) * velocity;
+<<<<<<< HEAD
+||||||| merged common ancestors
+
+        if (!updatePosition) return;
+
+        // Update position
+        player.x = player.canvasObject.x;
+        player.y = player.canvasObject.y;
+=======
+
+        if (!updatePosition) return;
+
+        // Update position
+        //ToDo @IAR Why do we change the server xD ?
+        //player.x = player.canvasObject.x;
+        //player.y = player.canvasObject.y;
+>>>>>>> b36e88aa500f4725b19647720213325fffaf2aa9
     };
 
     module.getAngleAndDistance = function (point1, point2) {
