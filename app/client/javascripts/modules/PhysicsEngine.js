@@ -2,7 +2,7 @@
  * Created by ibrahimradwan on 3/6/18.
  */
 // Constants
-const MOVEMENT_INTERPOLATION_FACTOR = 0.1;
+const MOVEMENT_INTERPOLATION_FACTOR = 0.5;
 
 export default function () {
     let module = {};
@@ -27,8 +27,8 @@ export default function () {
      * Move some player normal movement (player's velocity and angle)
      * @param player the player to be moved.
      */
-    module.movePlayerNormally = function (player) {
-        if (dist(player.x, player.y, player.canvasObject.x, player.canvasObject.y) < player.radius) {
+    module.movePlayerNormally = function (player, isMe) {
+        if (dist(player.x, player.y, player.canvasObject.x, player.canvasObject.y) < player.radius && isMe) {
             // Move canvas object
             movePlayer(player, player.velocity);
         }
@@ -46,6 +46,8 @@ export default function () {
         // Interpolate user location until we reach target
         player.canvasObject.x = lerp(player.canvasObject.x, target.x, MOVEMENT_INTERPOLATION_FACTOR);
         player.canvasObject.y = lerp(player.canvasObject.y, target.y, MOVEMENT_INTERPOLATION_FACTOR);
+        // player.canvasObject.x = target.x;
+        // player.canvasObject.y = target.y;
     };
 
     /**
@@ -58,23 +60,6 @@ export default function () {
         // Move canvas object
         player.canvasObject.x += Math.cos(player.angle) * velocity;
         player.canvasObject.y += Math.sin(player.angle) * velocity;
-<<<<<<< HEAD
-||||||| merged common ancestors
-
-        if (!updatePosition) return;
-
-        // Update position
-        player.x = player.canvasObject.x;
-        player.y = player.canvasObject.y;
-=======
-
-        if (!updatePosition) return;
-
-        // Update position
-        //ToDo @IAR Why do we change the server xD ?
-        //player.x = player.canvasObject.x;
-        //player.y = player.canvasObject.y;
->>>>>>> b36e88aa500f4725b19647720213325fffaf2aa9
     };
 
     module.getAngleAndDistance = function (point1, point2) {
