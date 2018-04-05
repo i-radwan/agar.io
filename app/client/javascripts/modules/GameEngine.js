@@ -36,7 +36,7 @@ export default function (gameStatus, serverGameStatus) {
 
         // Move players
         gameStatus.status.players.concat(gameStatus.status.me).forEach(function (player) {
-            physicsEngine.movePlayerNormally(player, player.id === gameStatus.status.me.id);
+            physicsEngine.movePlayer(player, player.id === gameStatus.status.me.id);
         });
     };
 
@@ -47,10 +47,6 @@ export default function (gameStatus, serverGameStatus) {
         if (gameStatus.status.env.serverResponseReceived) {
             // Update gameStatus by serverGameStatus
             gameStatus.set(serverGameStatus);
-
-            //Update Server Center (Debugging)
-            gameStatus.status.me.canvasObject.ServerCenterX = gameStatus.status.me.x;
-            gameStatus.status.me.canvasObject.ServerCenterY = gameStatus.status.me.y;
 
             // Update canvas objects
             updateCanvasObjects();
@@ -86,7 +82,7 @@ export default function (gameStatus, serverGameStatus) {
     let initGameCanvasObjects = function () {
         // Draw gems
         for (let i = 0; i < gameStatus.status.gems.length; i++) {
-            gameStatus.status.gems[i].canvasObject = uiEngine.addGem(gameStatus.status.gems[i]);
+            uiEngine.addGem(gameStatus.status.gems[i]);
         }
 
         // Draw players
@@ -95,11 +91,7 @@ export default function (gameStatus, serverGameStatus) {
         }
 
         // Draw myself
-        gameStatus.status.me.canvasObject = uiEngine.addMainPlayer(gameStatus.status.me);
-
-        //Set Server Center (Debugging)
-        gameStatus.status.me.canvasObject.ServerCenterX = gameStatus.status.me.x;
-        gameStatus.status.me.canvasObject.ServerCenterY = gameStatus.status.me.y;
+        uiEngine.addMainPlayer(gameStatus.status.me);
 
         // Fix z index of objects
         uiEngine.fixObjectsZIndex();

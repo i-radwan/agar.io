@@ -10,13 +10,15 @@ const START_BLOB_RADIUS = 30;
 const MOVEMENT_INTERPOLATION_FACTOR = 0.2;
 const MAX_BLOB_WABBLE_RADIUS_OFFSET = 1 / 5;
 const UPDATE_PHYSICS_THRESHOLD = 15;
+const CANVAS_OBJECT_PLAYER = "player";
+const CANVAS_OBJECT_GEM = "gem";
 
 export default function () {
     let module = {};
 
     let gameObjects = [];
     let stars = [];
-    let mainPlayerCanvasObject;
+    let mainPlayer;
     let zoom = 1, targetZoom = 1;
 
     module.init = function () {
@@ -36,9 +38,10 @@ export default function () {
     module.draw = function (lag) {
         // Apply some physics to handle lag
         for (let i = 0; i < gameObjects.length; i++) {
-            if (gameObjects[i].hasOwnProperty("velocity")) {
-                gameObjects[i].canvasObject.x += Math.cos(gameObjects[i].angle) * gameObjects[i].velocity * (lag / UPDATE_PHYSICS_THRESHOLD);
-                gameObjects[i].canvasObject.y += Math.sin(gameObjects[i].angle) * gameObjects[i].velocity * (lag / UPDATE_PHYSICS_THRESHOLD);
+            if (gameObjects[i].type === CANVAS_OBJECT_PLAYER) {
+                let positionsDelta = simulatePhysics(gameObjects[i], lag);
+                gameObjects[i].canvasX += positionsDelta.dx;
+                gameObjects[i].canvasY += positionsDelta.dy;
             }
         }
 
@@ -56,12 +59,13 @@ export default function () {
         // Draw all objects
         for (let i = 0; i < gameObjects.length; i++) {
             // Draw object
-            gameObjects[i].canvasObject.draw();
+            gameObjects[i].draw();
 
             // Revert the applied physics
-            if (gameObjects[i].hasOwnProperty("velocity")) {
-                gameObjects[i].canvasObject.x -= Math.cos(gameObjects[i].angle) * gameObjects[i].velocity * (lag / UPDATE_PHYSICS_THRESHOLD);
-                gameObjects[i].canvasObject.y -= Math.sin(gameObjects[i].angle) * gameObjects[i].velocity * (lag / UPDATE_PHYSICS_THRESHOLD);
+            if (gameObjects[i].type === CANVAS_OBJECT_PLAYER) {
+                let positionsDelta = simulatePhysics(gameObjects[i], lag);
+                gameObjects[i].canvasX -= positionsDelta.dx;
+                gameObjects[i].canvasY -= positionsDelta.dy;
             }
         }
 
@@ -69,27 +73,26 @@ export default function () {
     };
 
     module.addGem = function (gemObject) {
-        return attachCircle(gemObject, drawCircle);
+        attachCircle(gemObject, drawCircle);
+        gemObject.canvasX = gemObject.x;
+        gemObject.canvasY = gemObject.y;
+        gemObject.canvasObjectType = CANVAS_OBJECT_GEM;
     };
 
     module.addPlayer = function (playerObject) {
-        let circle = attachCircle(playerObject, drawBlob);
+        attachCircle(playerObject, drawBlob);
 
-        // Set blob attributes
-        circle.yOffset = 0; // Used for noise
-        circle.strokeColor = 255;
-
-        return circle;
+        // Set graphics attributes
+        playerObject.yOffset = 0; // Used for noise
+        playerObject.strokeColor = 255;
+        playerObject.canvasX = playerObject.x;
+        playerObject.canvasY = playerObject.y;
+        playerObject.canvasObjectType = CANVAS_OBJECT_PLAYER;
     };
 
     module.addMainPlayer = function (myselfObject) {
-        mainPlayerCanvasObject = attachCircle(myselfObject, drawBlob);
-
-        // Set blob attributes
-        mainPlayerCanvasObject.yOffset = 0;
-        mainPlayerCanvasObject.strokeColor = 255;
-
-        return mainPlayerCanvasObject;
+        module.addPlayer(myselfObject);
+        mainPlayer = myselfObject;
     };
 
     module.drawScore = function () {
@@ -104,8 +107,8 @@ export default function () {
         if (gemObject.removed) { // Gem has been eaten
             gameObjects.splice(gameObjects.indexOf(gemObject), 1);
         }
-        else if (!gemObject.hasOwnProperty("canvasObject")) { // New gem generated -> Draw it
-            gemObject.canvasObject = module.addGem(gemObject);
+        else if (!gemObject.hasOwnProperty("canvasObjectType")) { // New gem generated -> Draw it
+            module.addGem(gemObject);
         }
     };
 
@@ -117,11 +120,11 @@ export default function () {
         if (playerObject.removed) { // Player is dead
             gameObjects.splice(gameObjects.indexOf(playerObject), 1);
         }
-        else if (!playerObject.hasOwnProperty("canvasObject")) { // New gem generated -> Draw it
-            playerObject.canvasObject = module.addPlayer(playerObject);
+        else if (!playerObject.hasOwnProperty("canvasObjectType")) { // New player generated -> Draw it
+            module.addPlayer(playerObject);
         }
         else { // Player existed and still -> update radius
-            playerObject.canvasObject.setRadius(playerObject.radius);
+            playerObject.setRadius(playerObject.radius);
         }
     };
 
@@ -147,48 +150,32 @@ export default function () {
         translate(window.innerWidth / 2, window.innerHeight / 2);
 
         // Scaling (interpolated)
-        if ((targetZoom * mainPlayerCanvasObject.radius) > MAX_ZOOM_THRESHOLD || (targetZoom * mainPlayerCanvasObject.radius) < MIN_ZOOM_THRESHOLD)
-            targetZoom = START_BLOB_RADIUS / mainPlayerCanvasObject.radius;
+        if ((targetZoom * mainPlayer.radius) > MAX_ZOOM_THRESHOLD || (targetZoom * mainPlayer.radius) < MIN_ZOOM_THRESHOLD)
+            targetZoom = START_BLOB_RADIUS / mainPlayer.radius;
 
         zoom = lerp(zoom, targetZoom, 0.05);
         scale(zoom * Math.sqrt((window.innerWidth * window.innerHeight) / (2000 * 1000)));
 
         // Translate camera to player center
-        translate(-mainPlayerCanvasObject.x, -mainPlayerCanvasObject.y);
+        translate(-mainPlayer.canvasX, -mainPlayer.canvasY);
     };
 
     /**
      * Attach a new circle to canvas and return the object pointing to it
      * @param object {{x, y, radius, color}}
      * @param drawFunction
-     * @return {{x, y, radius: (*|number), color: (*|string|string|string|string|string), draw: draw, setRadius: setRadius, getCenterPoint: getCenterPoint}}
      */
     let attachCircle = function (object, drawFunction) {
-        let circle = {
-            x: object.x,
-            y: object.y,
-            radius: object.radius,
-            color: object.color,
-
-            /**
-             * Function called each frame to draw the object
-             */
-            draw: function () {
-                drawFunction(this);
-            },
-            setRadius: function (r) {
-                this.radius = lerp(this.radius, r, MOVEMENT_INTERPOLATION_FACTOR);
-            },
-            getCenterPoint: function () {
-                return createVector(this.x, this.y);
-            }
+        object.draw = function () {
+            drawFunction(object);
         };
-        object.canvasObject = circle;
+
+        object.setRadius = function (r) {
+            this.radius = lerp(this.radius, r, MOVEMENT_INTERPOLATION_FACTOR);
+        };
 
         // Push to canvas objects
         gameObjects.push(object);
-
-        return circle;
     };
 
     /**
@@ -197,7 +184,7 @@ export default function () {
      */
     let drawCircle = function (circle) {
         fill(circle.color);
-        ellipse(circle.x, circle.y, circle.radius * 2, circle.radius * 2);
+        ellipse(circle.canvasX, circle.canvasY, circle.radius * 2, circle.radius * 2);
     };
 
     /**
@@ -211,25 +198,22 @@ export default function () {
         // Draw the small noisy circle
         drawNoisyCircle(blob, blob.radius, blob.color);
 
-
         //Draw My center and Server Center (Debugging)
-        if (blob.hasOwnProperty("ServerCenterX")) {
-            let serverCenterCircle = {
-                color: "white",
-                x: blob.ServerCenterX,
-                y: blob.ServerCenterY,
-                radius: 0.1 * blob.radius
-            };
-            let centerCircle = {
-                color: "black",
-                x: blob.x,
-                y: blob.y,
-                radius: 0.1 * blob.radius
-            };
+        let serverCenterCircle = {
+            color: "white",
+            canvasX: blob.x,
+            canvasY: blob.y,
+            radius: 0.1 * blob.radius
+        };
+        let centerCircle = {
+            color: "black",
+            canvasX: blob.canvasX,
+            canvasY: blob.canvasY,
+            radius: 0.1 * blob.radius
+        };
 
-            drawCircle(centerCircle);
-            drawCircle(serverCenterCircle);
-        }
+        drawCircle(centerCircle);
+        drawCircle(serverCenterCircle);
 
         // Increase yOffset for the animation effect
         blob.yOffset += 0.01;
@@ -253,11 +237,11 @@ export default function () {
 
         for (let theta = 0; theta < TWO_PI - 0.1; theta += 0.1) {
             // Make radius with ± noise
-            let rad = map(noise(xOffset, blob.yOffset), 0, 1, r, r * ( 1 + MAX_BLOB_WABBLE_RADIUS_OFFSET));
+            let rad = map(noise(xOffset, blob.yOffset), 0, 1, r, r * (1 + MAX_BLOB_WABBLE_RADIUS_OFFSET));
 
             // Add the vertex of the circle
-            let x = blob.x + rad * Math.cos(theta);
-            let y = blob.y + rad * Math.sin(theta);
+            let x = blob.canvasX + rad * Math.cos(theta);
+            let y = blob.canvasY + rad * Math.sin(theta);
             vertex(x, y);
 
             // Increase the xOffset to get another noisy pattern in the next loop (for the blob animation)
@@ -306,13 +290,19 @@ export default function () {
 
         while (n--) {
             stars.push({
-                x: ((Math.random() * 2 - 1) * 2),
-                y: ((Math.random() * 2 - 1) * 2),
+                canvasX: ((Math.random() * 2 - 1) * 2),
+                canvasY: ((Math.random() * 2 - 1) * 2),
                 color: "white",
                 radius: 0.00133
             });
         }
     };
 
+    let simulatePhysics = function (object, lag) {
+        return {
+            dx: Math.cos(object.angle) * object.velocity * (lag / UPDATE_PHYSICS_THRESHOLD),
+            dy: Math.cos(object.angle) * object.velocity * (lag / UPDATE_PHYSICS_THRESHOLD)
+        };
+    };
     return module;
 };

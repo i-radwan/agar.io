@@ -21,9 +21,10 @@ export default function () {
 
         if (player.lerping) return;
 
+        // Update my player angle
         player.angle = angleAndDistance.angle;
 
-        // Calculate mouse angle and move my player with the velocity
+        // Push this angle to be sent to server
         player.mouseAngle[player.mouseAngle.length - 1].angles.push({
             angle: angleAndDistance.angle,
             timestamp: Date.now()
@@ -35,17 +36,13 @@ export default function () {
      * Move some player normal movement (player's velocity and angle)
      * @param player the player to be moved.
      */
-    module.movePlayerNormally = function (player, isMe) {
+    module.movePlayer = function (player, isMe) {
         if (!isMe || !player.lerping) {
             // Move canvas object
-            movePlayer(player, player.velocity);
-            if (isMe)
-                console.log("NOR");
+            updatePlayerPosition(player, player.velocity);
         }
         else {
-            if (isMe)
-                console.log("LERP");
-            module.movePlayerToTarget(player, {x: player.x, y: player.y});
+            module.movePlayerToPosition(player, {x: player.x, y: player.y});
         }
     };
 
@@ -54,12 +51,10 @@ export default function () {
      * @param player the player to be moved.
      * @param target the point to be moved to.
      */
-    module.movePlayerToTarget = function (player, target) {
+    module.movePlayerToPosition = function (player, target) {
         // Interpolate user location until we reach target
-        player.canvasObject.x = lerp(player.canvasObject.x, target.x, MOVEMENT_INTERPOLATION_FACTOR);
-        player.canvasObject.y = lerp(player.canvasObject.y, target.y, MOVEMENT_INTERPOLATION_FACTOR);
-        // player.canvasObject.x = target.x;
-        // player.canvasObject.y = target.y;
+        player.canvasX = lerp(player.canvasX, target.x, MOVEMENT_INTERPOLATION_FACTOR);
+        player.canvasY = lerp(player.canvasY, target.y, MOVEMENT_INTERPOLATION_FACTOR);
     };
 
     /**
@@ -68,10 +63,10 @@ export default function () {
      * @param velocity the velocity in which player is moving.
      * @param updatePosition{boolean} update player.x, player.y.
      */
-    let movePlayer = function (player, velocity) {
+    let updatePlayerPosition = function (player, velocity) {
         // Move canvas object
-        player.canvasObject.x += Math.cos(player.angle) * velocity;
-        player.canvasObject.y += Math.sin(player.angle) * velocity;
+        player.canvasX += Math.cos(player.angle) * velocity;
+        player.canvasY += Math.sin(player.angle) * velocity;
     };
 
     module.getAngleAndDistance = function (point1, point2) {
