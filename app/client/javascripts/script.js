@@ -45,7 +45,7 @@ let game = {
                 lag -= UPDATE_PHYSICS_THRESHOLD;
             }
 
-            game.gameEngine.drawGame(lag);
+            game.gameEngine.drawGame(lag, elapsed);
 
             // Stop when dead
             if (game.gameStatus.status.me.alive)

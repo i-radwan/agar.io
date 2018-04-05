@@ -23,8 +23,8 @@ export default function (gameStatus, serverGameStatus) {
         initGameCanvasObjects();
     };
 
-    module.drawGame = function (lag) {
-        uiEngine.draw(lag);
+    module.drawGame = function (lag, elapsed) {
+        uiEngine.draw(lag, elapsed);
     };
 
     module.updateGameStatus = function () {

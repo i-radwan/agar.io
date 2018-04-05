@@ -61,7 +61,6 @@ export default function () {
      * Move some player normal movement (velocity and angle)
      * @param player the player to be moved.
      * @param velocity the velocity in which player is moving.
-     * @param updatePosition{boolean} update player.x, player.y.
      */
     let updatePlayerPosition = function (player, velocity) {
         // Move canvas object

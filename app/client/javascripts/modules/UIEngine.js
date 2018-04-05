@@ -10,6 +10,7 @@ const START_BLOB_RADIUS = 30;
 const MOVEMENT_INTERPOLATION_FACTOR = 0.2;
 const MAX_BLOB_WABBLE_RADIUS_OFFSET = 1 / 5;
 const UPDATE_PHYSICS_THRESHOLD = 15;
+const WABBLE_SPEED = 0.0009;
 const CANVAS_OBJECT_PLAYER = "player";
 const CANVAS_OBJECT_GEM = "gem";
 
@@ -35,14 +36,10 @@ export default function () {
     /**
      * Refresh the drawing due to game status update
      */
-    module.draw = function (lag) {
-        // Apply some physics to handle lag
+    module.draw = function (lag, elapsed) {
+        // Interpolate some physics to handle lag
         for (let i = 0; i < gameObjects.length; i++) {
-            if (gameObjects[i].type === CANVAS_OBJECT_PLAYER) {
-                let positionsDelta = simulatePhysics(gameObjects[i], lag);
-                gameObjects[i].canvasX += positionsDelta.dx;
-                gameObjects[i].canvasY += positionsDelta.dy;
-            }
+            gameObjects[i].interpolatePhysics(lag);
         }
 
         push();
@@ -62,10 +59,11 @@ export default function () {
             gameObjects[i].draw();
 
             // Revert the applied physics
-            if (gameObjects[i].type === CANVAS_OBJECT_PLAYER) {
-                let positionsDelta = simulatePhysics(gameObjects[i], lag);
-                gameObjects[i].canvasX -= positionsDelta.dx;
-                gameObjects[i].canvasY -= positionsDelta.dy;
+            gameObjects[i].undoPhysics(lag);
+
+            // Update blob yOffset
+            if (gameObjects[i].canvasObjectType === CANVAS_OBJECT_PLAYER) {
+                gameObjects[i].yOffset += elapsed * WABBLE_SPEED;
             }
         }
 
@@ -77,6 +75,9 @@ export default function () {
         gemObject.canvasX = gemObject.x;
         gemObject.canvasY = gemObject.y;
         gemObject.canvasObjectType = CANVAS_OBJECT_GEM;
+
+        gemObject.interpolatePhysics = function (lag){};
+        gemObject.undoPhysics = function (lag){};
     };
 
     module.addPlayer = function (playerObject) {
@@ -88,6 +89,19 @@ export default function () {
         playerObject.canvasX = playerObject.x;
         playerObject.canvasY = playerObject.y;
         playerObject.canvasObjectType = CANVAS_OBJECT_PLAYER;
+
+        playerObject.simulatePhysics = function(lag, direction) {
+            this.canvasX += Math.cos(this.angle) * this.velocity * (lag / UPDATE_PHYSICS_THRESHOLD) * direction;
+            this.canvasY += Math.sin(this.angle) * this.velocity * (lag / UPDATE_PHYSICS_THRESHOLD) * direction;
+        };
+
+        playerObject.interpolatePhysics = function (lag) {
+            this.simulatePhysics(lag, 1);
+        };
+
+        playerObject.undoPhysics = function (lag) {
+            this.simulatePhysics(lag, -1);
+        };
     };
 
     module.addMainPlayer = function (myselfObject) {
@@ -213,10 +227,7 @@ export default function () {
         };
 
         drawCircle(centerCircle);
-        drawCircle(serverCenterCircle);
-
-        // Increase yOffset for the animation effect
-        blob.yOffset += 0.01;
+        // drawCircle(serverCenterCircle);
     };
 
     /**
@@ -298,11 +309,5 @@ export default function () {
         }
     };
 
-    let simulatePhysics = function (object, lag) {
-        return {
-            dx: Math.cos(object.angle) * object.velocity * (lag / UPDATE_PHYSICS_THRESHOLD),
-            dy: Math.cos(object.angle) * object.velocity * (lag / UPDATE_PHYSICS_THRESHOLD)
-        };
-    };
     return module;
 };
