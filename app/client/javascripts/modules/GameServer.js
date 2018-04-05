@@ -23,21 +23,14 @@ export default function (gameStatus, serverGameStatus) {
     module.sendAngle = function () {
         // if (gameStatus.status.me.lerping) return;
 
-        // console.log("Insert", gameStatus.status.me.lastAngleID + 1);
-        // console.log("Sending", gameStatus.status.me.color, gameStatus.status.me.mouseAngle.slice(-1)[0].angles);
+        _socket.emit('angle', gameStatus.status.anglesQueue.mouseAngles.slice(-1)[0]);
 
-        _socket.emit('angle', gameStatus.status.me.mouseAngle.slice(-1)[0]);
+        gameStatus.status.anglesQueue.mouseAngles.push({id: ++gameStatus.status.anglesQueue.lastAngleID, angles: []});
 
-        gameStatus.status.me.lastAngleID++;
-
-        gameStatus.status.me.mouseAngle.push({id: gameStatus.status.me.lastAngleID, angles: []});
-
-        while (gameStatus.status.me.anglesBufferSize > 20) {
-            let size = gameStatus.status.me.mouseAngle[0].angles.length;
-
-            // console.log("FLUSHING", gameStatus.status.me.mouseAngle.splice(0, 1));
-
-            gameStatus.status.me.anglesBufferSize -= size;
+        while (gameStatus.status.anglesQueue.anglesBufferSize > 20) {
+            let size = gameStatus.status.anglesQueue.mouseAngles[0].angles.length;
+            gameStatus.status.anglesQueue.mouseAngles.splice(0, 1);
+            gameStatus.status.anglesQueue.anglesBufferSize -= size;
         }
     };
 

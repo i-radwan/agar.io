@@ -12,7 +12,7 @@ export default function () {
      * @param player the player to be moved
      * @param target object contains the targeted x, y coordinates
      */
-    module.getMouseAngle = function (player, target) {
+    module.getMouseAngle = function (player, target, anglesQueue) {
         // To be changed when splitting happens (using get equivalent center)
         let angleAndDistance = module.getAngleAndDistance({
             x: window.innerWidth / 2,
@@ -25,11 +25,11 @@ export default function () {
         player.angle = angleAndDistance.angle;
 
         // Push this angle to be sent to server
-        player.mouseAngle[player.mouseAngle.length - 1].angles.push({
+        anglesQueue.mouseAngles[anglesQueue.mouseAngles.length - 1].angles.push({
             angle: angleAndDistance.angle,
             timestamp: Date.now()
         });
-        player.anglesBufferSize++;
+        anglesQueue.anglesBufferSize++;
     };
 
     /**

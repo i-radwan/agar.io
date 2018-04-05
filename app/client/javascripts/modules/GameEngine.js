@@ -32,7 +32,7 @@ export default function (gameStatus, serverGameStatus) {
         checkServerResponse();
 
         // Get mouse angle
-        physicsEngine.getMouseAngle(gameStatus.status.me, {x: mouseX, y: mouseY});
+        physicsEngine.getMouseAngle(gameStatus.status.me, {x: mouseX, y: mouseY}, gameStatus.status.anglesQueue);
 
         // Move players
         gameStatus.status.players.concat(gameStatus.status.me).forEach(function (player) {

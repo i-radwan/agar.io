@@ -12,11 +12,13 @@ export default function () {
             gameHeight: 4 * window.innerHeight,
             serverResponseReceived: false
         },
-        me: {
-            mouseAngle: [{id: 0, angles: []}],
+        anglesQueue: {
+            mouseAngles: [{id: 0, angles: []}],
             anglesBufferSize: 0,
             lastAngleID: 0,
-            lastReceivedAngleID: -1,
+            lastReceivedAngleID: -1
+        },
+        me: {
             lerping: false
         }
     };
@@ -54,9 +56,9 @@ export default function () {
             let player = module.status.players[idx];
 
             if (player.id === module.status.me.id) {
-                let flag = (module.status.me.lastReceivedAngleID === player.lastReceivedAngleID);
+                let flag = (module.status.anglesQueue.lastReceivedAngleID === player.lastReceivedAngleID);
 
-                let tmpLastReceivedAngleID = module.status.me.lastReceivedAngleID;
+                let tmpLastReceivedAngleID = module.status.anglesQueue.lastReceivedAngleID;
 
                 // Update myself
                 module.status.me = Object.assign(module.status.me, player);
@@ -66,29 +68,29 @@ export default function () {
 
                 if (flag) continue;
 
-                while (player.lastReceivedAngleID > module.status.me.mouseAngle[0].id && module.status.me.mouseAngle.length > 2) {
-                    module.status.me.anglesBufferSize -= module.status.me.mouseAngle[0].angles.length;
-                    module.status.me.mouseAngle.splice(0, 1);
+                while (player.lastReceivedAngleID > module.status.anglesQueue.mouseAngles[0].id && module.status.anglesQueue.mouseAngles.length > 2) {
+                    module.status.anglesQueue.anglesBufferSize -= module.status.anglesQueue.mouseAngles[0].angles.length;
+                    module.status.anglesQueue.mouseAngles.splice(0, 1);
                 }
 
                 // Check for anglesBuffer
-                if (module.status.me.mouseAngle[0].id === player.lastReceivedAngleID) {
-                    module.status.me.anglesBufferSize -= module.status.me.mouseAngle[0].angles.length;
+                if (module.status.anglesQueue.mouseAngles[0].id === player.lastReceivedAngleID) {
+                    module.status.anglesQueue.anglesBufferSize -= module.status.anglesQueue.mouseAngles[0].angles.length;
 
                     module.status.me.lerping = false;
                 }
                 else if (!module.status.me.lerping) {
-                    module.status.me.mouseAngle = module.status.me.mouseAngle.splice(-2, 2);
+                    module.status.anglesQueue.mouseAngles = module.status.anglesQueue.mouseAngles.splice(-2, 2);
 
                     // Calculate new size
                     let size = 0;
-                    for (let i = 0; i < module.status.me.mouseAngle.length; i++) {
-                        size += module.status.me.mouseAngle[i].angles.length;
+                    for (let i = 0; i < module.status.anglesQueue.mouseAngles.length; i++) {
+                        size += module.status.anglesQueue.mouseAngles[i].angles.length;
                     }
-                    module.status.me.anglesBufferSize = size;
+                    module.status.anglesQueue.anglesBufferSize = size;
 
                     module.status.me.lerping = true;
-                    module.status.me.lastReceivedAngleID = tmpLastReceivedAngleID;
+                    module.status.anglesQueue.lastReceivedAngleID = tmpLastReceivedAngleID;
                 }
             }
         }
