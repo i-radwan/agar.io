@@ -10,9 +10,7 @@ export default function () {
             scoreObject: {},
             gameWidth: 4 * window.innerWidth,
             gameHeight: 4 * window.innerHeight,
-            serverResponseReceived: false,
-            fastForward: false,
-            graphicsFrameDelta: 0
+            serverResponseReceived: false
         },
         me: {
             mouseAngle: [{id: 0, angles: []}],

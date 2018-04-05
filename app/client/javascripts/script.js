@@ -8,7 +8,7 @@ import GameServer from "./modules/GameServer.js";
 
 // Constants
 const GAME_FPS = 120;
-const SEND_ANGLE_TO_SERVER_RATE = 40; // milliseconds
+const SEND_ANGLE_TO_SERVER_RATE = (1000 / 120) * 10; // milliseconds
 const UPDATE_PHYSICS_THRESHOLD = 15;
 
 new p5();
@@ -47,8 +47,6 @@ let game = {
 
             game.gameEngine.drawGame(lag);
 
-            game.gameStatus.status.env.graphicsFrameDelta = window.performance.now() - now;
-
             // Stop when dead
             if (game.gameStatus.status.me.alive)
                 requestAnimationFrame(gameGraphicsLoop);
@@ -63,7 +61,7 @@ let game = {
 
             if (!game.gameStatus.status.me.alive)
                 clearInterval(sendAngleLoop);
-        }, (1000 / 120) * 10);
+        }, SEND_ANGLE_TO_SERVER_RATE);
     }
 };
 
