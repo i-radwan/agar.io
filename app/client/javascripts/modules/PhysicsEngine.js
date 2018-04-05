@@ -21,6 +21,8 @@ export default function () {
 
         if (player.lerping) return;
 
+        player.angle = angleAndDistance.angle;
+
         // Calculate mouse angle and move my player with the velocity
         player.mouseAngle[player.mouseAngle.length - 1].angles.push({
             angle: angleAndDistance.angle,
@@ -38,7 +40,7 @@ export default function () {
             // Move canvas object
             movePlayer(player, player.velocity);
             if (isMe)
-                console.log("Nor");
+                console.log("NOR");
         }
         else {
             if (isMe)

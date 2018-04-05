@@ -3,7 +3,7 @@
  */
 
 // Constants
-const STARS_COUNT = 100;
+const STARS_COUNT = 300;
 const MAX_ZOOM_THRESHOLD = 50;
 const MIN_ZOOM_THRESHOLD = 30;
 const START_BLOB_RADIUS = 30;

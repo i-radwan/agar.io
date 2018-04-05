@@ -66,14 +66,14 @@ export default function () {
                 // Remove myself from players array
                 module.status.players.splice(idx, 1);
 
-                console.log("PRE", module.status.me.anglesBufferSize, player.lastReceivedAngleID, module.status.me.mouseAngle[0].id, module.status.me.lastAngleID - 1);
+                // console.log("PRE", module.status.me.anglesBufferSize, player.lastReceivedAngleID, module.status.me.mouseAngle[0].id, module.status.me.lastAngleID - 1);
 
                 if (flag) continue;
 
-                console.log("POST", module.status.me.anglesBufferSize, player.lastReceivedAngleID, module.status.me.mouseAngle[0].id, module.status.me.lastAngleID - 1);
+                // console.log("POST", module.status.me.anglesBufferSize, player.lastReceivedAngleID, module.status.me.mouseAngle[0].id, module.status.me.lastAngleID - 1);
 
                 while (player.lastReceivedAngleID > module.status.me.mouseAngle[0].id && module.status.me.mouseAngle.length > 2) {
-                    console.log("TT", player.lastReceivedAngleID, module.status.me.mouseAngle[0].id);
+                    // console.log("TT", player.lastReceivedAngleID, module.status.me.mouseAngle[0].id);
 
                     module.status.me.anglesBufferSize -= module.status.me.mouseAngle[0].angles.length;
                     module.status.me.mouseAngle.splice(0, 1);
@@ -81,14 +81,14 @@ export default function () {
 
                 // Check for anglesBuffer
                 if (module.status.me.mouseAngle[0].id === player.lastReceivedAngleID) {
-                    console.log("Remove", module.status.me.mouseAngle.splice(0, 1)[0].id);
+                    // console.log("Remove", module.status.me.mouseAngle.splice(0, 1)[0].id);
 
                     module.status.me.anglesBufferSize -= module.status.me.mouseAngle[0].angles.length;
 
                     module.status.me.lerping = false;
                 }
                 else if (!module.status.me.lerping) {
-                    console.log("Flush");
+                    // console.log("Flush");
                     module.status.me.mouseAngle = module.status.me.mouseAngle.splice(-2, 2);
 
                     // Calculate new size
