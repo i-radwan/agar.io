@@ -1,18 +1,7 @@
 /**
  * Created by ibrahimradwan on 3/6/18.
  */
-
-// Constants
-const STARS_COUNT = 300;
-const MAX_ZOOM_THRESHOLD = 50;
-const MIN_ZOOM_THRESHOLD = 30;
-const START_BLOB_RADIUS = 30;
-const MOVEMENT_INTERPOLATION_FACTOR = 0.2;
-const MAX_BLOB_WABBLE_RADIUS_OFFSET = 1 / 5;
-const UPDATE_PHYSICS_THRESHOLD = 15;
-const WABBLE_SPEED = 0.0009;
-const CANVAS_OBJECT_PLAYER = "player";
-const CANVAS_OBJECT_GEM = "gem";
+import Constants from "./Constants.js";
 
 export default function () {
     let module = {};
@@ -21,6 +10,8 @@ export default function () {
     let stars = [];
     let mainPlayer;
     let zoom = 1, targetZoom = 1;
+
+    let constants = Constants();
 
     module.init = function () {
         // Create canvas
@@ -48,7 +39,7 @@ export default function () {
         setupCamera();
 
         // Clear everything
-        background(0);
+        background(constants.graphics.GAME_BACKGROUND);
 
         // Draw stars
         drawStars();
@@ -62,8 +53,8 @@ export default function () {
             gameObjects[i].undoPhysics(lag);
 
             // Update blob yOffset
-            if (gameObjects[i].canvasObjectType === CANVAS_OBJECT_PLAYER) {
-                gameObjects[i].yOffset += elapsed * WABBLE_SPEED;
+            if (gameObjects[i].canvasObjectType === constants.graphics.CANVAS_OBJECT_PLAYER) {
+                gameObjects[i].yOffset += elapsed * constants.graphics.WABBLE_SPEED;
             }
         }
 
@@ -72,27 +63,31 @@ export default function () {
 
     module.addGem = function (gemObject) {
         attachCircle(gemObject, drawCircle);
+
+        // Set graphics attributes
         gemObject.canvasX = gemObject.x;
         gemObject.canvasY = gemObject.y;
-        gemObject.canvasObjectType = CANVAS_OBJECT_GEM;
+        gemObject.canvasObjectType = constants.graphics.CANVAS_OBJECT_GEM;
 
-        gemObject.interpolatePhysics = function (lag){};
-        gemObject.undoPhysics = function (lag){};
+        gemObject.interpolatePhysics = function (lag) {
+        };
+        gemObject.undoPhysics = function (lag) {
+        };
     };
 
     module.addPlayer = function (playerObject) {
         attachCircle(playerObject, drawBlob);
 
         // Set graphics attributes
-        playerObject.yOffset = 0; // Used for noise
-        playerObject.strokeColor = 255;
         playerObject.canvasX = playerObject.x;
         playerObject.canvasY = playerObject.y;
-        playerObject.canvasObjectType = CANVAS_OBJECT_PLAYER;
+        playerObject.canvasObjectType = constants.graphics.CANVAS_OBJECT_PLAYER;
+        playerObject.yOffset = 0; // Used for noise
+        playerObject.strokeColor = constants.graphics.BLOB_STROKE_COLOR;
 
-        playerObject.simulatePhysics = function(lag, direction) {
-            this.canvasX += Math.cos(this.angle) * this.velocity * (lag / UPDATE_PHYSICS_THRESHOLD) * direction;
-            this.canvasY += Math.sin(this.angle) * this.velocity * (lag / UPDATE_PHYSICS_THRESHOLD) * direction;
+        playerObject.simulatePhysics = function (lag, direction) {
+            this.canvasX += Math.cos(this.angle) * this.velocity * (lag / constants.general.UPDATE_PHYSICS_THRESHOLD) * direction;
+            this.canvasY += Math.sin(this.angle) * this.velocity * (lag / constants.general.UPDATE_PHYSICS_THRESHOLD) * direction;
         };
 
         playerObject.interpolatePhysics = function (lag) {
@@ -164,11 +159,11 @@ export default function () {
         translate(window.innerWidth / 2, window.innerHeight / 2);
 
         // Scaling (interpolated)
-        if ((targetZoom * mainPlayer.radius) > MAX_ZOOM_THRESHOLD || (targetZoom * mainPlayer.radius) < MIN_ZOOM_THRESHOLD)
-            targetZoom = START_BLOB_RADIUS / mainPlayer.radius;
+        if ((targetZoom * mainPlayer.radius) > constants.graphics.MAX_ZOOM_THRESHOLD || (targetZoom * mainPlayer.radius) < constants.graphics.MIN_ZOOM_THRESHOLD)
+            targetZoom = constants.graphics.START_BLOB_RADIUS / mainPlayer.radius;
 
-        zoom = lerp(zoom, targetZoom, 0.05);
-        scale(zoom * Math.sqrt((window.innerWidth * window.innerHeight) / (2000 * 1000)));
+        zoom = lerp(zoom, targetZoom, constants.graphics.ZOOM_INTERPOLATION_FACTOR);
+        scale(zoom * Math.sqrt((window.innerWidth * window.innerHeight) / (constants.graphics.GENERIC_WINDOW_AREA)));
 
         // Translate camera to player center
         translate(-mainPlayer.canvasX, -mainPlayer.canvasY);
@@ -185,7 +180,7 @@ export default function () {
         };
 
         object.setRadius = function (r) {
-            this.radius = lerp(this.radius, r, MOVEMENT_INTERPOLATION_FACTOR);
+            this.radius = lerp(this.radius, r, constants.graphics.SIZE_INTERPOLATION_FACTOR);
         };
 
         // Push to canvas objects
@@ -207,7 +202,7 @@ export default function () {
      */
     let drawBlob = function (blob) {
         // Draw the large noisy circle
-        drawNoisyCircle(blob, blob.radius * (1 + MAX_BLOB_WABBLE_RADIUS_OFFSET), blob.strokeColor);
+        drawNoisyCircle(blob, blob.radius * (1 + constants.graphics.MAX_BLOB_WABBLE_RADIUS_OFFSET), blob.strokeColor);
 
         // Draw the small noisy circle
         drawNoisyCircle(blob, blob.radius, blob.color);
@@ -248,7 +243,7 @@ export default function () {
 
         for (let theta = 0; theta < TWO_PI - 0.1; theta += 0.1) {
             // Make radius with ± noise
-            let rad = map(noise(xOffset, blob.yOffset), 0, 1, r, r * (1 + MAX_BLOB_WABBLE_RADIUS_OFFSET));
+            let rad = map(noise(xOffset, blob.yOffset), 0, 1, r, r * (1 + constants.graphics.MAX_BLOB_WABBLE_RADIUS_OFFSET));
 
             // Add the vertex of the circle
             let x = blob.canvasX + rad * Math.cos(theta);
@@ -286,7 +281,7 @@ export default function () {
      * Add stars to background
      */
     let drawStars = function () {
-        let n = STARS_COUNT - 1;
+        let n = constants.graphics.STARS_COUNT - 1;
 
         while (n--) {
             drawCircle(stars[n]);
@@ -297,14 +292,14 @@ export default function () {
      * Fill stars array
      */
     let fillStars = function () {
-        let n = STARS_COUNT;
+        let n = constants.graphics.STARS_COUNT;
 
         while (n--) {
             stars.push({
                 canvasX: ((Math.random() * 2 - 1) * 2),
                 canvasY: ((Math.random() * 2 - 1) * 2),
                 color: "white",
-                radius: 0.00133
+                radius: constants.graphics.STAR_RADIUS
             });
         }
     };

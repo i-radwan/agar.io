@@ -1,11 +1,11 @@
 /**
  * Created by ibrahimradwan on 3/6/18.
  */
-// Constants
-const MOVEMENT_INTERPOLATION_FACTOR = 0.5;
+import Constants from "./Constants.js";
 
 export default function () {
     let module = {};
+    let constants = Constants();
 
     /**
      * Move some player to follow the mouse
@@ -40,10 +40,8 @@ export default function () {
         if (!isMe || !player.lerping) {
             // Move canvas object
             updatePlayerPosition(player, player.velocity);
-            if (isMe) console.log("Nor");
         }
         else {
-            if (isMe) console.log("LERP---------------------------");
             movePlayerToPosition(player, {x: player.x, y: player.y});
         }
     };
@@ -55,8 +53,8 @@ export default function () {
      */
     let movePlayerToPosition = function (player, target) {
         // Interpolate user location until we reach target
-        player.canvasX = lerp(player.canvasX, target.x, MOVEMENT_INTERPOLATION_FACTOR);
-        player.canvasY = lerp(player.canvasY, target.y, MOVEMENT_INTERPOLATION_FACTOR);
+        player.canvasX = lerp(player.canvasX, target.x, constants.physics.MOVEMENT_INTERPOLATION_FACTOR);
+        player.canvasY = lerp(player.canvasY, target.y, constants.physics.MOVEMENT_INTERPOLATION_FACTOR);
     };
 
     /**

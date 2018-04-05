@@ -5,17 +5,16 @@
 import GameStatus from "./modules/GameStatus.js";
 import GameEngine from "./modules/GameEngine.js";
 import GameServer from "./modules/GameServer.js";
-
-// Constants
-const GAME_FPS = 120;
-const SEND_ANGLE_TO_SERVER_RATE = (1000 / 120) * 10; // milliseconds
-const UPDATE_PHYSICS_THRESHOLD = 15;
+import Constants from "./modules/Constants.js";
 
 new p5();
 
 // Main game canvasObject
 let game = {
+
     init: function () {
+        game.constants = Constants();
+
         game.gameStatus = GameStatus();
         game.serverGameStatus = {};
 
@@ -38,11 +37,11 @@ let game = {
             now = window.performance.now();
             lag += elapsed;
 
-            while(lag >= UPDATE_PHYSICS_THRESHOLD) {
+            while (lag >= game.constants.general.UPDATE_PHYSICS_THRESHOLD) {
                 // Update the game status (My location, players, gems, score, ... etc) and physics
                 game.gameEngine.updateGameStatus();
 
-                lag -= UPDATE_PHYSICS_THRESHOLD;
+                lag -= game.constants.general.UPDATE_PHYSICS_THRESHOLD;
             }
 
             game.gameEngine.drawGame(lag, elapsed);
@@ -61,7 +60,7 @@ let game = {
 
             if (!game.gameStatus.status.me.alive)
                 clearInterval(sendAngleLoop);
-        }, SEND_ANGLE_TO_SERVER_RATE);
+        }, game.constants.general.SEND_ANGLE_TO_SERVER_RATE);
     }
 };
 

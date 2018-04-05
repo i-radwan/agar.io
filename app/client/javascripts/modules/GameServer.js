@@ -6,7 +6,6 @@ export default function (gameStatus, serverGameStatus) {
     let module = {};
     let connectionEstablished = false;
     let _socket = io();
-    let lastID = 0;
 
     module.init = function (setupGameEngine) {
         setupReceivers(setupGameEngine);
@@ -32,23 +31,12 @@ export default function (gameStatus, serverGameStatus) {
         }
     };
 
-    /**
-     * Send game status to the server
-     */
-    module.sendStatus = function () {
-        // _socket.emit('game_status', gameStatus);
-    };
-
     let setupReceivers = function (startGame) {
         _socket.on('player_info', function (playerInfo) {
-            console.log('Incoming player info:', playerInfo);
-
             gameStatus.status.me.id = playerInfo.id;
         });
 
         _socket.on('game_status', function (receivedGameStatus) {
-            // console.log('Incoming game status:', receivedGameStatus);
-
             gameStatus.status.env.serverResponseReceived = true;
             serverGameStatus = storeReceivedGameStatus(serverGameStatus, receivedGameStatus);
 
