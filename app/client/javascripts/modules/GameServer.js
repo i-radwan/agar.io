@@ -1,9 +1,11 @@
 /**
  * Created by ibrahimradwan on 3/3/18.
  */
+import Constants from "./Constants.js";
 
 export default function (gameStatus, serverGameStatus) {
     let module = {};
+    let constants = Constants();
     let connectionEstablished = false;
     let _socket = io();
 
@@ -24,7 +26,7 @@ export default function (gameStatus, serverGameStatus) {
 
         gameStatus.status.anglesQueue.mouseAngles.push({id: ++gameStatus.status.anglesQueue.lastAngleID, angles: []});
 
-        while (gameStatus.status.anglesQueue.anglesBufferSize > 20) {
+        while (gameStatus.status.anglesQueue.anglesBufferSize > constants.general.MAX_ANGLES_BUFFER_SIZE) {
             let size = gameStatus.status.anglesQueue.mouseAngles[0].angles.length;
             gameStatus.status.anglesQueue.mouseAngles.splice(0, 1);
             gameStatus.status.anglesQueue.anglesBufferSize -= size;

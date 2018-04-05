@@ -6,7 +6,8 @@ export default function () {
     return {
         general: {
             SEND_ANGLE_TO_SERVER_RATE: (1000 / 120) * 10, // milliseconds
-            UPDATE_PHYSICS_THRESHOLD: 15,
+            MAX_ANGLES_BUFFER_SIZE: 20,
+            UPDATE_PHYSICS_THRESHOLD: 15
         },
         physics: {
             MOVEMENT_INTERPOLATION_FACTOR: 0.5
