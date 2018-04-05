@@ -56,9 +56,7 @@ export default function () {
             let player = module.status.players[idx];
 
             if (player.id === module.status.me.id) {
-                let flag = (module.status.anglesQueue.lastReceivedAngleID === player.lastReceivedAngleID);
-
-                let tmpLastReceivedAngleID = module.status.anglesQueue.lastReceivedAngleID;
+                syncAnglesBuffer(module.status.me);
 
                 // Update myself
                 module.status.me = Object.assign(module.status.me, player);
@@ -66,32 +64,7 @@ export default function () {
                 // Remove myself from players array
                 module.status.players.splice(idx, 1);
 
-                if (flag) continue;
-
-                while (player.lastReceivedAngleID > module.status.anglesQueue.mouseAngles[0].id && module.status.anglesQueue.mouseAngles.length > 2) {
-                    module.status.anglesQueue.anglesBufferSize -= module.status.anglesQueue.mouseAngles[0].angles.length;
-                    module.status.anglesQueue.mouseAngles.splice(0, 1);
-                }
-
-                // Check for anglesBuffer
-                if (module.status.anglesQueue.mouseAngles[0].id === player.lastReceivedAngleID) {
-                    module.status.anglesQueue.anglesBufferSize -= module.status.anglesQueue.mouseAngles[0].angles.length;
-
-                    module.status.me.lerping = false;
-                }
-                else if (!module.status.me.lerping) {
-                    module.status.anglesQueue.mouseAngles = module.status.anglesQueue.mouseAngles.splice(-2, 2);
-
-                    // Calculate new size
-                    let size = 0;
-                    for (let i = 0; i < module.status.anglesQueue.mouseAngles.length; i++) {
-                        size += module.status.anglesQueue.mouseAngles[i].angles.length;
-                    }
-                    module.status.anglesQueue.anglesBufferSize = size;
-
-                    module.status.me.lerping = true;
-                    module.status.anglesQueue.lastReceivedAngleID = tmpLastReceivedAngleID;
-                }
+                break;
             }
         }
     };
@@ -130,5 +103,28 @@ export default function () {
         }
     };
 
+    let syncAnglesBuffer = function (player) {
+        // Configure my player only
+        let sameServerAnglesID = (module.status.anglesQueue.lastReceivedAngleID === player.lastReceivedAngleID);
+
+        if (sameServerAnglesID) return;
+
+        module.status.anglesQueue.lastReceivedAngleID = player.lastReceivedAngleID;
+
+        // Check if the received angle ID = anglesQueue top
+        if (module.status.anglesQueue.mouseAngles[0].id === player.lastReceivedAngleID) {
+            module.status.anglesQueue.anglesBufferSize -= module.status.anglesQueue.mouseAngles.splice(0, 1)[0].angles.length;
+            player.lerping = false;
+        }
+        else if (!player.lerping) {
+            module.status.anglesQueue.mouseAngles = module.status.anglesQueue.mouseAngles.splice(-1, 1);
+
+            // Set new size with the size of the top row only
+            module.status.anglesQueue.anglesBufferSize = module.status.anglesQueue.mouseAngles[0].angles.length;
+
+            // Start lerping to server position
+            player.lerping = true;
+        }
+    };
     return module;
 };

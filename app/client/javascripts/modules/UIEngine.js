@@ -212,7 +212,7 @@ export default function () {
         // Draw the small noisy circle
         drawNoisyCircle(blob, blob.radius, blob.color);
 
-        //Draw My center and Server Center (Debugging)
+        // Draw My center and Server Center (Debugging)
         let serverCenterCircle = {
             color: "white",
             canvasX: blob.x,
@@ -227,7 +227,7 @@ export default function () {
         };
 
         drawCircle(centerCircle);
-        // drawCircle(serverCenterCircle);
+        drawCircle(serverCenterCircle);
     };
 
     /**

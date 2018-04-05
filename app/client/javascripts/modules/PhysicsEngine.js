@@ -40,9 +40,11 @@ export default function () {
         if (!isMe || !player.lerping) {
             // Move canvas object
             updatePlayerPosition(player, player.velocity);
+            if (isMe) console.log("Nor");
         }
         else {
-            module.movePlayerToPosition(player, {x: player.x, y: player.y});
+            if (isMe) console.log("LERP---------------------------");
+            movePlayerToPosition(player, {x: player.x, y: player.y});
         }
     };
 
@@ -51,7 +53,7 @@ export default function () {
      * @param player the player to be moved.
      * @param target the point to be moved to.
      */
-    module.movePlayerToPosition = function (player, target) {
+    let movePlayerToPosition = function (player, target) {
         // Interpolate user location until we reach target
         player.canvasX = lerp(player.canvasX, target.x, MOVEMENT_INTERPOLATION_FACTOR);
         player.canvasY = lerp(player.canvasY, target.y, MOVEMENT_INTERPOLATION_FACTOR);

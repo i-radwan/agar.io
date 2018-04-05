@@ -21,8 +21,6 @@ export default function (gameStatus, serverGameStatus) {
      * Send my angle to the server
      */
     module.sendAngle = function () {
-        // if (gameStatus.status.me.lerping) return;
-
         _socket.emit('angle', gameStatus.status.anglesQueue.mouseAngles.slice(-1)[0]);
 
         gameStatus.status.anglesQueue.mouseAngles.push({id: ++gameStatus.status.anglesQueue.lastAngleID, angles: []});
