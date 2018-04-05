@@ -141,51 +141,6 @@ class Room {
     };
 
     /**
-     * Simulate game
-     */
-    simulate() {
-        // Move players
-        for (let i = 0; i < this.game.players.length; i++) {
-            this.game.players[i].movePlayer();
-        }
-
-
-        // TODO @Samir55 check using quad trees
-        // Check gem eaten & update score of the player
-        for (let i = 0; i < this.game.players.length; i++) {
-            let player = this.game.players[i];
-            if (!player.alive) continue;
-
-            for (let j = 0; j < this.game.gems.length; j++) {
-                let gem = this.game.gems[j];
-                if (Room.playerAteGem(player, gem)) {
-                    this.removeGem(player.id, j);
-                }
-            }
-        }
-
-        // Check player is killed
-        for (let i = 0; i < this.game.players.length; i++) {
-            let playerA = this.game.players[i];
-            for (let j = i + 1; j < this.game.players.length; j++) {
-                let playerB = this.game.players[j];
-
-                if (Room.playerAtePlayer(playerA, playerB)) {
-                    playerA.incrementScore(playerB.score);
-                    this.killPlayer(playerB);
-                }
-                else if (Room.playerAtePlayer(playerB, playerA)) {
-                    playerB.incrementScore(playerB.score);
-                    this.killPlayer(playerA);
-                }
-            }
-        }
-
-        // Add new gems if needed
-        this.addGems();
-    };
-
-    /**
      * Eat gems
      */
     removeGem(playerID, index) {

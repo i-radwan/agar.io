@@ -40,7 +40,6 @@ function GameServer(gameConfig) {
 
             // Updates player's angle
             socket.on('angle', function (anglesBuffer) {
-                // module.setPlayerAngle(socket.id, angle);
                 module.updatePlayerPosition(socket.id, anglesBuffer);
             });
 
@@ -59,9 +58,7 @@ function GameServer(gameConfig) {
             console.log('listening on *: ', gameConfig.port);
         });
 
-        // setInterval(module.runGameRooms, gameConfig.simulateRunRate);
         setInterval(module.sendRoomsGameStatuses, gameConfig.sendGameStatusesRate);
-
     };
 
     module.addNewPlayer = function (playerSocketID) {
@@ -93,8 +90,6 @@ function GameServer(gameConfig) {
         let playerInfo = {};
         playerInfo.id = playerID;
 
-        // console.log("Sent Player Info ", playerInfo);
-        // console.log("Sent Initial game status ", gameRooms[roomID].getGameStatus());
         __socket.to(playerSocketID).emit('player_info', playerInfo);
         __socket.to(playerSocketID).emit('game_status', gameRooms[roomID].getGameStatus());
     };
@@ -104,18 +99,8 @@ function GameServer(gameConfig) {
         let roomID = gamePlayers[playerSocketID].roomID;
 
         if (gameRooms[roomID].isPlayerAlive(playerID)) {
-            // gameRooms[roomID].setPlayerAngle(playerID, angle[angle.length - 1]);
             gameRooms[roomID].game.players[playerID].lastReceivedAngleID = anglesBuffer.id;
             gameRooms[roomID].simulatePlayer(playerID, anglesBuffer.angles);
-        }
-    };
-
-    module.setPlayerAngle = function (playerSocketID, angle) {
-        let playerID = gamePlayers[playerSocketID].playerID;
-        let roomID = gamePlayers[playerSocketID].roomID;
-
-        if (gameRooms[roomID].isPlayerAlive(playerID)) {
-            gameRooms[roomID].setPlayerAngle(playerID, angle);
         }
     };
 
@@ -131,16 +116,6 @@ function GameServer(gameConfig) {
     // TODO @Samir55
     module.interpolateGameStatus = function () {
 
-    };
-
-    module.runGameRooms = function () {
-        if (!roomsExist) return;
-
-        // Loop over all game rooms and run simulate
-        for (let room in gameRooms) {
-            let gameRoom = gameRooms[room];
-            gameRoom.simulate();
-        }
     };
 
     module.sendRoomsGameStatuses = function () {
