@@ -20,7 +20,7 @@ export default function () {
             MAX_ZOOM_THRESHOLD: 50,
             MIN_ZOOM_THRESHOLD: 30,
 
-            STARS_COUNT: 300,
+            STARS_COUNT: 100,
             STAR_RADIUS: 0.00133,
 
             START_BLOB_RADIUS: 30,

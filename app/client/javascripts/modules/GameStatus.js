@@ -38,23 +38,35 @@ export default function () {
      * Update the game status
      */
     module.set = function (serverGameStatus) {
-
-        // syncGems(serverGameStatus);
+        syncGems(serverGameStatus.newGems, serverGameStatus.deletedGemsIDs);
         syncPlayers(serverGameStatus.players);
 
         module.status.env.serverResponseReceived = false;
     };
 
-    let syncGems = function (serverGameStatus) {
-        syncArrays(module.status.gems, serverGameStatus.gems);
+    let syncGems = function (serverGameNewGems, serverGameDeletedGems) {
+        // Sync local gems
+        for (let i in module.status.gems) {
+            let gem = module.status.gems[i];
+
+            if (serverGameDeletedGems.indexOf(gem.id.toString()) > -1) {
+                gem.removed = true;
+            }
+        }
+
+        // Add new gems
+        for (let i in serverGameNewGems){
+            module.status.gems.push(serverGameNewGems[i]);
+        }
     };
 
     let syncPlayers = function (serverGamePlayers) {
+        // Sync local players
         for (let i = 0; i < module.status.players.length; i++) {
             let player = module.status.players[i];
 
             // Player is dead
-            if (!serverGamePlayers.hasOwnProperty(player.id)){
+            if (!serverGamePlayers.hasOwnProperty(player.id)) {
                 player.removed = true;
 
                 module.status.me.alive |= (player.id === module.status.me.id);
@@ -68,12 +80,12 @@ export default function () {
             delete serverGamePlayers[player.id];
         }
 
+        // Add new players
         for (let playerID in serverGamePlayers) {
             module.status.players.push(serverGamePlayers[playerID]);
         }
 
         if (!module.status.me.alive) return;
-        // syncArrays(module.status.players, serverGameStatus.players);
 
         // Iterate over the new players array
         for (let idx = 0; idx < module.status.players.length; idx++) {

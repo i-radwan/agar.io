@@ -61,9 +61,9 @@ class Room {
      * Add gems
      */
     addGems() {
-        if (this.game.gems.length >= gameConfig.ROOM_MAX_GEMS) return;
+        if (Object.keys(this.game.gems).length >= gameConfig.ROOM_MAX_GEMS) return;
 
-        for (let i = this.game.gems.length; i < gameConfig.ROOM_MAX_GEMS; i++) {
+        for (let i = Object.keys(this.game.gems).length; i < gameConfig.ROOM_MAX_GEMS; i++) {
 
             // Generate random positions.
             let x = ((Math.random() * 2 - 1) * gameConfig.GAME_SIZE);
@@ -72,7 +72,7 @@ class Room {
             let color = Math.floor(Math.random() * COLORS.length);
 
             this.game.gems[this.nextGemID] = new Gem(this.nextGemID, [x, y], COLORS[color], 1);
-            this.newGems[this.nextGemID++] = this.game.gems[this.nextGemID];
+            this.newGems[this.nextGemID] = this.game.gems[this.nextGemID++];
         }
     };
 
@@ -205,7 +205,7 @@ class Room {
         // Create a new array holding each player id and his score
         this.leaderBoard = [];
 
-        for (let i = 0; i < this.game.players.length; i++) {
+        for (let i = 0; i <  Object.keys(this.game.players).length; i++) {
             let player = this.game.players[i];
             this.leaderBoard.push({player: player.id, score: player.score});
         }
@@ -221,7 +221,7 @@ class Room {
      * @returns {Number}
      */
     getPlayersCount() {
-        return this.game.players.length;
+        return Object.keys(this.game.players).length;
     }
 
     /**

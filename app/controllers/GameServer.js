@@ -119,6 +119,8 @@ function GameServer(gameConfig) {
     };
     
     module.removePlayer = function (playerSocketID) {
+        console.log("a Player Disconnected");
+
         let playerID = gamePlayers[playerSocketID].playerID;
         let roomID = gamePlayers[playerSocketID].roomID;
 

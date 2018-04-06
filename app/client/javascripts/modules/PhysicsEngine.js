@@ -38,14 +38,9 @@ export default function () {
      */
     module.movePlayer = function (player, isMe) {
         if (!isMe || !player.lerping) {
-            // Move canvas object
             updatePlayerPosition(player, player.velocity);
-            // if (isMe)
-            //     console.log("NOR");
         }
         else {
-            // if (isMe)
-            //     console.log("LERP");
             movePlayerToPosition(player, {x: player.x, y: player.y});
         }
     };
