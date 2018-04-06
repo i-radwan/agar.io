@@ -69,6 +69,7 @@ export default function () {
             if (!serverGamePlayers.hasOwnProperty(player.id)) {
                 player.removed = true;
 
+                // Is this dead player me ?
                 module.status.me.alive |= (player.id === module.status.me.id);
 
                 continue;
@@ -105,62 +106,31 @@ export default function () {
         }
     };
 
-    /**
-     * Sync two arrays
-     * @param local the array of local items
-     * @param remote the array of remote(server) items
-     */
-    let syncArrays = function (local, remote) {
-        let i = 0, j = 0, len = local.length;
-        while (i < len && j < remote.length) {
-            if (local[i].id === remote[j].id) { // Object still exists
-                local[i] = Object.assign(local[i], remote[j]);
-                i++;
-                j++;
-            }
-            else if (local[i].id < remote[j].id) { // Object gem removed
-                local[i].removed = true;
-                i++;
-            }
-            else {
-                local.push(Object.assign({}, remote[j]));
-                j++;
-            }
-        }
-
-        while (i < len) {
-            local[i].removed = true;
-            i++;
-        }
-
-        while (j < remote.length) {
-            local.push(Object.assign({}, remote[j]));
-            j++;
-        }
-    };
-
-    let syncAnglesBuffer = function (player) {
-        // Configure my player only
-        let sameServerAnglesID = (module.status.anglesQueue.lastReceivedAngleID === player.lastReceivedAngleID);
+    let syncAnglesBuffer = function (me) {
+        // If the server sends same angle acceptance again
+        let sameServerAnglesID = (module.status.anglesQueue.lastReceivedAngleID === me.lastReceivedAngleID);
 
         if (sameServerAnglesID) return;
 
-        module.status.anglesQueue.lastReceivedAngleID = player.lastReceivedAngleID;
+        // Update the last accepted angles ID
+        module.status.anglesQueue.lastReceivedAngleID = me.lastReceivedAngleID;
 
         // Check if the received angle ID = anglesQueue top
-        if (module.status.anglesQueue.mouseAngles[0].id === player.lastReceivedAngleID) {
+        if (module.status.anglesQueue.mouseAngles[0].id === me.lastReceivedAngleID) {
             module.status.anglesQueue.anglesBufferSize -= module.status.anglesQueue.mouseAngles.splice(0, 1)[0].angles.length;
-            player.lerping = false;
+            me.lerping = false;
         }
-        else if (!player.lerping) {
+        else if (!me.lerping) {
+            // Flush the buffer
             module.status.anglesQueue.mouseAngles = module.status.anglesQueue.mouseAngles.splice(-1, 1);
 
             // Set new size with the size of the top row only
             module.status.anglesQueue.anglesBufferSize = module.status.anglesQueue.mouseAngles[0].angles.length;
 
             // Start lerping to server position
-            player.lerping = true;
+            me.lerping = true;
         }
     };
+
     return module;
 };

@@ -26,6 +26,7 @@ export default function (gameStatus, serverGameStatus) {
 
         gameStatus.status.anglesQueue.mouseAngles.push({id: ++gameStatus.status.anglesQueue.lastAngleID, angles: []});
 
+        // Check if the anglesBuffer is getting filled, remove rows until condition is broken
         while (gameStatus.status.anglesQueue.anglesBufferSize > constants.general.MAX_ANGLES_BUFFER_SIZE) {
             let size = gameStatus.status.anglesQueue.mouseAngles[0].angles.length;
             gameStatus.status.anglesQueue.mouseAngles.splice(0, 1);
@@ -41,7 +42,7 @@ export default function (gameStatus, serverGameStatus) {
         _socket.on('game_status', function (receivedGameStatus) {
             gameStatus.status.env.serverResponseReceived = true;
 
-            serverGameStatus = storeReceivedGameStatus(serverGameStatus, JSON.parse(receivedGameStatus));
+            serverGameStatus = Object.assign(serverGameStatus, JSON.parse(receivedGameStatus));
 
             // Start game
             if (!connectionEstablished) {
@@ -51,13 +52,6 @@ export default function (gameStatus, serverGameStatus) {
                 connectionEstablished = true;
             }
         });
-    };
-
-    let storeReceivedGameStatus = function (serverGameStatus, receivedGameStatus) {
-        // delete serverGameStatus.gems;
-        delete serverGameStatus.players;
-
-        return Object.assign(serverGameStatus, receivedGameStatus);
     };
 
     return module;

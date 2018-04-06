@@ -9,8 +9,10 @@ export default function () {
 
     /**
      * Move some player to follow the mouse
+     *
      * @param player the player to be moved
      * @param target object contains the targeted x, y coordinates
+     * @param anglesQueue the queue that contains mouse angles (to be filled)
      */
     module.getMouseAngle = function (player, target, anglesQueue) {
         // To be changed when splitting happens (using get equivalent center)
@@ -34,7 +36,9 @@ export default function () {
 
     /**
      * Move some player normal movement (player's velocity and angle)
+     *
      * @param player the player to be moved.
+     * @param isMe is this player the main player?
      */
     module.movePlayer = function (player, isMe) {
         if (!isMe || !player.lerping) {
@@ -47,17 +51,19 @@ export default function () {
 
     /**
      * Move some player to target
+     *
      * @param player the player to be moved.
-     * @param target the point to be moved to.
+     * @param position the point to be moved to.
      */
-    let movePlayerToPosition = function (player, target) {
+    let movePlayerToPosition = function (player, position) {
         // Interpolate user location until we reach target
-        player.canvasX = lerp(player.canvasX, target.x, constants.physics.MOVEMENT_INTERPOLATION_FACTOR);
-        player.canvasY = lerp(player.canvasY, target.y, constants.physics.MOVEMENT_INTERPOLATION_FACTOR);
+        player.canvasX = lerp(player.canvasX, position.x, constants.physics.MOVEMENT_INTERPOLATION_FACTOR);
+        player.canvasY = lerp(player.canvasY, position.y, constants.physics.MOVEMENT_INTERPOLATION_FACTOR);
     };
 
     /**
      * Move some player normal movement (velocity and angle)
+     *
      * @param player the player to be moved.
      * @param velocity the velocity in which player is moving.
      */

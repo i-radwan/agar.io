@@ -26,6 +26,9 @@ export default function () {
 
     /**
      * Refresh the drawing due to game status update
+     *
+     * @param lag the time between this function call and the last physics update
+     * @param elapsed the time taken by previous game loop
      */
     module.draw = function (lag, elapsed) {
         // Interpolate some physics to handle lag
@@ -47,7 +50,8 @@ export default function () {
         // Draw all objects
         for (let i = 0; i < gameObjects.length; i++) {
             // Draw object
-            gameObjects[i].draw();
+            if (isObjectInsideMyViewWindow(gameObjects[i]))
+                gameObjects[i].draw();
 
             // Revert the applied physics
             gameObjects[i].undoPhysics(lag);
@@ -82,7 +86,7 @@ export default function () {
         playerObject.canvasX = playerObject.x;
         playerObject.canvasY = playerObject.y;
         playerObject.canvasObjectType = constants.graphics.CANVAS_OBJECT_PLAYER;
-        playerObject.yOffset = 0; // Used for noise
+        playerObject.yOffset = 0; // Used for noisy bubble
         playerObject.strokeColor = constants.graphics.BLOB_STROKE_COLOR;
 
         playerObject.simulatePhysics = function (lag, direction) {
@@ -110,6 +114,7 @@ export default function () {
 
     /**
      * Update gem canvas object to follow the updates in the gemObject
+     *
      * @param gemObject
      */
     module.updateGem = function (gemObject) {
@@ -123,6 +128,7 @@ export default function () {
 
     /**
      * Update player canvas object to follow the updates in the playerObject
+     *
      * @param playerObject
      */
     module.updatePlayer = function (playerObject) {
@@ -171,8 +177,9 @@ export default function () {
 
     /**
      * Attach a new circle to canvas and return the object pointing to it
-     * @param object {{x, y, radius, color}}
-     * @param drawFunction
+     *
+     * @param object the object that needs some canvas functions
+     * @param drawFunction the drawing functions which is responsible for drawing this object
      */
     let attachCircle = function (object, drawFunction) {
         object.draw = function () {
@@ -189,6 +196,7 @@ export default function () {
 
     /**
      * Draw normal circle
+     *
      * @param circle
      */
     let drawCircle = function (circle) {
@@ -198,6 +206,7 @@ export default function () {
 
     /**
      * Draw 2 circles and give the nice noisy effect
+     *
      * @param blob
      */
     let drawBlob = function (blob) {
@@ -227,6 +236,7 @@ export default function () {
 
     /**
      * Draw noisy circle to form the blob (1 blob = 2 noisy circles
+     *
      * @param blob object used to get attributes of the blob
      * @param radius the radius of this circle (has to be passed in because it may differ from the blob radius)
      * @param color the circle filling color
@@ -260,6 +270,7 @@ export default function () {
 
     /**
      * Use p5js createCanvas function to create canvas and configure it
+     *
      * @return canvas object
      */
     let makeCanvas = function () {
@@ -284,7 +295,8 @@ export default function () {
         let n = constants.graphics.STARS_COUNT - 1;
 
         while (n--) {
-            drawCircle(stars[n]);
+            if (isObjectInsideMyViewWindow(stars[n]))
+                drawCircle(stars[n]);
         }
     };
 
@@ -298,10 +310,22 @@ export default function () {
             stars.push({
                 canvasX: ((Math.random() * 2 - 1) * 2),
                 canvasY: ((Math.random() * 2 - 1) * 2),
-                color: "white",
+                color: constants.graphics.STAR_COLOR,
                 radius: constants.graphics.STAR_RADIUS
             });
         }
+    };
+
+    /**
+     * Check if the given object is inside my viewing window
+     *
+     * ToDo: use proper equation
+     *
+     * @param object
+     */
+    let isObjectInsideMyViewWindow = function (object) {
+        return Math.abs(object.canvasX - mainPlayer.canvasX) < 0.4 &&
+            Math.abs(object.canvasY - mainPlayer.canvasY) < 0.2;
     };
 
     return module;

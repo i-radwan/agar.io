@@ -48,6 +48,7 @@ class Player {
 
     /**
      * A static function used in comparing scores for sorting
+     *
      * @param playerA
      * @param playerB
      * @returns {int}

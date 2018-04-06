@@ -4,6 +4,7 @@ const gameConfig = require("../configs/GameConfig")().gameConfig;
 class Gem {
     /**
      * Gem constructor
+     *
      * @param id The gem unique id in the game room
      * @param position: object contains {x, y}
      * @param color: object contains {r, g, b}

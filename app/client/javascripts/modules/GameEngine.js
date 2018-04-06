@@ -45,7 +45,7 @@ export default function (gameStatus, serverGameStatus) {
      */
     let checkServerResponse = function () {
         if (gameStatus.status.env.serverResponseReceived) {
-            // Update gameStatus by serverGameStatus
+            // Update local gameStatus by serverGameStatus
             gameStatus.set(serverGameStatus);
 
             // Update canvas objects

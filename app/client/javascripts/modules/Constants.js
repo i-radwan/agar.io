@@ -20,8 +20,9 @@ export default function () {
             MAX_ZOOM_THRESHOLD: 50,
             MIN_ZOOM_THRESHOLD: 30,
 
-            STARS_COUNT: 100,
+            STARS_COUNT: 1000,
             STAR_RADIUS: 0.00133,
+            STAR_COLOR: "white",
 
             START_BLOB_RADIUS: 30,
             BLOB_STROKE_COLOR: 255,

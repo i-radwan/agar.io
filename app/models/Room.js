@@ -168,6 +168,7 @@ class Room {
 
     /**
      * Kill player
+     *
      * @param playerID
      */
     killPlayer(playerID) {
@@ -178,6 +179,7 @@ class Room {
 
     /**
      * Get current game status
+     *
      * @returns {{_id: *, Players: *, killedPlayersIDs: Array, newGems: ( []|*), deletedGemsIDs: Array}}
      */
     getGameStatus() {
@@ -218,6 +220,7 @@ class Room {
 
     /**
      * Get players count
+     *
      * @returns {Number}
      */
     getPlayersCount() {
@@ -226,6 +229,7 @@ class Room {
 
     /**
      * Check whether the player is alive or not
+     *
      * @param playerID
      * @returns {boolean}
      */
@@ -235,6 +239,7 @@ class Room {
 
     /**
      * Update player angle
+     *
      * @param playerID
      * @param angle
      */
@@ -249,6 +254,7 @@ class Room {
 
     /**
      * Check if a gem has been eaten by a player
+     *
      * @param gem the gem object
      * @param player the player object
      * @returns {boolean} true when the gem is in the player's blob and false otherwise
@@ -259,6 +265,7 @@ class Room {
 
     /**
      * Check whether playerA has eaten playerB
+     *
      * @param playerA
      * @param playerB
      * @returns {boolean}
@@ -274,6 +281,7 @@ class Room {
 
     /**
      * Calculate the square of distance between 2 points
+     *
      * @param pointA
      * @param pointB
      * @returns {number} the square of the distance
@@ -284,6 +292,7 @@ class Room {
 
     /**
      * Calculate the area of a player
+     *
      * @param player
      * @returns {number} the player's area
      */

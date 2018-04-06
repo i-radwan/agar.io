@@ -33,10 +33,12 @@ let game = {
         // Graphics loop
         let lag = 0, now = window.performance.now();
         let gameGraphicsLoop = function () {
+            // Calculate total time spent outside
             let elapsed = window.performance.now() - now;
             now = window.performance.now();
             lag += elapsed;
 
+            // Perform physics in a loop by the number of the threshold spent before getting here again
             while (lag >= game.constants.general.UPDATE_PHYSICS_THRESHOLD) {
                 // Update the game status (My location, players, gems, score, ... etc) and physics
                 game.gameEngine.updateGameStatus();
@@ -44,6 +46,7 @@ let game = {
                 lag -= game.constants.general.UPDATE_PHYSICS_THRESHOLD;
             }
 
+            // Draw the game
             game.gameEngine.drawGame(lag, elapsed);
 
             // Stop when dead
