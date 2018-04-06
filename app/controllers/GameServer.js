@@ -8,15 +8,12 @@ let http = require('http').Server(app);
 let io = require('socket.io')(http);
 
 // Game modules
-const GameConfig = require("../configs/GameConfig");
 const Room = require("../models/Room");
 
 // Routes
 require('../routes/index')(app, express);
 
 function GameServer(gameConfig) {
-    let count = {};
-
     let module = {};
 
     // All game players and all game rooms
@@ -58,6 +55,10 @@ function GameServer(gameConfig) {
             console.log('listening on *: ', gameConfig.PORT);
         });
 
+        // Regenerate game gems
+        setInterval(module.regenerateGems, gameConfig.REGENERATE_GEMS_RATE);
+
+        // Send room statuses to clients
         setInterval(module.sendRoomsGameStatuses, gameConfig.SEND_GAME_STATUSES_RATE);
     };
 
@@ -123,6 +124,16 @@ function GameServer(gameConfig) {
         for (let room in gameRooms) {
             let gameRoom = gameRooms[room];
             __socket.in(gameRoom.id).emit('game_status', gameRoom.getGameStatus());
+        }
+    };
+
+    module.regenerateGems = function () {
+        if (!roomsExist) return;
+
+        // Loop over all game rooms and run simulate
+        for (let room in gameRooms) {
+            let gameRoom = gameRooms[room];
+            gameRoom.addGems();
         }
     };
 

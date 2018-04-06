@@ -96,6 +96,8 @@ class Room {
             for (let j = 0; j < this.game.players.length; j++) {
                 let playerB = this.game.players[j];
 
+                if (!playerB.alive) continue;
+
                 if (Room.playerAtePlayer(player, playerB)) {
                     player.incrementScore(playerB.score);
                     this.killPlayer(playerB);
