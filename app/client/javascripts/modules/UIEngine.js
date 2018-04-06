@@ -53,16 +53,21 @@ export default function () {
             if (isObjectInsideMyViewWindow(gameObjects[i]))
                 gameObjects[i].draw();
 
-            // Revert the applied physics
-            gameObjects[i].undoPhysics(lag);
-
             // Update blob yOffset
             if (gameObjects[i].canvasObjectType === constants.graphics.CANVAS_OBJECT_PLAYER) {
                 gameObjects[i].yOffset += elapsed * constants.graphics.WABBLE_SPEED;
             }
         }
 
+        // Draw FPS
+        drawFPS(elapsed);
+
         pop();
+
+        for (let i = 0; i < gameObjects.length; i++) {
+            // Revert the applied physics
+            gameObjects[i].undoPhysics(lag);
+        }
     };
 
     module.addGem = function (gemObject) {
@@ -110,6 +115,16 @@ export default function () {
 
     module.drawScore = function () {
         // ToDo: Draw score text
+    };
+
+    let drawFPS = function (elapsed) {
+        let FPS = parseInt(1000 / elapsed);
+        let txtSize = 30 / zoom;
+
+        textAlign(LEFT, TOP);
+        textSize(txtSize);
+        fill(255, 255, 255);
+        text("FPS: " + FPS, mainPlayer.canvasX - window.innerWidth / (2 * zoom), mainPlayer.canvasY - window.innerHeight / (2 * zoom));
     };
 
     /**
@@ -165,7 +180,7 @@ export default function () {
         translate(window.innerWidth / 2, window.innerHeight / 2);
 
         // Scaling (interpolated)
-        if ((targetZoom * mainPlayer.radius) > constants.graphics.MAX_ZOOM_THRESHOLD || (targetZoom * mainPlayer.radius) < constants.graphics.MIN_ZOOM_THRESHOLD)
+        //if ((targetZoom * mainPlayer.radius) > constants.graphics.MAX_ZOOM_THRESHOLD || (targetZoom * mainPlayer.radius) < constants.graphics.MIN_ZOOM_THRESHOLD)
             targetZoom = constants.graphics.START_BLOB_RADIUS / mainPlayer.radius;
 
         zoom = lerp(zoom, targetZoom * Math.sqrt((window.innerWidth * window.innerHeight) / (constants.graphics.GENERIC_WINDOW_AREA)), constants.graphics.ZOOM_INTERPOLATION_FACTOR);
