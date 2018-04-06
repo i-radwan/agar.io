@@ -47,7 +47,7 @@ function GameServer(gameConfig) {
 
             // Remove player on disconnection
             socket.on('disconnect', function () {
-                // module.removePlayer(socket.id);
+                module.removePlayer(socket.id);
             })
 
         });
