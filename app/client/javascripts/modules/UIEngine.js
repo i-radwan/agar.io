@@ -166,10 +166,10 @@ export default function () {
 
         // Scaling (interpolated)
         if ((targetZoom * mainPlayer.radius) > constants.graphics.MAX_ZOOM_THRESHOLD || (targetZoom * mainPlayer.radius) < constants.graphics.MIN_ZOOM_THRESHOLD)
-            targetZoom = constants.graphics.START_BLOB_RADIUS / mainPlayer.radius;
+            targetZoom = constants.graphics.START_BLOB_RADIUS / mainPlayer.radius * Math.sqrt((window.innerWidth * window.innerHeight) / (constants.graphics.GENERIC_WINDOW_AREA));
 
         zoom = lerp(zoom, targetZoom, constants.graphics.ZOOM_INTERPOLATION_FACTOR);
-        scale(zoom * Math.sqrt((window.innerWidth * window.innerHeight) / (constants.graphics.GENERIC_WINDOW_AREA)));
+        scale(zoom);
 
         // Translate camera to player center
         translate(-mainPlayer.canvasX, -mainPlayer.canvasY);
@@ -292,7 +292,7 @@ export default function () {
      * Add stars to background
      */
     let drawStars = function () {
-        let n = constants.graphics.STARS_COUNT - 1;
+        let n = constants.graphics.STARS_COUNT;
 
         while (n--) {
             if (isObjectInsideMyViewWindow(stars[n]))
@@ -324,8 +324,11 @@ export default function () {
      * @param object
      */
     let isObjectInsideMyViewWindow = function (object) {
-        return Math.abs(object.canvasX - mainPlayer.canvasX) < 0.4 &&
-            Math.abs(object.canvasY - mainPlayer.canvasY) < 0.2;
+        let maxDistX = window.innerWidth / (2 * zoom);
+        let maxDistY = window.innerHeight / (2 * zoom);
+
+        return Math.abs(object.canvasX - mainPlayer.canvasX) < maxDistX + object.radius &&
+            Math.abs(object.canvasY - mainPlayer.canvasY) < maxDistY + object.radius;
     };
 
     return module;
