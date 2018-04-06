@@ -11,7 +11,7 @@ function GameConfig() {
     module.gameConfig = {
         PORT: 3000,
         GAME_SIZE: GAME_SIZE * SCALE_FACTOR,
-        ROOM_MAX_PLAYERS: 1,
+        ROOM_MAX_PLAYERS: 5,
         ROOM_MAX_GEMS: 1000,
         SIMULATE_RUN_RATE: 1000 / 40,
         SEND_GAME_STATUSES_RATE: 40,
