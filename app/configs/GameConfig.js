@@ -9,19 +9,19 @@ function GameConfig() {
     let SCALE_FACTOR = 2 / GAME_SIZE;
 
     module.gameConfig = {
-        port: 3000,
-        gameSize: GAME_SIZE * SCALE_FACTOR,
-        roomMaxPlayers: 5,
-        roomMaxGems: 0,
-        simulateRunRate: 1000 / 40,
-        sendGameStatusesRate: 40,
-        gemRadius: 10 * SCALE_FACTOR,
-        lowestPlayerVelocity: 0.2 * SCALE_FACTOR,
-        initialPlayerVelocity: 6 * SCALE_FACTOR,
-        initialPlayerRadius: 30 * SCALE_FACTOR,
-        quadTreeNodeMaxObjects: 15,
-        quadTreeMaxLevels: 5,
-        scaleFactor: SCALE_FACTOR
+        PORT: 3000,
+        GAME_SIZE: GAME_SIZE * SCALE_FACTOR,
+        ROOM_MAX_PLAYERS: 5,
+        ROOM_MAX_GEMS: 300,
+        SIMULATE_RUN_RATE: 1000 / 40,
+        SEND_GAME_STATUSES_RATE: 40,
+        GEM_RADIUS: 10 * SCALE_FACTOR,
+        LOWEST_PLAYER_SPEED: 0.2 * SCALE_FACTOR,
+        INITIAL_PLAYER_SPEED: 6 * SCALE_FACTOR,
+        INITIAL_PLAYER_RADIUS: 30 * SCALE_FACTOR,
+        QUAD_TREE_NODE_MAX_OBJECTS: 15,
+        QUAD_TREE_MAX_LEVELS: 5,
+        SCALE_FACTOR: SCALE_FACTOR
     };
 
     return module;

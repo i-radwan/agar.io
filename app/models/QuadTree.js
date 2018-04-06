@@ -94,7 +94,7 @@ class QuadTree {
         this.bodies.push(body);
 
         // Check if the current node exceeds it max objects limit
-        if (this.bodies.length > gameConfig.quadTreeNodeMaxObjects && this.level < gameConfig.quadTreeMaxLevels) {
+        if (this.bodies.length > gameConfig.QUAD_TREE_NODE_MAX_OBJECTS && this.level < gameConfig.QUAD_TREE_MAX_LEVELS) {
             if (this.nodes.length > 0) {
                 this.split();
             }

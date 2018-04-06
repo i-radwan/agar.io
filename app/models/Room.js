@@ -26,7 +26,7 @@ class Room {
 
         // Create a quad tree to carry gems
         // ToDo @SAMRA -> ALERT!! -> Note that the game coordinates are all normalized
-        let quadTree = new QuadTree(0, new Rectangle(0, 0, gameConfig.gameSize, gameConfig.gameHeight));
+        let quadTree = new QuadTree(0, new Rectangle(0, 0, gameConfig.GAME_SIZE, gameConfig.gameHeight));
 
         // Add default gems
         this.addGems();
@@ -38,8 +38,8 @@ class Room {
     addPlayer() {
         // TODO @Samir55 select using quad trees
         // Generate random position. (normalized)
-        let x = ((Math.random() * 2 - 1) * gameConfig.gameSize);
-        let y = ((Math.random() * 2 - 1) * gameConfig.gameSize);
+        let x = ((Math.random() * 2 - 1) * gameConfig.GAME_SIZE);
+        let y = ((Math.random() * 2 - 1) * gameConfig.GAME_SIZE);
 
         x = y = 0;
 
@@ -54,13 +54,13 @@ class Room {
      * Add gems
      */
     addGems() {
-        if (this.game.gems.length >= gameConfig.roomMaxGems) return;
+        if (this.game.gems.length >= gameConfig.ROOM_MAX_GEMS) return;
 
-        for (let i = this.game.gems.length; i < gameConfig.roomMaxGems; i++) {
+        for (let i = this.game.gems.length; i < gameConfig.ROOM_MAX_GEMS; i++) {
 
             // Generate random positions.
-            let x = ((Math.random() * 2 - 1) * gameConfig.gameSize);
-            let y = ((Math.random() * 2 - 1) * gameConfig.gameSize);
+            let x = ((Math.random() * 2 - 1) * gameConfig.GAME_SIZE);
+            let y = ((Math.random() * 2 - 1) * gameConfig.GAME_SIZE);
 
             let color = Math.floor(Math.random() * COLORS.length);
 

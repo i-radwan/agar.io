@@ -54,11 +54,11 @@ function GameServer(gameConfig) {
             });
         });
 
-        http.listen(gameConfig.port, function () {
-            console.log('listening on *: ', gameConfig.port);
+        http.listen(gameConfig.PORT, function () {
+            console.log('listening on *: ', gameConfig.PORT);
         });
 
-        setInterval(module.sendRoomsGameStatuses, gameConfig.sendGameStatusesRate);
+        setInterval(module.sendRoomsGameStatuses, gameConfig.SEND_GAME_STATUSES_RATE);
     };
 
     module.addNewPlayer = function (playerSocketID) {
@@ -67,7 +67,7 @@ function GameServer(gameConfig) {
         // Search for any game having a free slot
         for (let room in gameRooms) {
             let gameRoom = gameRooms[room];
-            if (gameRoom.getPlayersCount() < gameConfig.roomMaxPlayers) {
+            if (gameRoom.getPlayersCount() < gameConfig.ROOM_MAX_PLAYERS) {
                 roomID = gameRoom.id;
             }
         }

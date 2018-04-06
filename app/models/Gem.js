@@ -17,7 +17,7 @@ class Gem {
 
         this.color = color;
 
-        this.radius = gameConfig.gemRadius;
+        this.radius = gameConfig.GEM_RADIUS;
     }
 }
 
