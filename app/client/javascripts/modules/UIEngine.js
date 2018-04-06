@@ -9,6 +9,7 @@ export default function () {
     let gameObjects = [];
     let stars = [];
     let mainPlayer;
+    let txtSize = 0;
     let zoom = 1, targetZoom = 1;
 
     let constants = Constants();
@@ -119,7 +120,7 @@ export default function () {
 
     let drawFPS = function (elapsed) {
         let FPS = parseInt(1000 / elapsed);
-        let txtSize = 30 / zoom;
+        txtSize = lerp(txtSize, 0.1, 0.001);
 
         textAlign(LEFT, TOP);
         textSize(txtSize);
