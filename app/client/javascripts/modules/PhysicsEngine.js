@@ -40,12 +40,12 @@ export default function () {
         if (!isMe || !player.lerping) {
             // Move canvas object
             updatePlayerPosition(player, player.velocity);
-            if (isMe)
-                console.log("NOR");
+            // if (isMe)
+            //     console.log("NOR");
         }
         else {
-            if (isMe)
-                console.log("LERP");
+            // if (isMe)
+            //     console.log("LERP");
             movePlayerToPosition(player, {x: player.x, y: player.y});
         }
     };

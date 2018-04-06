@@ -38,8 +38,9 @@ export default function () {
      * Update the game status
      */
     module.set = function (serverGameStatus) {
-        syncGems(serverGameStatus);
-        syncPlayers(serverGameStatus);
+
+        // syncGems(serverGameStatus);
+        syncPlayers(serverGameStatus.players);
 
         module.status.env.serverResponseReceived = false;
     };
@@ -48,8 +49,31 @@ export default function () {
         syncArrays(module.status.gems, serverGameStatus.gems);
     };
 
-    let syncPlayers = function (serverGameStatus) {
-        syncArrays(module.status.players, serverGameStatus.players);
+    let syncPlayers = function (serverGamePlayers) {
+        for (let i = 0; i < module.status.players.length; i++) {
+            let player = module.status.players[i];
+
+            // Player is dead
+            if (!serverGamePlayers.hasOwnProperty(player.id)){
+                player.removed = true;
+
+                module.status.me.alive |= (player.id === module.status.me.id);
+
+                continue;
+            }
+
+            player = Object.assign(player, serverGamePlayers[player.id]);
+
+            // Remove from the server array (after loop we will have the new players only)
+            delete serverGamePlayers[player.id];
+        }
+
+        for (let playerID in serverGamePlayers) {
+            module.status.players.push(serverGamePlayers[playerID]);
+        }
+
+        if (!module.status.me.alive) return;
+        // syncArrays(module.status.players, serverGameStatus.players);
 
         // Iterate over the new players array
         for (let idx = 0; idx < module.status.players.length; idx++) {

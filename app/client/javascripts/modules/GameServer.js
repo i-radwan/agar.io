@@ -40,11 +40,12 @@ export default function (gameStatus, serverGameStatus) {
 
         _socket.on('game_status', function (receivedGameStatus) {
             gameStatus.status.env.serverResponseReceived = true;
-            serverGameStatus = storeReceivedGameStatus(serverGameStatus, receivedGameStatus);
+
+            serverGameStatus = storeReceivedGameStatus(serverGameStatus, JSON.parse(receivedGameStatus));
 
             // Start game
             if (!connectionEstablished) {
-                gameStatus.init(receivedGameStatus);
+                gameStatus.init(serverGameStatus);
 
                 startGame();
                 connectionEstablished = true;
@@ -53,7 +54,7 @@ export default function (gameStatus, serverGameStatus) {
     };
 
     let storeReceivedGameStatus = function (serverGameStatus, receivedGameStatus) {
-        delete serverGameStatus.gems;
+        // delete serverGameStatus.gems;
         delete serverGameStatus.players;
 
         return Object.assign(serverGameStatus, receivedGameStatus);
