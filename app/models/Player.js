@@ -46,6 +46,16 @@ class Player {
         this.velocity = Math.max(gameConfig.LOWEST_PLAYER_SPEED,
             gameConfig.INITIAL_PLAYER_SPEED - 0.00291 * this.radius);
     }
+
+    /**
+     * A static function used in comparing scores for sorting
+     * @param playerA
+     * @param playerB
+     * @returns {int}
+     */
+    static compareScore(playerA, playerB) {
+        return playerB.score - playerA.score;
+    }
 }
 
 module.exports = Player;

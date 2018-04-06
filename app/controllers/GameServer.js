@@ -60,6 +60,9 @@ function GameServer(gameConfig) {
 
         // Send room statuses to clients
         setInterval(module.sendRoomsGameStatuses, gameConfig.SEND_GAME_STATUSES_RATE);
+
+        // Send room leader boards to clients
+        // setInterval(module.sendRoomsLeaderBoards, gameConfig.SEND_LEADER_BOARD_RATE);
     };
 
     module.addNewPlayer = function (playerSocketID) {
@@ -134,6 +137,15 @@ function GameServer(gameConfig) {
         for (let room in gameRooms) {
             let gameRoom = gameRooms[room];
             gameRoom.addGems();
+        }
+    };
+
+
+    module.sendRoomsLeaderBoards = function () {
+        // Loop over all game rooms and send leader board
+        for (let room in gameRooms) {
+            let gameRoom = gameRooms[room];
+            __socket.in(gameRoom.id).emit('game_leader_board', gameRoom.getLeaderBoard());
         }
     };
 

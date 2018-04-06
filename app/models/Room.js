@@ -173,6 +173,16 @@ class Room {
      * Get the top (currently 5) players.
      */
     getLeaderBoard() {
+        // Create a new array holding each player id and his score
+        this.leaderBoard = [];
+
+        for (let i = 0; i < this.game.players.length; i++) {
+            let player = this.game.players[i];
+            this.leaderBoard.push({player: player.id, score: player.score});
+        }
+
+        // Sort that array according to the highest score
+        this.leaderBoard.sort(Player.compareScore);
 
         return this.leaderBoard;
     }
