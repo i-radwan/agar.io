@@ -1,0 +1,8 @@
+<component name="libraryTable">
+  <library name="p5js" type="javaScript">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/app/client/vendor/javascripts/p5.min.js" />
+    </CLASSES>
+    <SOURCES />
+  </library>
+</component>
