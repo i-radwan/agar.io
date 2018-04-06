@@ -96,7 +96,7 @@ function GameServer(gameConfig) {
         playerInfo.id = playerID;
 
         __socket.to(playerSocketID).emit('player_info', playerInfo);
-        __socket.to(playerSocketID).emit('game_status', gameRooms[roomID].getGameStatus());
+        __socket.to(playerSocketID).emit('game_status', gameRooms[roomID].getGameStatus(true));
     };
 
     module.updatePlayerPosition = function (playerSocketID, anglesBuffer) {
@@ -133,7 +133,7 @@ function GameServer(gameConfig) {
         // Loop over all game rooms and run simulate
         for (let room in gameRooms) {
             let gameRoom = gameRooms[room];
-            __socket.in(gameRoom.id).emit('game_status', gameRoom.getGameStatus());
+            __socket.in(gameRoom.id).emit('game_status', gameRoom.getGameStatus(false));
         }
     };
 

@@ -180,14 +180,15 @@ class Room {
     /**
      * Get current game status
      *
+     * @param firstTime indicates new player joining the room
      * @returns {{_id: *, Players: *, killedPlayersIDs: Array, newGems: ( []|*), deletedGemsIDs: Array}}
      */
-    getGameStatus() {
+    getGameStatus(firstTime) {
         let gameStatus = {
             _id: this.game._id,
             players: this.game.players,
             killedPlayersIDs: this.killedPlayersIDs,
-            newGems: this.newGems,
+            newGems: (firstTime ? this.game.gems : this.newGems),
             deletedGemsIDs: this.deletedGemsIDs
         };
 
@@ -207,7 +208,7 @@ class Room {
         // Create a new array holding each player id and his score
         this.leaderBoard = [];
 
-        for (let i = 0; i <  Object.keys(this.game.players).length; i++) {
+        for (let i = 0; i < Object.keys(this.game.players).length; i++) {
             let player = this.game.players[i];
             this.leaderBoard.push({player: player.id, score: player.score});
         }
