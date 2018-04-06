@@ -166,7 +166,8 @@ export default function () {
 
         // Scaling (interpolated)
         if ((targetZoom * mainPlayer.radius) > constants.graphics.MAX_ZOOM_THRESHOLD || (targetZoom * mainPlayer.radius) < constants.graphics.MIN_ZOOM_THRESHOLD)
-            targetZoom = constants.graphics.START_BLOB_RADIUS / mainPlayer.radius * Math.sqrt((window.innerWidth * window.innerHeight) / (constants.graphics.GENERIC_WINDOW_AREA));
+            targetZoom = constants.graphics.START_BLOB_RADIUS / mainPlayer.radius *
+                Math.sqrt((window.innerWidth * window.innerHeight) / (constants.graphics.GENERIC_WINDOW_AREA));
 
         zoom = lerp(zoom, targetZoom, constants.graphics.ZOOM_INTERPOLATION_FACTOR);
         scale(zoom);
