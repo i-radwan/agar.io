@@ -319,8 +319,6 @@ export default function () {
     /**
      * Check if the given object is inside my viewing window
      *
-     * ToDo: use proper equation
-     *
      * @param object
      */
     let isObjectInsideMyViewWindow = function (object) {
