@@ -40,6 +40,13 @@ export default function (gameStatus, serverGameStatus) {
         });
     };
 
+    module.forceServerPositions = function () {
+        // Move players
+        gameStatus.status.players.concat(gameStatus.status.me).forEach(function (player) {
+            physicsEngine.forceServerPosition(player);
+        });
+    };
+
     /**
      * Check if server has sent new updates, and update the canvas objects if response is received
      */

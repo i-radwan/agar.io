@@ -54,6 +54,16 @@ export default function () {
     };
 
     /**
+     * Every interval reset the player position to server's
+     *
+     * @param player the player to fix its position.
+     */
+    module.forceServerPosition = function (player) {
+        player.canvasX = player.x;
+        player.canvasY = player.y;
+    };
+
+    /**
      * Move some player to target
      *
      * @param player the player to be moved.

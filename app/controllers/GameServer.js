@@ -101,6 +101,8 @@ function GameServer(gameConfig) {
     };
 
     module.updatePlayerPosition = function (playerSocketID, anglesBuffer) {
+        if (!gamePlayers.hasOwnProperty(playerSocketID)) return;
+
         let playerID = gamePlayers[playerSocketID].playerID;
         let roomID = gamePlayers[playerSocketID].roomID;
 

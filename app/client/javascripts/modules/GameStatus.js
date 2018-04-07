@@ -107,22 +107,29 @@ export default function () {
     };
 
     let syncAnglesBuffer = function (me) {
+
         // If the server sends same angle acceptance again
-        let sameServerAnglesID = (module.status.anglesQueue.lastReceivedAngleID === me.lastReceivedAngleID);
-
-        console.log(module.status.anglesQueue.lastReceivedAngleID, module.status.anglesQueue.mouseAngles[0].id, me.lastReceivedAngleID, me.lerping);
-
-        if (sameServerAnglesID) return;
+        if (module.status.anglesQueue.lastReceivedAngleID === me.lastReceivedAngleID) return;
 
         // Update the last accepted angles ID
         module.status.anglesQueue.lastReceivedAngleID = me.lastReceivedAngleID;
 
-        // Check if the received angle ID = anglesQueue top
-        if (module.status.anglesQueue.mouseAngles[0].id === me.lastReceivedAngleID) {
-            module.status.anglesQueue.anglesBufferSize -= module.status.anglesQueue.mouseAngles.splice(0, 1)[0].angles.length;
+        let serverKeepingUp = false;
+
+        // Flush all angles corresponding to missed packets
+        while (me.lastReceivedAngleID >= module.status.anglesQueue.mouseAngles[0].id) {
+            // Reduce total buffer size
+            module.status.anglesQueue.anglesBufferSize -= module.status.anglesQueue.mouseAngles[0].angles.length;
+
+            // Remove the top value
+            module.status.anglesQueue.mouseAngles.splice(0, 1);
+
+            serverKeepingUp = true;
             me.lerping = false;
         }
-        else if (!me.lerping) {
+
+        // Server is failing behind with huge margin -> ignore local -> lerp to server
+        if (!serverKeepingUp && !me.lerping) {
             // Flush the buffer
             module.status.anglesQueue.mouseAngles = module.status.anglesQueue.mouseAngles.splice(-1, 1);
 
@@ -132,7 +139,6 @@ export default function () {
             // Start lerping to server position
             me.lerping = true;
         }
-        console.log(me.lerping);
     };
 
     return module;
