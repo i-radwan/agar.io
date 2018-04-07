@@ -106,6 +106,7 @@ class Room {
 
             for (let playerBID in this.game.players) {
                 if (!this.game.players.hasOwnProperty(playerBID)) continue;
+
                 if (playerBID === playerID) continue;
 
                 let playerB = this.game.players[playerBID];

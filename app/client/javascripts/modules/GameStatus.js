@@ -60,17 +60,19 @@ export default function () {
     };
 
     let syncPlayers = function (serverGamePlayers) {
-        // Sync local players
+        // Check if I'm killed
+        if (!serverGamePlayers.hasOwnProperty(module.status.me.id)) {
+            module.status.me.alive = false;
+            return;
+        }
+
+        // Sync local players (not including me)
         for (let i = 0; i < module.status.players.length; i++) {
             let player = module.status.players[i];
 
             // Player is dead
             if (!serverGamePlayers.hasOwnProperty(player.id)) {
                 player.removed = true;
-
-                // Is this dead player me ?
-                module.status.me.alive |= (player.id === module.status.me.id);
-
                 continue;
             }
 
@@ -82,41 +84,30 @@ export default function () {
 
         // Add new players
         for (let playerID in serverGamePlayers) {
-            module.status.players.push(serverGamePlayers[playerID]);
+            if (Number(playerID) !== module.status.me.id)
+                module.status.players.push(serverGamePlayers[playerID]);
         }
 
-        if (!module.status.me.alive) return;
+        let mainPlayerServerVersion = serverGamePlayers[module.status.me.id];
 
-        // Iterate over the new players array to find myself
-        for (let idx = 0; idx < module.status.players.length; idx++) {
-            let player = module.status.players[idx];
+        syncAnglesBuffer(mainPlayerServerVersion);
 
-            if (player.id === module.status.me.id) {
-                syncAnglesBuffer(module.status.me);
-
-                // Update myself
-                module.status.me = Object.assign(module.status.me, player);
-
-                // Remove myself from players array
-                module.status.players.splice(idx, 1);
-
-                break;
-            }
-        }
+        // Update myself
+        module.status.me = Object.assign(module.status.me, mainPlayerServerVersion);
     };
 
-    let syncAnglesBuffer = function (me) {
+    let syncAnglesBuffer = function (meOnServer) {
 
         // If the server sends same angle acceptance again
-        if (module.status.anglesQueue.lastReceivedAngleID === me.lastReceivedAngleID) return;
+        if (module.status.anglesQueue.lastReceivedAngleID === meOnServer.lastReceivedAngleID) return;
 
         // Update the last accepted angles ID
-        module.status.anglesQueue.lastReceivedAngleID = me.lastReceivedAngleID;
+        module.status.anglesQueue.lastReceivedAngleID = meOnServer.lastReceivedAngleID;
 
         let serverKeepingUp = false;
 
         // Flush all angles corresponding to missed packets
-        while (me.lastReceivedAngleID >= module.status.anglesQueue.mouseAngles[0].id) {
+        while (meOnServer.lastReceivedAngleID >= module.status.anglesQueue.mouseAngles[0].id) {
             // Reduce total buffer size
             module.status.anglesQueue.anglesBufferSize -= module.status.anglesQueue.mouseAngles[0].angles.length;
 

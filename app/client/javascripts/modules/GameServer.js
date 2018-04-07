@@ -30,7 +30,7 @@ export default function (gameStatus, serverGameStatus) {
 
         // Check if the anglesBuffer is getting filled, remove rows until condition is broken
         while (gameStatus.status.anglesQueue.anglesBufferSize > constants.general.MAX_ANGLES_BUFFER_SIZE) {
-            // Size to be decremented from total buffer size (of the first row)
+            // Size to be decremented from the total buffer size (of the first row)
             let size = gameStatus.status.anglesQueue.mouseAngles[0].angles.length;
 
             // Remove the first row
