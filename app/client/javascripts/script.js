@@ -37,13 +37,13 @@ let game = {
         game.gameEngine.init();
 
         // Graphics loop
-        requestAnimationFrame(game.gameGraphicsLoop);
+        requestAnimationFrame(game.gameMainLoop);
 
         // Send game status loop
         setInterval(game.sendAngleLoop, game.constants.general.SEND_ANGLE_TO_SERVER_RATE);
     },
 
-    gameGraphicsLoop: function () {
+    gameMainLoop: function () {
         // Increase deltas to prepare for physics and forcing positions steps
         game.increaseTimers();
 
@@ -56,7 +56,7 @@ let game = {
 
         // Stop when dead
         if (game.gameStatus.status.me.alive)
-            requestAnimationFrame(game.gameGraphicsLoop);
+            requestAnimationFrame(game.gameMainLoop);
     },
 
     sendAngleLoop: function () {

@@ -41,8 +41,8 @@ export default function () {
      * @param isMe is this player the main player?
      */
     module.movePlayer = function (player, isMe) {
-        if (!isMe || !player.lerping) {
-            updatePlayerPosition(player, player.velocity);
+        if (!player.lerping) {
+            updatePlayerPosition(player);
             if (isMe)
                 console.log("NOR");
         }
@@ -79,12 +79,11 @@ export default function () {
      * Move some player normal movement (velocity and angle)
      *
      * @param player the player to be moved.
-     * @param velocity the velocity in which player is moving.
      */
-    let updatePlayerPosition = function (player, velocity) {
+    let updatePlayerPosition = function (player) {
         // Move canvas object
-        player.canvasX += Math.cos(player.angle) * velocity;
-        player.canvasY += Math.sin(player.angle) * velocity;
+        player.canvasX += Math.cos(player.angle) * player.velocity;
+        player.canvasY += Math.sin(player.angle) * player.velocity;
     };
 
     module.getAngleAndDistance = function (point1, point2) {

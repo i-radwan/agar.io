@@ -43,7 +43,7 @@ export default function (gameStatus, serverGameStatus) {
     module.forceServerPositions = function () {
         // Move players
         gameStatus.status.players.forEach(function (player) {
-            physicsEngine.forceServerPosition(player);
+            // physicsEngine.forceServerPosition(player);
         });
     };
 
