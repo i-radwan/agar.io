@@ -10,7 +10,7 @@ export default function () {
     let stars = [];
     let mainPlayer;
     let zoom = 1, targetZoom = 1;
-    let canvasGame, canvasHud;
+    let hudCanvas, hudCanvasContext;
 
     let constants = Constants();
 
@@ -22,8 +22,8 @@ export default function () {
         fillStars();
 
         // Remove strokes
-        canvasGame.strokeWeight(0);
-        canvasHud.strokeWeight(0);
+        strokeWeight(0);
+        strokeWeight(0);
     };
 
     /**
@@ -38,13 +38,13 @@ export default function () {
             gameObjects[i].interpolatePhysics(lag);
         }
 
-        canvasGame.push();
+        push();
 
         // Camera setup and translating to user location
         setupCamera();
 
         // Clear everything
-        canvasGame.background(constants.graphics.GAME_BACKGROUND);
+        background(constants.graphics.GAME_BACKGROUND);
 
         // Draw stars
         drawStars();
@@ -61,20 +61,16 @@ export default function () {
             }
         }
 
-        canvasGame.pop();
+        pop();
 
-        // Clear previous Hud Frame and start new one
-        canvasHud.clear();
-        canvasHud.push();
+        //Clear Hud Canvas
+        hudCanvasClear();
 
         // Draw FPS
         drawFPS(elapsed);
 
-        canvasHud.pop();
-
-        // Merge Hud canvas with Game Canvas
-        image(canvasGame, 0, 0);
-        image(canvasHud, 0, 0);
+        // Draw Score
+        module.drawScore();
 
         for (let i = 0; i < gameObjects.length; i++) {
             // Revert the applied physics
@@ -126,16 +122,27 @@ export default function () {
     };
 
     module.drawScore = function () {
-        // ToDo: Draw score text
+        hudCanvasContext.font = constants.graphics.TEXT_STYLE;
+        hudCanvasContext.fillStyle = constants.graphics.TEXT_COLOR;
+
+        hudCanvasContext.textBaseline = "bottom";
+        hudCanvasContext.textAlign = "left";
+        hudCanvasContext.fillText("Score: " + mainPlayer.score, 0, window.innerHeight);
+    };
+
+    let hudCanvasClear = function () {
+        hudCanvasContext.clearRect(0, 0, window.innerWidth, window.innerHeight);
     };
 
     let drawFPS = function (elapsed) {
         let FPS = parseInt(1000 / elapsed);
 
-        canvasHud.textAlign(LEFT, TOP);
-        canvasHud.textSize(constants.graphics.TEXT_SIZE);
-        canvasHud.fill(255, 255, 255);
-        canvasHud.text("FPS: " + FPS, 0, 0);
+        hudCanvasContext.font = constants.graphics.TEXT_STYLE;
+        hudCanvasContext.fillStyle = constants.graphics.TEXT_COLOR;
+
+        hudCanvasContext.textBaseline = "top";
+        hudCanvasContext.textAlign = "left";
+        hudCanvasContext.fillText("FPS: " + FPS, 0, 0);
     };
 
     /**
@@ -188,17 +195,17 @@ export default function () {
      */
     let setupCamera = function () {
         // Translate camera to screen center
-        canvasGame.translate(window.innerWidth / 2, window.innerHeight / 2);
+        translate(window.innerWidth / 2, window.innerHeight / 2);
 
         // Scaling (interpolated)
         if ((targetZoom * mainPlayer.radius) > constants.graphics.MAX_ZOOM_THRESHOLD || (targetZoom * mainPlayer.radius) < constants.graphics.MIN_ZOOM_THRESHOLD)
             targetZoom = constants.graphics.START_BLOB_RADIUS / mainPlayer.radius;
 
         zoom = lerp(zoom, targetZoom * Math.sqrt((window.innerWidth * window.innerHeight) / (constants.graphics.GENERIC_WINDOW_AREA)), constants.graphics.ZOOM_INTERPOLATION_FACTOR);
-        canvasGame.scale(zoom);
+        scale(zoom);
 
         // Translate camera to player center
-        canvasGame.translate(-mainPlayer.canvasX, -mainPlayer.canvasY);
+        translate(-mainPlayer.canvasX, -mainPlayer.canvasY);
     };
 
     /**
@@ -226,8 +233,8 @@ export default function () {
      * @param circle
      */
     let drawCircle = function (circle) {
-        canvasGame.fill(circle.color);
-        canvasGame.ellipse(circle.canvasX, circle.canvasY, circle.radius * 2, circle.radius * 2);
+        fill(circle.color);
+        ellipse(circle.canvasX, circle.canvasY, circle.radius * 2, circle.radius * 2);
     };
 
     /**
@@ -268,11 +275,11 @@ export default function () {
      * @param color the circle filling color
      */
     let drawNoisyCircle = function (blob, radius, color) {
-        canvasGame.push();
-        canvasGame.beginShape();
+        push();
+        beginShape();
 
         // Fill the drawing with the required color
-        canvasGame.fill(color);
+        fill(color);
 
         let r = radius;
         let xOffset = 0;
@@ -284,14 +291,20 @@ export default function () {
             // Add the vertex of the circle
             let x = blob.canvasX + rad * Math.cos(theta);
             let y = blob.canvasY + rad * Math.sin(theta);
-            canvasGame.vertex(x, y);
+            vertex(x, y);
 
             // Increase the xOffset to get another noisy pattern in the next loop (for the blob animation)
             xOffset += 0.1;
         }
 
-        canvasGame.endShape();
-        canvasGame.pop();
+        endShape();
+        pop();
+    };
+
+    let preventCanvasTouchMove = function (canvas) {
+        canvas.addEventListener('touchmove', function (e) {
+            e.preventDefault();
+        }, false);
     };
 
     /**
@@ -301,21 +314,22 @@ export default function () {
      */
     let makeCanvas = function () {
         let canvas = createCanvas(window.innerWidth, window.innerHeight);
-        canvasGame = createGraphics(window.innerWidth, window.innerHeight);
-        canvasHud = createGraphics(window.innerWidth, window.innerHeight);
+        canvas.position(0, 0);
+        canvas.style('z-index', -1);
 
-        // Fix Sizing issues with screens with different pixel densities
-        canvasGame.pixelDensity(1);
-        canvasHud.pixelDensity(1);
+        hudCanvas = document.getElementById("hudCanvasId");
+        hudCanvasContext = hudCanvas.getContext("2d");
+
+        hudCanvas.width = Number(window.innerWidth);
+        hudCanvas.height = Number(window.innerHeight);
 
         // For frame-rate optimization ? https://forum.processing.org/two/discussion/11462/help-in-p5-js-performance-improvement-on-mobile-devices
         canvas.elt.style.width = '100%';
         canvas.elt.style.height = '100%';
 
         // Correctly disables touch on mobile devices
-        document.getElementById(canvas.elt.id).addEventListener('touchmove', function (e) {
-            e.preventDefault();
-        }, false);
+        preventCanvasTouchMove(document.getElementById(canvas.elt.id));
+        preventCanvasTouchMove(hudCanvas);
 
         return canvas;
     };
