@@ -82,12 +82,14 @@ class Room {
     simulatePlayer(playerID, anglesBuffer) {
         let player = this.game.players[playerID];
 
-        // ToDo uncomment this check
-        // if (!this.checkAngles(angle)) return;
+        player.lastReceivedAngleID = anglesBuffer.id;
 
-        for (let i = 0; i < anglesBuffer.length; i++) {
+        // ToDo uncomment this check
+        // if (!this.checkAngles(anglesBuffer, player.lastAngleTimeStamp)) return;
+
+        for (let i = 0; i < anglesBuffer.angles.length; i++) {
             // Set user angle
-            this.setPlayerAngle(playerID, anglesBuffer[i].angle);
+            this.setPlayerAngle(playerID, anglesBuffer.angles[i].angle);
 
             // Move player
             player.movePlayer();
@@ -122,8 +124,6 @@ class Room {
     };
 
     checkAngles(angle, lastAngleTimeStamp) {
-        if (angle.length > 4) return;
-
         //ToDo
         // Check if all angles are sent in ascending order
         for (let i = 1; i < angle.length; i++) {
@@ -235,6 +235,8 @@ class Room {
      * @returns {boolean}
      */
     isPlayerAlive(playerID) {
+        if (!this.game.players.hasOwnProperty(playerID)) return false;
+
         return this.game.players[playerID].alive;
     }
 

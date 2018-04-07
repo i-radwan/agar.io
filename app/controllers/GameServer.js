@@ -37,6 +37,7 @@ function GameServer(gameConfig) {
 
             // Updates player's angle
             socket.on('angle', function (anglesBuffer) {
+                console.log(anglesBuffer);
                 module.updatePlayerPosition(socket.id, anglesBuffer);
             });
 
@@ -105,8 +106,7 @@ function GameServer(gameConfig) {
         let roomID = gamePlayers[playerSocketID].roomID;
 
         if (gameRooms[roomID].isPlayerAlive(playerID)) {
-            gameRooms[roomID].game.players[playerID].lastReceivedAngleID = anglesBuffer.id;
-            gameRooms[roomID].simulatePlayer(playerID, anglesBuffer.angles);
+            gameRooms[roomID].simulatePlayer(playerID, anglesBuffer);
         }
     };
 

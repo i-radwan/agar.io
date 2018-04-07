@@ -110,11 +110,13 @@ export default function () {
         // If the server sends same angle acceptance again
         let sameServerAnglesID = (module.status.anglesQueue.lastReceivedAngleID === me.lastReceivedAngleID);
 
-        console.log(module.status.anglesQueue.lastReceivedAngleID, module.status.anglesQueue.mouseAngles[0].id, me.lastReceivedAngleID, me);
+        console.log(module.status.anglesQueue.lastReceivedAngleID, module.status.anglesQueue.mouseAngles[0].id, me.lastReceivedAngleID, me.lerping);
+
         if (sameServerAnglesID) return;
 
         // Update the last accepted angles ID
         module.status.anglesQueue.lastReceivedAngleID = me.lastReceivedAngleID;
+
         // Check if the received angle ID = anglesQueue top
         if (module.status.anglesQueue.mouseAngles[0].id === me.lastReceivedAngleID) {
             module.status.anglesQueue.anglesBufferSize -= module.status.anglesQueue.mouseAngles.splice(0, 1)[0].angles.length;

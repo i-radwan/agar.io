@@ -21,16 +21,13 @@ export default function () {
             y: window.innerHeight / 2
         }, target);
 
-        if (player.lerping) return;
+        // if (player.lerping) return;
 
         // Update my player angle
         player.angle = angleAndDistance.angle;
 
         // Push this angle to be sent to server
-        anglesQueue.mouseAngles[anglesQueue.mouseAngles.length - 1].angles.push({
-            angle: angleAndDistance.angle,
-            timestamp: Date.now()
-        });
+        anglesQueue.mouseAngles[anglesQueue.mouseAngles.length - 1].angles.push(angleAndDistance.angle);
         anglesQueue.anglesBufferSize++;
     };
 
