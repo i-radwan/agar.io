@@ -66,11 +66,8 @@ export default function () {
         //Clear Hud Canvas
         clearHudCanvas();
 
-        // Draw FPS
-        drawFPS(elapsed);
-
-        // Draw Score
-        module.drawScore();
+        // Draw HUDs
+        drawHUDs(elapsed);
 
         for (let i = 0; i < gameObjects.length; i++) {
             // Revert the applied physics
@@ -150,15 +147,6 @@ export default function () {
         else { // Player existed and still -> update radius
             playerObject.setRadius(playerObject.radius);
         }
-    };
-
-    module.drawScore = function () {
-        hudCanvasContext.font = constants.graphics.TEXT_STYLE;
-        hudCanvasContext.fillStyle = constants.graphics.TEXT_COLOR;
-
-        hudCanvasContext.textBaseline = "bottom";
-        hudCanvasContext.textAlign = "left";
-        hudCanvasContext.fillText("Score: " + mainPlayer.score, 0, window.innerHeight);
     };
 
     /**
@@ -314,6 +302,16 @@ export default function () {
         }
     };
 
+    /**
+     * Call all functions that draw head ups
+     *
+     * @param elapsed
+     */
+    let drawHUDs = function (elapsed) {
+        drawFPS(elapsed);
+        drawScore();
+    };
+
     let drawFPS = function (elapsed) {
         let FPS = parseInt(1000 / elapsed);
 
@@ -323,6 +321,15 @@ export default function () {
         hudCanvasContext.textBaseline = "top";
         hudCanvasContext.textAlign = "left";
         hudCanvasContext.fillText("FPS: " + FPS, 0, 0);
+    };
+
+    let drawScore = function () {
+        hudCanvasContext.font = constants.graphics.TEXT_STYLE;
+        hudCanvasContext.fillStyle = constants.graphics.TEXT_COLOR;
+
+        hudCanvasContext.textBaseline = "bottom";
+        hudCanvasContext.textAlign = "left";
+        hudCanvasContext.fillText("Score: " + mainPlayer.score, 0, window.innerHeight);
     };
 
     /**
