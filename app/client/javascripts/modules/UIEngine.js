@@ -145,7 +145,7 @@ export default function () {
             module.addPlayer(playerObject);
         }
         else { // Player existed and still -> update radius
-            playerObject.setRadius(playerObject.radius);
+            playerObject.radius = (playerObject.radius);
         }
     };
 
@@ -192,10 +192,6 @@ export default function () {
             drawFunction(object);
         };
 
-        object.setRadius = function (r) {
-            this.radius = lerp(this.radius, r, constants.graphics.SIZE_INTERPOLATION_FACTOR);
-        };
-
         // Push to canvas objects
         gameObjects.push(object);
     };
@@ -237,7 +233,7 @@ export default function () {
         };
 
         drawCircle(centerCircle);
-        drawCircle(serverCenterCircle);
+        // drawCircle(serverCenterCircle);
     };
 
     /**

@@ -16,7 +16,6 @@ export default function () {
         graphics: {
             GAME_BACKGROUND: 0, // black
             GENERIC_WINDOW_AREA: 2000 * 1000,
-            SIZE_INTERPOLATION_FACTOR: 0.2,
             ZOOM_INTERPOLATION_FACTOR: 0.05,
             MAX_ZOOM_THRESHOLD: 50,
             MIN_ZOOM_THRESHOLD: 30,
