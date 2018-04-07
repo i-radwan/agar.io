@@ -30,16 +30,20 @@ export default function (gameStatus, serverGameStatus) {
 
         // Check if the anglesBuffer is getting filled, remove rows until condition is broken
         while (gameStatus.status.anglesQueue.anglesBufferSize > constants.general.MAX_ANGLES_BUFFER_SIZE) {
+            // Size to be decremented from total buffer size (of the first row)
             let size = gameStatus.status.anglesQueue.mouseAngles[0].angles.length;
+
+            // Remove the first row
             gameStatus.status.anglesQueue.mouseAngles.splice(0, 1);
+
+            // Decrease the size
             gameStatus.status.anglesQueue.anglesBufferSize -= size;
         }
     };
 
     let setupReceivers = function (startGame) {
         _socket.on('player_info', function (playerInfo) {
-            gameStatus.status.me.id = playerInfo.id;
-            gameStatus.status.me.lastReceivedAngleID = playerInfo.lastReceivedAngleID;
+            gameStatus.status.me = Object.assign({}, playerInfo);
         });
 
         _socket.on('game_status', function (receivedGameStatus) {
