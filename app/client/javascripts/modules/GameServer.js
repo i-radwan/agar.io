@@ -22,7 +22,10 @@ export default function (gameStatus, serverGameStatus) {
      * Send my angle to the server
      */
     module.sendAngle = function () {
-        _socket.emit('angle', gameStatus.status.anglesQueue.mouseAngles.slice(-1)[0]);
+        let angles = gameStatus.status.anglesQueue.mouseAngles.slice(-1)[0];
+
+        _socket.emit('angle', angles);
+        // console.log(angles.angles.length);
 
         gameStatus.status.anglesQueue.mouseAngles.push({id: ++gameStatus.status.anglesQueue.lastAngleID, angles: []});
 
@@ -37,6 +40,7 @@ export default function (gameStatus, serverGameStatus) {
     let setupReceivers = function (startGame) {
         _socket.on('player_info', function (playerInfo) {
             gameStatus.status.me.id = playerInfo.id;
+            gameStatus.status.me.lastReceivedAngleID = playerInfo.lastReceivedAngleID;
         });
 
         _socket.on('game_status', function (receivedGameStatus) {

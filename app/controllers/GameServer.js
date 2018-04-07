@@ -94,6 +94,7 @@ function GameServer(gameConfig) {
     module.sendPlayerInfo = function (playerSocketID, playerID, roomID) {
         let playerInfo = {};
         playerInfo.id = playerID;
+        playerInfo.lastReceivedAngleID = -1;
 
         __socket.to(playerSocketID).emit('player_info', playerInfo);
         __socket.to(playerSocketID).emit('game_status', gameRooms[roomID].getGameStatus(true));
@@ -117,8 +118,10 @@ function GameServer(gameConfig) {
             gameRooms[roomID].setPlayerInfo(playerID, newPlayerInfo);
         }
     };
-    
+
     module.removePlayer = function (playerSocketID) {
+        if (!gamePlayers.hasOwnProperty(playerSocketID)) return;
+
         console.log("a Player Disconnected");
 
         let playerID = gamePlayers[playerSocketID].playerID;

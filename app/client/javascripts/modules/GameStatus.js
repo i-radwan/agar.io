@@ -55,7 +55,7 @@ export default function () {
         }
 
         // Add new gems
-        for (let i in serverGameNewGems){
+        for (let i in serverGameNewGems) {
             module.status.gems.push(serverGameNewGems[i]);
         }
     };
@@ -88,7 +88,7 @@ export default function () {
 
         if (!module.status.me.alive) return;
 
-        // Iterate over the new players array
+        // Iterate over the new players array to find myself
         for (let idx = 0; idx < module.status.players.length; idx++) {
             let player = module.status.players[idx];
 
@@ -110,11 +110,11 @@ export default function () {
         // If the server sends same angle acceptance again
         let sameServerAnglesID = (module.status.anglesQueue.lastReceivedAngleID === me.lastReceivedAngleID);
 
+        console.log(module.status.anglesQueue.lastReceivedAngleID, module.status.anglesQueue.mouseAngles[0].id, me.lastReceivedAngleID, me);
         if (sameServerAnglesID) return;
 
         // Update the last accepted angles ID
         module.status.anglesQueue.lastReceivedAngleID = me.lastReceivedAngleID;
-
         // Check if the received angle ID = anglesQueue top
         if (module.status.anglesQueue.mouseAngles[0].id === me.lastReceivedAngleID) {
             module.status.anglesQueue.anglesBufferSize -= module.status.anglesQueue.mouseAngles.splice(0, 1)[0].angles.length;
@@ -130,6 +130,7 @@ export default function () {
             // Start lerping to server position
             me.lerping = true;
         }
+        console.log(me.lerping);
     };
 
     return module;

@@ -21,7 +21,7 @@ export default function () {
             MIN_ZOOM_THRESHOLD: 30,
 
             STARS_COUNT: 1000,
-            STAR_RADIUS: 0.00133,
+            STAR_RADIUS: 0.00063,
             STAR_COLOR: "white",
 
             START_BLOB_RADIUS: 30,

@@ -235,8 +235,6 @@ class Room {
      * @returns {boolean}
      */
     isPlayerAlive(playerID) {
-        if (!this.game.players.hasOwnProperty(playerID)) return false;
-
         return this.game.players[playerID].alive;
     }
 
