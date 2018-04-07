@@ -57,6 +57,8 @@ let game = {
         // Stop when dead
         if (game.gameStatus.status.me.alive)
             requestAnimationFrame(game.gameMainLoop);
+        else
+            game.gameOver();
     },
 
     sendAngleLoop: function () {
@@ -93,6 +95,10 @@ let game = {
             game.gameEngine.forceServerPositions();
             game.forceServerPositionsTimer = 0;
         }
+    },
+
+    gameOver: function () {
+        alert("Sry!");
     }
 };
 
