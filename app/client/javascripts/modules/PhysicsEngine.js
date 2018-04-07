@@ -21,8 +21,6 @@ export default function () {
             y: window.innerHeight / 2
         }, target);
 
-        // if (player.lerping) return;
-
         // Update my player angle
         player.angle = angleAndDistance.angle;
 
@@ -39,9 +37,10 @@ export default function () {
      *
      * @param player the player to be moved.
      * @param isMe is this player the main player?
+     * @param isLerping is the game forcing server input due to delays?
      */
-    module.movePlayer = function (player, isMe) {
-        if (!player.lerping) {
+    module.movePlayer = function (player, isMe, isLerping) {
+        if (!isLerping) {
             updatePlayerPosition(player);
             if (isMe)
                 console.log("NOR");

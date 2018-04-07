@@ -10,7 +10,8 @@ export default function () {
             scoreObject: {},
             gameWidth: 4 * window.innerWidth,
             gameHeight: 4 * window.innerHeight,
-            serverResponseReceived: false
+            serverResponseReceived: false,
+            lerping: false
         },
         anglesQueue: {
             mouseAngles: [{id: 0, angles: []}],
@@ -18,9 +19,7 @@ export default function () {
             lastAngleID: 0,
             lastReceivedAngleID: -1
         },
-        me: {
-            lerping: false
-        }
+        me: {}
     };
 
     module.init = function (serverGameStatus) {
@@ -125,11 +124,11 @@ export default function () {
             module.status.anglesQueue.mouseAngles.splice(0, 1);
 
             serverKeepingUp = true;
-            me.lerping = false;
+            module.status.env.lerping = false;
         }
 
         // Server is failing behind with huge margin -> ignore local -> lerp to server
-        if (!serverKeepingUp && !me.lerping) {
+        if (!serverKeepingUp && !module.status.env.lerping) {
             // Flush the buffer
             module.status.anglesQueue.mouseAngles = module.status.anglesQueue.mouseAngles.splice(-1, 1);
 
@@ -137,7 +136,7 @@ export default function () {
             module.status.anglesQueue.anglesBufferSize = module.status.anglesQueue.mouseAngles[0].angles.length;
 
             // Start lerping to server position
-            me.lerping = true;
+            module.status.env.lerping = true;
         }
     };
 

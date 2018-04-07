@@ -25,7 +25,6 @@ export default function (gameStatus, serverGameStatus) {
         let angles = gameStatus.status.anglesQueue.mouseAngles.slice(-1)[0];
 
         _socket.emit('angle', angles);
-        // console.log(angles.angles.length);
 
         gameStatus.status.anglesQueue.mouseAngles.push({id: ++gameStatus.status.anglesQueue.lastAngleID, angles: []});
 

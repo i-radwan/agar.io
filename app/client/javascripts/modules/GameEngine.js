@@ -36,14 +36,14 @@ export default function (gameStatus, serverGameStatus) {
 
         // Move players
         gameStatus.status.players.concat(gameStatus.status.me).forEach(function (player) {
-            physicsEngine.movePlayer(player, player.id === gameStatus.status.me.id);
+            physicsEngine.movePlayer(player, player.id === gameStatus.status.me.id, gameStatus.status.env.lerping);
         });
     };
 
     module.forceServerPositions = function () {
         // Move players
         gameStatus.status.players.forEach(function (player) {
-            // physicsEngine.forceServerPosition(player);
+            physicsEngine.forceServerPosition(player);
         });
     };
 
