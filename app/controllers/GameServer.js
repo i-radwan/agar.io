@@ -37,7 +37,6 @@ function GameServer(gameConfig) {
 
             // Updates player's angle
             socket.on('angle', function (anglesBuffer) {
-                console.log(anglesBuffer);
                 module.updatePlayerPosition(socket.id, anglesBuffer);
             });
 
