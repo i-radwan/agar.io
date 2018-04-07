@@ -9,8 +9,8 @@ export default function () {
     let gameObjects = [];
     let stars = [];
     let mainPlayer;
-    let txtSize = 0;
     let zoom = 1, targetZoom = 1;
+    let canvasGame, canvasHud;
 
     let constants = Constants();
 
@@ -22,7 +22,8 @@ export default function () {
         fillStars();
 
         // Remove strokes
-        strokeWeight(0);
+        canvasGame.strokeWeight(0);
+        canvasHud.strokeWeight(0);
     };
 
     /**
@@ -37,13 +38,13 @@ export default function () {
             gameObjects[i].interpolatePhysics(lag);
         }
 
-        push();
+        canvasGame.push();
 
         // Camera setup and translating to user location
         setupCamera();
 
         // Clear everything
-        background(constants.graphics.GAME_BACKGROUND);
+        canvasGame.background(constants.graphics.GAME_BACKGROUND);
 
         // Draw stars
         drawStars();
@@ -60,10 +61,20 @@ export default function () {
             }
         }
 
+        canvasGame.pop();
+
+        // Clear previous Hud Frame and start new one
+        canvasHud.clear();
+        canvasHud.push();
+
         // Draw FPS
         drawFPS(elapsed);
 
-        pop();
+        canvasHud.pop();
+
+        // Merge Hud canvas with Game Canvas
+        image(canvasGame, 0, 0);
+        image(canvasHud, 0, 0);
 
         for (let i = 0; i < gameObjects.length; i++) {
             // Revert the applied physics
@@ -120,12 +131,11 @@ export default function () {
 
     let drawFPS = function (elapsed) {
         let FPS = parseInt(1000 / elapsed);
-        txtSize = lerp(txtSize, 0.1, 0.001);
 
-        textAlign(LEFT, TOP);
-        textSize(txtSize);
-        fill(255, 255, 255);
-        text("FPS: " + FPS, mainPlayer.canvasX - window.innerWidth / (2 * zoom), mainPlayer.canvasY - window.innerHeight / (2 * zoom));
+        canvasHud.textAlign(LEFT, TOP);
+        canvasHud.textSize(constants.graphics.TEXT_SIZE);
+        canvasHud.fill(255, 255, 255);
+        canvasHud.text("FPS: " + FPS, 0, 0);
     };
 
     /**
@@ -178,17 +188,17 @@ export default function () {
      */
     let setupCamera = function () {
         // Translate camera to screen center
-        translate(window.innerWidth / 2, window.innerHeight / 2);
+        canvasGame.translate(window.innerWidth / 2, window.innerHeight / 2);
 
         // Scaling (interpolated)
-        //if ((targetZoom * mainPlayer.radius) > constants.graphics.MAX_ZOOM_THRESHOLD || (targetZoom * mainPlayer.radius) < constants.graphics.MIN_ZOOM_THRESHOLD)
+        if ((targetZoom * mainPlayer.radius) > constants.graphics.MAX_ZOOM_THRESHOLD || (targetZoom * mainPlayer.radius) < constants.graphics.MIN_ZOOM_THRESHOLD)
             targetZoom = constants.graphics.START_BLOB_RADIUS / mainPlayer.radius;
 
         zoom = lerp(zoom, targetZoom * Math.sqrt((window.innerWidth * window.innerHeight) / (constants.graphics.GENERIC_WINDOW_AREA)), constants.graphics.ZOOM_INTERPOLATION_FACTOR);
-        scale(zoom);
+        canvasGame.scale(zoom);
 
         // Translate camera to player center
-        translate(-mainPlayer.canvasX, -mainPlayer.canvasY);
+        canvasGame.translate(-mainPlayer.canvasX, -mainPlayer.canvasY);
     };
 
     /**
@@ -216,8 +226,8 @@ export default function () {
      * @param circle
      */
     let drawCircle = function (circle) {
-        fill(circle.color);
-        ellipse(circle.canvasX, circle.canvasY, circle.radius * 2, circle.radius * 2);
+        canvasGame.fill(circle.color);
+        canvasGame.ellipse(circle.canvasX, circle.canvasY, circle.radius * 2, circle.radius * 2);
     };
 
     /**
@@ -258,11 +268,11 @@ export default function () {
      * @param color the circle filling color
      */
     let drawNoisyCircle = function (blob, radius, color) {
-        push();
-        beginShape();
+        canvasGame.push();
+        canvasGame.beginShape();
 
         // Fill the drawing with the required color
-        fill(color);
+        canvasGame.fill(color);
 
         let r = radius;
         let xOffset = 0;
@@ -274,14 +284,14 @@ export default function () {
             // Add the vertex of the circle
             let x = blob.canvasX + rad * Math.cos(theta);
             let y = blob.canvasY + rad * Math.sin(theta);
-            vertex(x, y);
+            canvasGame.vertex(x, y);
 
             // Increase the xOffset to get another noisy pattern in the next loop (for the blob animation)
             xOffset += 0.1;
         }
 
-        endShape();
-        pop();
+        canvasGame.endShape();
+        canvasGame.pop();
     };
 
     /**
@@ -291,6 +301,12 @@ export default function () {
      */
     let makeCanvas = function () {
         let canvas = createCanvas(window.innerWidth, window.innerHeight);
+        canvasGame = createGraphics(window.innerWidth, window.innerHeight);
+        canvasHud = createGraphics(window.innerWidth, window.innerHeight);
+
+        // Fix Sizing issues with screens with different pixel densities
+        canvasGame.pixelDensity(1);
+        canvasHud.pixelDensity(1);
 
         // For frame-rate optimization ? https://forum.processing.org/two/discussion/11462/help-in-p5-js-performance-improvement-on-mobile-devices
         canvas.elt.style.width = '100%';
@@ -334,8 +350,6 @@ export default function () {
 
     /**
      * Check if the given object is inside my viewing window
-     *
-     * ToDo: use proper equation
      *
      * @param object
      */

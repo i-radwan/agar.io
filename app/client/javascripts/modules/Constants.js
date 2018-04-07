@@ -29,6 +29,8 @@ export default function () {
             MAX_BLOB_WABBLE_RADIUS_OFFSET: 1 / 5,
             WABBLE_SPEED: 0.0009,
 
+            TEXT_SIZE: 20,
+
             CANVAS_OBJECT_PLAYER: "player",
             CANVAS_OBJECT_GEM: "gem"
         }
