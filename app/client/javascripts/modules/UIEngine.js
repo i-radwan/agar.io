@@ -10,6 +10,7 @@ export default function () {
     let stars = [];
     let mainPlayer;
     let zoom = 1, targetZoom = 1;
+    let hudCanvas, hudCanvasContext;
 
     let constants = Constants();
 
@@ -21,6 +22,7 @@ export default function () {
         fillStars();
 
         // Remove strokes
+        strokeWeight(0);
         strokeWeight(0);
     };
 
@@ -53,9 +55,6 @@ export default function () {
             if (isObjectInsideMyViewWindow(gameObjects[i]))
                 gameObjects[i].draw();
 
-            // Revert the applied physics
-            gameObjects[i].undoPhysics(lag);
-
             // Update blob yOffset
             if (gameObjects[i].canvasObjectType === constants.graphics.CANVAS_OBJECT_PLAYER) {
                 gameObjects[i].yOffset += elapsed * constants.graphics.WABBLE_SPEED;
@@ -63,6 +62,17 @@ export default function () {
         }
 
         pop();
+
+        //Clear Hud Canvas
+        clearHudCanvas();
+
+        // Draw HUDs
+        drawHUDs(elapsed);
+
+        for (let i = 0; i < gameObjects.length; i++) {
+            // Revert the applied physics
+            gameObjects[i].undoPhysics(lag);
+        }
     };
 
     module.addGem = function (gemObject) {
@@ -106,10 +116,6 @@ export default function () {
     module.addMainPlayer = function (myselfObject) {
         module.addPlayer(myselfObject);
         mainPlayer = myselfObject;
-    };
-
-    module.drawScore = function () {
-        // ToDo: Draw score text
     };
 
     /**
@@ -269,23 +275,19 @@ export default function () {
     };
 
     /**
-     * Use p5js createCanvas function to create canvas and configure it
-     *
-     * @return canvas object
+     * Fill stars array
      */
-    let makeCanvas = function () {
-        let canvas = createCanvas(window.innerWidth, window.innerHeight);
+    let fillStars = function () {
+        let n = constants.graphics.STARS_COUNT;
 
-        // For frame-rate optimization ? https://forum.processing.org/two/discussion/11462/help-in-p5-js-performance-improvement-on-mobile-devices
-        canvas.elt.style.width = '100%';
-        canvas.elt.style.height = '100%';
-
-        // Correctly disables touch on mobile devices
-        document.getElementById(canvas.elt.id).addEventListener('touchmove', function (e) {
-            e.preventDefault();
-        }, false);
-
-        return canvas;
+        while (n--) {
+            stars.push({
+                canvasX: ((Math.random() * 2 - 1) * 2),
+                canvasY: ((Math.random() * 2 - 1) * 2),
+                color: constants.graphics.STAR_COLOR,
+                radius: constants.graphics.STAR_RADIUS
+            });
+        }
     };
 
     /**
@@ -301,19 +303,70 @@ export default function () {
     };
 
     /**
-     * Fill stars array
+     * Call all functions that draw head ups
+     *
+     * @param elapsed
      */
-    let fillStars = function () {
-        let n = constants.graphics.STARS_COUNT;
+    let drawHUDs = function (elapsed) {
+        drawFPS(elapsed);
+        drawScore();
+    };
 
-        while (n--) {
-            stars.push({
-                canvasX: ((Math.random() * 2 - 1) * 2),
-                canvasY: ((Math.random() * 2 - 1) * 2),
-                color: constants.graphics.STAR_COLOR,
-                radius: constants.graphics.STAR_RADIUS
-            });
-        }
+    let drawFPS = function (elapsed) {
+        let FPS = parseInt(1000 / elapsed);
+
+        hudCanvasContext.font = constants.graphics.TEXT_STYLE;
+        hudCanvasContext.fillStyle = constants.graphics.TEXT_COLOR;
+
+        hudCanvasContext.textBaseline = "top";
+        hudCanvasContext.textAlign = "left";
+        hudCanvasContext.fillText("FPS: " + FPS, 0, 0);
+    };
+
+    let drawScore = function () {
+        hudCanvasContext.font = constants.graphics.TEXT_STYLE;
+        hudCanvasContext.fillStyle = constants.graphics.TEXT_COLOR;
+
+        hudCanvasContext.textBaseline = "bottom";
+        hudCanvasContext.textAlign = "left";
+        hudCanvasContext.fillText("Score: " + mainPlayer.score, 0, window.innerHeight);
+    };
+
+    /**
+     * Use p5js createCanvas function to create canvas and configure it
+     *
+     * @return canvas object
+     */
+    let makeCanvas = function () {
+        let canvas = createCanvas(window.innerWidth, window.innerHeight);
+        canvas.position(0, 0);
+        canvas.style('z-index', -1);
+
+        hudCanvas = document.getElementById("hudCanvasId");
+        hudCanvasContext = hudCanvas.getContext("2d");
+
+        hudCanvas.width = Number(window.innerWidth);
+        hudCanvas.height = Number(window.innerHeight);
+
+        // For frame-rate optimization ? https://forum.processing.org/two/discussion/11462/help-in-p5-js-performance-improvement-on-mobile-devices
+        canvas.elt.style.width = '100%';
+        canvas.elt.style.height = '100%';
+
+        // Correctly disables touch on mobile devices
+        preventCanvasTouchMove(document.getElementById(canvas.elt.id));
+        preventCanvasTouchMove(hudCanvas);
+
+        return canvas;
+    };
+
+    let preventCanvasTouchMove = function (canvas) {
+        canvas.addEventListener('touchmove', function (e) {
+            e.preventDefault();
+        }, false);
+    };
+
+    let clearHudCanvas = function () {
+        hudCanvasContext.clearRect(0, 0, window.innerWidth, window.innerHeight);
     };
 
     /**

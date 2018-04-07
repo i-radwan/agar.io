@@ -29,6 +29,9 @@ export default function () {
             MAX_BLOB_WABBLE_RADIUS_OFFSET: 1 / 5,
             WABBLE_SPEED: 0.0009,
 
+            TEXT_STYLE: '20px serif',
+            TEXT_COLOR: 'orange',
+
             CANVAS_OBJECT_PLAYER: "player",
             CANVAS_OBJECT_GEM: "gem"
         }
