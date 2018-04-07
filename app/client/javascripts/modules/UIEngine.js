@@ -64,7 +64,7 @@ export default function () {
         pop();
 
         //Clear Hud Canvas
-        hudCanvasClear();
+        clearHudCanvas();
 
         // Draw FPS
         drawFPS(elapsed);
@@ -121,30 +121,6 @@ export default function () {
         mainPlayer = myselfObject;
     };
 
-    module.drawScore = function () {
-        hudCanvasContext.font = constants.graphics.TEXT_STYLE;
-        hudCanvasContext.fillStyle = constants.graphics.TEXT_COLOR;
-
-        hudCanvasContext.textBaseline = "bottom";
-        hudCanvasContext.textAlign = "left";
-        hudCanvasContext.fillText("Score: " + mainPlayer.score, 0, window.innerHeight);
-    };
-
-    let hudCanvasClear = function () {
-        hudCanvasContext.clearRect(0, 0, window.innerWidth, window.innerHeight);
-    };
-
-    let drawFPS = function (elapsed) {
-        let FPS = parseInt(1000 / elapsed);
-
-        hudCanvasContext.font = constants.graphics.TEXT_STYLE;
-        hudCanvasContext.fillStyle = constants.graphics.TEXT_COLOR;
-
-        hudCanvasContext.textBaseline = "top";
-        hudCanvasContext.textAlign = "left";
-        hudCanvasContext.fillText("FPS: " + FPS, 0, 0);
-    };
-
     /**
      * Update gem canvas object to follow the updates in the gemObject
      *
@@ -174,6 +150,15 @@ export default function () {
         else { // Player existed and still -> update radius
             playerObject.setRadius(playerObject.radius);
         }
+    };
+
+    module.drawScore = function () {
+        hudCanvasContext.font = constants.graphics.TEXT_STYLE;
+        hudCanvasContext.fillStyle = constants.graphics.TEXT_COLOR;
+
+        hudCanvasContext.textBaseline = "bottom";
+        hudCanvasContext.textAlign = "left";
+        hudCanvasContext.fillText("Score: " + mainPlayer.score, 0, window.innerHeight);
     };
 
     /**
@@ -301,10 +286,43 @@ export default function () {
         pop();
     };
 
-    let preventCanvasTouchMove = function (canvas) {
-        canvas.addEventListener('touchmove', function (e) {
-            e.preventDefault();
-        }, false);
+    /**
+     * Fill stars array
+     */
+    let fillStars = function () {
+        let n = constants.graphics.STARS_COUNT;
+
+        while (n--) {
+            stars.push({
+                canvasX: ((Math.random() * 2 - 1) * 2),
+                canvasY: ((Math.random() * 2 - 1) * 2),
+                color: constants.graphics.STAR_COLOR,
+                radius: constants.graphics.STAR_RADIUS
+            });
+        }
+    };
+
+    /**
+     * Add stars to background
+     */
+    let drawStars = function () {
+        let n = constants.graphics.STARS_COUNT;
+
+        while (n--) {
+            if (isObjectInsideMyViewWindow(stars[n]))
+                drawCircle(stars[n]);
+        }
+    };
+
+    let drawFPS = function (elapsed) {
+        let FPS = parseInt(1000 / elapsed);
+
+        hudCanvasContext.font = constants.graphics.TEXT_STYLE;
+        hudCanvasContext.fillStyle = constants.graphics.TEXT_COLOR;
+
+        hudCanvasContext.textBaseline = "top";
+        hudCanvasContext.textAlign = "left";
+        hudCanvasContext.fillText("FPS: " + FPS, 0, 0);
     };
 
     /**
@@ -334,32 +352,14 @@ export default function () {
         return canvas;
     };
 
-    /**
-     * Add stars to background
-     */
-    let drawStars = function () {
-        let n = constants.graphics.STARS_COUNT;
-
-        while (n--) {
-            if (isObjectInsideMyViewWindow(stars[n]))
-                drawCircle(stars[n]);
-        }
+    let preventCanvasTouchMove = function (canvas) {
+        canvas.addEventListener('touchmove', function (e) {
+            e.preventDefault();
+        }, false);
     };
 
-    /**
-     * Fill stars array
-     */
-    let fillStars = function () {
-        let n = constants.graphics.STARS_COUNT;
-
-        while (n--) {
-            stars.push({
-                canvasX: ((Math.random() * 2 - 1) * 2),
-                canvasY: ((Math.random() * 2 - 1) * 2),
-                color: constants.graphics.STAR_COLOR,
-                radius: constants.graphics.STAR_RADIUS
-            });
-        }
+    let clearHudCanvas = function () {
+        hudCanvasContext.clearRect(0, 0, window.innerWidth, window.innerHeight);
     };
 
     /**
