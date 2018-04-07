@@ -37,15 +37,19 @@ export default function () {
      *
      * @param player the player to be moved.
      * @param isMe is this player the main player?
-     * @param isLerping is the game forcing server input due to delays?
+     * @param gameEnv to check if game is lerping
      */
-    module.movePlayer = function (player, isMe, isLerping) {
-        if (!isLerping) {
+    module.movePlayer = function (player, isMe, gameEnv) {
+        if (!gameEnv.lerping) {
             updatePlayerPosition(player);
+            gameEnv.noLerpingCount++;
         }
         else {
+            gameEnv.lerpingCount++;
             movePlayerToPosition(player, {x: player.x, y: player.y});
         }
+
+        gameEnv.lerpingRatio = (gameEnv.lerpingCount / (gameEnv.lerpingCount + gameEnv.noLerpingCount));
     };
 
     /**

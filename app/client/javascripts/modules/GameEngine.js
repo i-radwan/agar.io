@@ -24,7 +24,7 @@ export default function (gameStatus, serverGameStatus) {
     };
 
     module.drawGame = function (lag, elapsed) {
-        uiEngine.draw(lag, elapsed);
+        uiEngine.draw(lag, elapsed, gameStatus.status.env.lerpingRatio);
     };
 
     module.updateGameStatus = function () {
@@ -36,7 +36,7 @@ export default function (gameStatus, serverGameStatus) {
 
         // Move players
         gameStatus.status.players.concat(gameStatus.status.me).forEach(function (player) {
-            physicsEngine.movePlayer(player, player.id === gameStatus.status.me.id, gameStatus.status.env.lerping);
+            physicsEngine.movePlayer(player, player.id === gameStatus.status.me.id, gameStatus.status.env);
         });
     };
 

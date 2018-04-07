@@ -11,7 +11,10 @@ export default function () {
             gameWidth: 4 * window.innerWidth,
             gameHeight: 4 * window.innerHeight,
             serverResponseReceived: false,
-            lerping: false
+            lerping: false,
+            lerpingCount: 0,
+            noLerpingCount: 0,
+            lerpingRatio: 0
         },
         anglesQueue: {
             mouseAngles: [{id: 0, angles: []}],
