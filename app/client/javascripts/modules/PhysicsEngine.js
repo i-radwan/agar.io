@@ -27,7 +27,10 @@ export default function () {
         player.angle = angleAndDistance.angle;
 
         // Push this angle to be sent to server
-        anglesQueue.mouseAngles[anglesQueue.mouseAngles.length - 1].angles.push(angleAndDistance.angle);
+        anglesQueue.mouseAngles[anglesQueue.mouseAngles.length - 1].angles.push({
+            angle: angleAndDistance.angle,
+            timestamp: Date.now()
+        });
         anglesQueue.anglesBufferSize++;
     };
 
