@@ -27,9 +27,6 @@ class Room {
         this.deletedGemsIDs = [];
         this.newGems = {};
 
-        // The killed players IDs.
-        this.killedPlayersIDs = [];
-
         // Create a quad tree to carry gems
         let quadTree = new QuadTree(0, new Rectangle(0, 0, gameConfig.GAME_SIZE, gameConfig.GAME_SIZE));
 
@@ -171,28 +168,24 @@ class Room {
      */
     killPlayer(playerID) {
         delete this.game.players[playerID];
-
-        this.killedPlayersIDs.push(playerID);
     };
 
     /**
      * Get current game status
      *
      * @param firstTime indicates new player joining the room
-     * @returns {{_id: *, Players: *, killedPlayersIDs: Array, newGems: ( []|*), deletedGemsIDs: Array}}
+     * @returns {{_id: *, Players: *, newGems: ( []|*), deletedGemsIDs: Array}}
      */
     getGameStatus(firstTime) {
         let gameStatus = {
             _id: this.game._id,
             players: this.game.players,
-            killedPlayersIDs: this.killedPlayersIDs,
             newGems: (firstTime ? this.game.gems : this.newGems),
             deletedGemsIDs: this.deletedGemsIDs
         };
 
         gameStatus = JSON.stringify(gameStatus);
 
-        this.killedPlayersIDs = [];
         this.deletedGemsIDs = [];
         this.newGems = {};
 
