@@ -5,7 +5,7 @@ const Player = require("./Player");
 const QuadTree = require("./QuadTree");
 const Rectangle = require("./Rectangle");
 
-const EPSILON = 0.0001;
+const EPSILON = 0.000001;
 const COLORS = ["red", "green", "blue", "yellow", "orange", "purple", "pink"];
 
 class Room {
@@ -44,11 +44,10 @@ class Room {
      */
     addPlayer() {
         // TODO @Samir55 select using quad trees
-        // Generate random position. (normalized)
-        let x = ((Math.random() * 2 - 1) * gameConfig.GAME_SIZE);
-        let y = ((Math.random() * 2 - 1) * gameConfig.GAME_SIZE);
 
-        x = y = 0;
+        // Generate random position (normalized)
+        let x = ((Math.random() * 2 - 1));
+        let y = ((Math.random() * 2 - 1));
 
         this.game.players[this.nextPlayerID] = (new Player(
             this.nextPlayerID, [x, y], COLORS[this.nextPlayerID % COLORS.length]
@@ -65,9 +64,9 @@ class Room {
 
         for (let i = Object.keys(this.game.gems).length; i < gameConfig.ROOM_MAX_GEMS; i++) {
 
-            // Generate random positions.
-            let x = ((Math.random() * 2 - 1) * gameConfig.GAME_SIZE);
-            let y = ((Math.random() * 2 - 1) * gameConfig.GAME_SIZE);
+            // Generate random positions (normalized)
+            let x = ((Math.random() * 2 - 1));
+            let y = ((Math.random() * 2 - 1));
 
             let color = Math.floor(Math.random() * COLORS.length);
 

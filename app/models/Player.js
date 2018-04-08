@@ -1,6 +1,8 @@
 // Player model class
 const gameConfig = require("../configs/GameConfig")().gameConfig;
 
+const EPSILON = 0.000001;
+
 class Player {
     /**
      * Player constructor
@@ -30,8 +32,15 @@ class Player {
      * Move player
      */
     movePlayer() {
-        this.x += Math.cos(this.angle) * this.velocity;
-        this.y += Math.sin(this.angle) * this.velocity;
+        let newX = this.x + Math.cos(this.angle) * this.velocity;
+        let newY = this.y + Math.sin(this.angle) * this.velocity;
+
+        if (-1 - newX < EPSILON && 1 - newX > EPSILON) {
+            this.x = newX;
+        }
+        if (-1 - newY < EPSILON && 1 - newY > EPSILON) {
+            this.y = newY;
+        }
     }
 
     /**
