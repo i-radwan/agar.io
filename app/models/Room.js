@@ -5,7 +5,6 @@ const Player = require("./Player");
 const QuadTree = require("./QuadTree");
 const Rectangle = require("./Rectangle");
 
-const EPSILON = 0.000001;
 const COLORS = ["red", "green", "blue", "yellow", "orange", "purple", "pink"];
 
 class Room {
@@ -32,7 +31,6 @@ class Room {
         this.killedPlayersIDs = [];
 
         // Create a quad tree to carry gems
-        // ToDo @SAMRA -> ALERT!! -> Note that the game coordinates are all normalized
         let quadTree = new QuadTree(0, new Rectangle(0, 0, gameConfig.GAME_SIZE, gameConfig.GAME_SIZE));
 
         // Add default gems
@@ -279,7 +277,7 @@ class Room {
 
         let radiiSumSquared = (playerA.radius + playerB.radius) * (playerA.radius + playerB.radius);
 
-        return radiiSumSquared - distanceSquared > EPSILON && Room.calculatePlayerArea(playerA) - 1.1 * Room.calculatePlayerArea(playerB) > EPSILON;
+        return radiiSumSquared - distanceSquared > gameConfig.EPSILON && Room.calculatePlayerArea(playerA) - 1.1 * Room.calculatePlayerArea(playerB) > gameConfig.EPSILON;
     }
 
     /**

@@ -10,7 +10,7 @@ function GameConfig() {
 
     module.gameConfig = {
         PORT: 3000,
-        GAME_SIZE: GAME_SIZE * SCALE_FACTOR,
+        GAME_SIZE: GAME_SIZE,
         ROOM_MAX_PLAYERS: 5,
         ROOM_MAX_GEMS: 300,
         SIMULATE_RUN_RATE: 1000 / 40,
@@ -23,7 +23,8 @@ function GameConfig() {
         INITIAL_PLAYER_RADIUS: 30 * SCALE_FACTOR,
         QUAD_TREE_NODE_MAX_OBJECTS: 15,
         QUAD_TREE_MAX_LEVELS: 5,
-        SCALE_FACTOR: SCALE_FACTOR
+        SCALE_FACTOR: SCALE_FACTOR,
+        EPSILON: 0.000001
     };
 
     return module;
