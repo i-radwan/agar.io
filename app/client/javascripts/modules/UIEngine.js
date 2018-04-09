@@ -310,9 +310,6 @@ export default function () {
     };
 
     let drawLerpingCount = function (lerpingRatio) {
-        hudCanvasContext.font = constants.graphics.TEXT_STYLE;
-        hudCanvasContext.fillStyle = constants.graphics.TEXT_COLOR;
-
         hudCanvasContext.textBaseline = "top";
         hudCanvasContext.textAlign = "left";
         hudCanvasContext.fillText("LC: " + lerpingRatio, 150, 0);
@@ -321,18 +318,12 @@ export default function () {
     let drawFPS = function (elapsed) {
         let FPS = parseInt(1000 / elapsed);
 
-        hudCanvasContext.font = constants.graphics.TEXT_STYLE;
-        hudCanvasContext.fillStyle = constants.graphics.TEXT_COLOR;
-
         hudCanvasContext.textBaseline = "top";
         hudCanvasContext.textAlign = "left";
         hudCanvasContext.fillText("FPS: " + FPS, 0, 0);
     };
 
     let drawScore = function () {
-        hudCanvasContext.font = constants.graphics.TEXT_STYLE;
-        hudCanvasContext.fillStyle = constants.graphics.TEXT_COLOR;
-
         hudCanvasContext.textBaseline = "bottom";
         hudCanvasContext.textAlign = "left";
         hudCanvasContext.fillText("Score: " + mainPlayer.score, 0, window.innerHeight);
@@ -353,6 +344,9 @@ export default function () {
 
         hudCanvas.width = Number(window.innerWidth);
         hudCanvas.height = Number(window.innerHeight);
+
+        hudCanvasContext.font = constants.graphics.TEXT_STYLE;
+        hudCanvasContext.fillStyle = constants.graphics.TEXT_COLOR;
 
         // For frame-rate optimization ? https://forum.processing.org/two/discussion/11462/help-in-p5-js-performance-improvement-on-mobile-devices
         canvas.elt.style.width = '100%';
