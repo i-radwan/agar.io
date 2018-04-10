@@ -95,32 +95,10 @@ class Room {
             player.movePlayer();
 
             // Check gem eaten & update score of the player
-            for (let gemID in this.game.gems) {
-                if (!this.game.gems.hasOwnProperty(gemID)) continue;
-                let gem = this.game.gems[gemID];
+            this.checkIfPlayerAteGem(player);
 
-                if (Room.playerAteGem(player, gem)) {
-                    this.removeGem(player.id, gemID);
-                }
-            }
-
-            for (let playerBID in this.game.players) {
-                if (!this.game.players.hasOwnProperty(playerBID)) continue;
-
-                if (playerBID === playerID) continue;
-
-                let playerB = this.game.players[playerBID];
-                if (!playerB.alive) continue;
-
-                if (Room.playerAtePlayer(player, playerB)) {
-                    player.incrementScore(playerB.score);
-                    this.killPlayer(playerB.id);
-                }
-                else if (Room.playerAtePlayer(playerB, player)) {
-                    playerB.incrementScore(playerB.score);
-                    this.killPlayer(player.id);
-                }
-            }
+            // Check player eaten & update score of the player
+            this.checkIfPlayerAtePlayer(player);
         }
     };
 
@@ -152,6 +130,37 @@ class Room {
         }
 
         return true;
+    };
+
+    checkIfPlayerAteGem(player) {
+        for (let gemID in this.game.gems) {
+            if (!this.game.gems.hasOwnProperty(gemID)) continue;
+            let gem = this.game.gems[gemID];
+
+            if (Room.playerAteGem(player, gem)) {
+                this.removeGem(player.id, gemID);
+            }
+        }
+    };
+
+    checkIfPlayerAtePlayer(player) {
+        for (let playerBID in this.game.players) {
+            if (!this.game.players.hasOwnProperty(playerBID)) continue;
+
+            if (playerBID === player.id) continue;
+
+            let playerB = this.game.players[playerBID];
+            if (!playerB.alive) continue;
+
+            if (Room.playerAtePlayer(player, playerB)) {
+                player.incrementScore(playerB.score);
+                this.killPlayer(playerB.id);
+            }
+            else if (Room.playerAtePlayer(playerB, player)) {
+                playerB.incrementScore(playerB.score);
+                this.killPlayer(player.id);
+            }
+        }
     };
 
     /**
