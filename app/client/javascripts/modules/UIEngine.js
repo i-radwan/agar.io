@@ -23,7 +23,6 @@ export default function () {
 
         // Remove strokes
         strokeWeight(0);
-        strokeWeight(0);
     };
 
     /**
