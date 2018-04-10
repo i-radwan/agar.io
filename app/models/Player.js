@@ -30,8 +30,15 @@ class Player {
      * Move player
      */
     movePlayer() {
-        this.x += Math.cos(this.angle) * this.velocity;
-        this.y += Math.sin(this.angle) * this.velocity;
+        let newX = this.x + Math.cos(this.angle) * this.velocity;
+        let newY = this.y + Math.sin(this.angle) * this.velocity;
+
+        if (-1 - newX < gameConfig.EPSILON && 1 - newX > gameConfig.EPSILON) {
+            this.x = newX;
+        }
+        if (-1 - newY < gameConfig.EPSILON && 1 - newY > gameConfig.EPSILON) {
+            this.y = newY;
+        }
     }
 
     /**

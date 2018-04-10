@@ -5,7 +5,6 @@ const Player = require("./Player");
 const QuadTree = require("./QuadTree");
 const Rectangle = require("./Rectangle");
 
-const EPSILON = 0.0001;
 const COLORS = ["red", "green", "blue", "yellow", "orange", "purple", "pink"];
 
 class Room {
@@ -28,11 +27,7 @@ class Room {
         this.deletedGemsIDs = [];
         this.newGems = {};
 
-        // The killed players IDs.
-        this.killedPlayersIDs = [];
-
         // Create a quad tree to carry gems
-        // ToDo @SAMRA -> ALERT!! -> Note that the game coordinates are all normalized
         let quadTree = new QuadTree(0, new Rectangle(0, 0, gameConfig.GAME_SIZE, gameConfig.GAME_SIZE));
 
         // Add default gems
@@ -44,11 +39,10 @@ class Room {
      */
     addPlayer() {
         // TODO @Samir55 select using quad trees
-        // Generate random position. (normalized)
-        let x = ((Math.random() * 2 - 1) * gameConfig.GAME_SIZE);
-        let y = ((Math.random() * 2 - 1) * gameConfig.GAME_SIZE);
 
-        x = y = 0;
+        // Generate random position (normalized)
+        let x = ((Math.random() * 2 - 1));
+        let y = ((Math.random() * 2 - 1));
 
         this.game.players[this.nextPlayerID] = (new Player(
             this.nextPlayerID, [x, y], COLORS[this.nextPlayerID % COLORS.length]
@@ -65,9 +59,9 @@ class Room {
 
         for (let i = Object.keys(this.game.gems).length; i < gameConfig.ROOM_MAX_GEMS; i++) {
 
-            // Generate random positions.
-            let x = ((Math.random() * 2 - 1) * gameConfig.GAME_SIZE);
-            let y = ((Math.random() * 2 - 1) * gameConfig.GAME_SIZE);
+            // Generate random positions (normalized)
+            let x = ((Math.random() * 2 - 1));
+            let y = ((Math.random() * 2 - 1));
 
             let color = Math.floor(Math.random() * COLORS.length);
 
@@ -174,28 +168,24 @@ class Room {
      */
     killPlayer(playerID) {
         delete this.game.players[playerID];
-
-        this.killedPlayersIDs.push(playerID);
     };
 
     /**
      * Get current game status
      *
      * @param firstTime indicates new player joining the room
-     * @returns {{_id: *, Players: *, killedPlayersIDs: Array, newGems: ( []|*), deletedGemsIDs: Array}}
+     * @returns {{_id: *, Players: *, newGems: ( []|*), deletedGemsIDs: Array}}
      */
     getGameStatus(firstTime) {
         let gameStatus = {
             _id: this.game._id,
             players: this.game.players,
-            killedPlayersIDs: this.killedPlayersIDs,
             newGems: (firstTime ? this.game.gems : this.newGems),
             deletedGemsIDs: this.deletedGemsIDs
         };
 
         gameStatus = JSON.stringify(gameStatus);
 
-        this.killedPlayersIDs = [];
         this.deletedGemsIDs = [];
         this.newGems = {};
 
@@ -280,7 +270,7 @@ class Room {
 
         let radiiSumSquared = (playerA.radius + playerB.radius) * (playerA.radius + playerB.radius);
 
-        return radiiSumSquared - distanceSquared > EPSILON && Room.calculatePlayerArea(playerA) - 1.1 * Room.calculatePlayerArea(playerB) > EPSILON;
+        return radiiSumSquared - distanceSquared > gameConfig.EPSILON && Room.calculatePlayerArea(playerA) - 1.1 * Room.calculatePlayerArea(playerB) > gameConfig.EPSILON;
     }
 
     /**
