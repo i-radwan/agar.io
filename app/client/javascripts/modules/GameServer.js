@@ -23,6 +23,7 @@ export default function (gameStatus, serverGameStatus) {
      */
     module.sendAngle = function () {
         let angles = gameStatus.status.anglesQueue.mouseAngles.slice(-1)[0];
+        angles.timestamp = Date.now();
 
         _socket.emit('angle', angles);
 

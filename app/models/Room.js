@@ -84,12 +84,14 @@ class Room {
 
         player.lastReceivedAngleID = anglesBuffer.id;
 
-        // ToDo uncomment this check
-        // if (!this.checkAngles(anglesBuffer, player.lastAngleTimeStamp)) return;
+        if (!this.checkAngles(anglesBuffer, player.lastAngleTimeStamp)) return;
 
+        player.lastAngleTimeStamp = anglesBuffer.timestamp;
+
+        // Update physics using all received angles
         for (let i = 0; i < anglesBuffer.angles.length; i++) {
             // Set user angle
-            this.setPlayerAngle(playerID, anglesBuffer.angles[i].angle);
+            this.setPlayerAngle(playerID, anglesBuffer.angles[i]);
 
             // Move player
             player.movePlayer();
@@ -102,29 +104,18 @@ class Room {
         }
     };
 
-    checkAngles(angle, lastAngleTimeStamp) {
-        //ToDo
-        // Check if all angles are sent in ascending order
-        for (let i = 1; i < angle.length; i++) {
-            if (angle[i].timestamp < angle[i - 1].timestamp) {
-                // ToDo cheating
-                return false;
-            }
-        }
+    checkAngles(anglesBuffer, lastAngleTimeStamp) {
+        // Check if the sent timestamp is in the future
+        if (anglesBuffer.timestamp > Date.now()) return false;
 
-        // Check if sending angles faster than sending rate
-        if (angle[0].timestamp - lastAngleTimeStamp < (1000 / 120) * 3) {
-            // ToDo cheating
-            return false;
-        }
-        // Tries to send valid angles by going to future
-        if (angle[angle.length - 1].timestamp > Date.now()) {
-            // ToDo cheating
-            return false;
-        }
+        // Check for # of sent angles and if they could occur in this delta time(since last send)
+        // keeping room for time functions differences (1 extra angle)
+        if (Math.ceil((anglesBuffer.timestamp - lastAngleTimeStamp) / gameConfig.UPDATE_PHYSICS_THRESHOLD) <
+            anglesBuffer.angles.length - 1) return false;
 
-        // Check if the angles are sent very early (bad connection)
-        if (Date.now() - angle[0].timestamp > 1000) {
+        // Check if the sent angles are too old (bad connection)
+        if (Date.now() - anglesBuffer.timestamp > 1000) {
+            // ToDo @Samir
             // ToDo bad connection
             return false;
         }
