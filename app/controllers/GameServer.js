@@ -46,13 +46,13 @@ class GameServer {
         });
 
         // Regenerate game gems
-        setInterval(self.regenerateGems, GameConfig.REGENERATE_GEMS_RATE);
+        setInterval(self.regenerateGems.bind(self), GameConfig.REGENERATE_GEMS_RATE);
 
         // Send room statuses to clients
-        setInterval(self.sendRoomsGameStatuses, GameConfig.SEND_GAME_STATUSES_RATE);
+        setInterval(self.sendRoomsGameStatuses.bind(self), GameConfig.SEND_GAME_STATUSES_RATE);
 
         // Send room leader boards to clients
-        // setInterval(self§.sendRoomsLeaderBoards, GameConfig.SEND_LEADER_BOARD_RATE);
+        // setInterval(self.sendRoomsLeaderBoards, GameConfig.SEND_LEADER_BOARD_RATE);
     };
 
     addNewPlayer(playerSocketID) {
