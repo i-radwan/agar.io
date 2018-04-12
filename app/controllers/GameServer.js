@@ -5,7 +5,6 @@ let express = require('express');
 let app = express();
 let path = require('path');
 let http = require('http').Server(app);
-let io = require('socket.io')(http);
 
 // Game modules
 const Room = require("../models/Room");
@@ -20,7 +19,10 @@ function GameServer(gameConfig) {
     let gamePlayers = {};
     let gameRooms = {};
 
-    let __socket = io;
+    let __socket = require('socket.io')(http, {
+        pingInterval: 10000,
+        pingTimeout: 5000,
+    });
 
     let roomsExist = false;
     let nextRoomID = 0;
