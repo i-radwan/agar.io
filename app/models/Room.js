@@ -96,6 +96,8 @@ class Room {
             // Check player eaten & update score of the player
             this.checkIfPlayerAtePlayer(player);
         }
+
+        this.updateLeaderBoard();
     };
 
     checkAngles(anglesBuffer, lastAngleTimeStamp) {
@@ -181,7 +183,8 @@ class Room {
             _id: this.game._id,
             players: this.game.players,
             newGems: (firstTime ? this.game.gems : this.newGems),
-            deletedGemsIDs: this.deletedGemsIDs
+            deletedGemsIDs: this.deletedGemsIDs,
+            leaderBoard: this.leaderBoard
         };
 
         gameStatus = JSON.stringify(gameStatus);
@@ -195,19 +198,19 @@ class Room {
     /**
      * Get the top (currently 5) players.
      */
-    getLeaderBoard() {
+    updateLeaderBoard() {
         // Create a new array holding each player id and his score
         this.leaderBoard = [];
 
         for (let i = 0; i < Object.keys(this.game.players).length; i++) {
+            if (!this.game.players.hasOwnProperty(i)) continue;
+
             let player = this.game.players[i];
             this.leaderBoard.push({player: player.id, score: player.score});
         }
 
         // Sort that array according to the highest score
         this.leaderBoard.sort(Player.compareScore);
-
-        return this.leaderBoard;
     }
 
     /**
