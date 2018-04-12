@@ -1,4 +1,4 @@
-const gameConfig = require("../configs/GameConfig")().gameConfig;
+const GameConfig = require("../configs/GameConfig")();
 
 // Gem model class
 class Gem {
@@ -17,7 +17,7 @@ class Gem {
 
         this.color = color;
 
-        this.radius = gameConfig.GEM_RADIUS;
+        this.radius = GameConfig.GEM_RADIUS;
     }
 }
 

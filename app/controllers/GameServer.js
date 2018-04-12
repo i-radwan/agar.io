@@ -1,19 +1,8 @@
-/**
- * Created by ASamir on 3/10/18.
- */
-let express = require('express');
-let app = express();
-let path = require('path');
-let http = require('http').Server(app);
-let io = require('socket.io')(http);
-
-// Game modules
+// Imports
+const GameConfig = require("../configs/GameConfig")();
 const Room = require("../models/Room");
 
-// Routes
-require('../routes/index')(app, express);
-
-function GameServer(gameConfig) {
+function GameServer(http, io) {
     let module = {};
 
     // All game players and all game rooms
@@ -52,18 +41,18 @@ function GameServer(gameConfig) {
 
         });
 
-        http.listen(gameConfig.PORT, function () {
-            console.log('listening on *: ', gameConfig.PORT);
+        http.listen(GameConfig.PORT, function () {
+            console.log('listening on *: ', GameConfig.PORT);
         });
 
         // Regenerate game gems
-        setInterval(module.regenerateGems, gameConfig.REGENERATE_GEMS_RATE);
+        setInterval(module.regenerateGems, GameConfig.REGENERATE_GEMS_RATE);
 
         // Send room statuses to clients
-        setInterval(module.sendRoomsGameStatuses, gameConfig.SEND_GAME_STATUSES_RATE);
+        setInterval(module.sendRoomsGameStatuses, GameConfig.SEND_GAME_STATUSES_RATE);
 
         // Send room leader boards to clients
-        // setInterval(module.sendRoomsLeaderBoards, gameConfig.SEND_LEADER_BOARD_RATE);
+        // setInterval(module.sendRoomsLeaderBoards, GameConfig.SEND_LEADER_BOARD_RATE);
     };
 
     module.addNewPlayer = function (playerSocketID) {
@@ -72,7 +61,7 @@ function GameServer(gameConfig) {
         // Search for any game having a free slot
         for (let room in gameRooms) {
             let gameRoom = gameRooms[room];
-            if (gameRoom.getPlayersCount() < gameConfig.ROOM_MAX_PLAYERS) {
+            if (gameRoom.getPlayersCount() < GameConfig.ROOM_MAX_PLAYERS) {
                 roomID = gameRoom.id;
             }
         }

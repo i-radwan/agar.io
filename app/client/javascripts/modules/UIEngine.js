@@ -303,15 +303,15 @@ export default function () {
      * @param elapsed
      */
     let drawHUDs = function (elapsed, lerpingRatio) {
-        drawLerpingCount(lerpingRatio);
+        drawLerpingRatio(lerpingRatio);
         drawFPS(elapsed);
         drawScore();
     };
 
-    let drawLerpingCount = function (lerpingRatio) {
+    let drawLerpingRatio = function (lerpingRatio) {
         hudCanvasContext.textBaseline = "top";
         hudCanvasContext.textAlign = "left";
-        hudCanvasContext.fillText("LC: " + lerpingRatio, 150, 0);
+        hudCanvasContext.fillText("LR: " + lerpingRatio, 150, 0);
     };
 
     let drawFPS = function (elapsed) {
