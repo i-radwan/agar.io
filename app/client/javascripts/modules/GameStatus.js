@@ -1,15 +1,8 @@
-/**
- * Created by ibrahimradwan on 3/3/18.
- */
-
 export default function () {
     let module = {};
 
     module.status = {
         env: {
-            scoreObject: {},
-            gameWidth: 4 * window.innerWidth,
-            gameHeight: 4 * window.innerHeight,
             serverResponseReceived: false,
             lerping: false,
             lerpingCount: 0,

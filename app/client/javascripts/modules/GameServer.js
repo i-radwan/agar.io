@@ -1,6 +1,3 @@
-/**
- * Created by ibrahimradwan on 3/3/18.
- */
 import Constants from "./Constants.js";
 
 export default function (gameStatus, serverGameStatus) {

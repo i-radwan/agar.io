@@ -1,7 +1,3 @@
-/**
- * Created by ibrahimradwan on 4/5/18.
- */
-
 export default function () {
     return {
         general: {

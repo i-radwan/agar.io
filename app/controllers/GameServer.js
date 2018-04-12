@@ -3,8 +3,7 @@ const GameConfig = require("../configs/GameConfig")();
 const Room = require("../models/Room");
 
 class GameServer {
-    constructor(http, io) {
-        this.http = http;
+    constructor(io) {
         this.io = io;
 
         // All game players and all game rooms
@@ -39,10 +38,6 @@ class GameServer {
             socket.on('disconnect', function () {
                 self.removePlayer(socket.id);
             })
-        });
-
-        self.http.listen(GameConfig.PORT, function () {
-            console.log('listening on *: ', GameConfig.PORT);
         });
 
         // Regenerate game gems

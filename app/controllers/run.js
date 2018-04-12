@@ -5,6 +5,7 @@ const path = require('path');
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 const GameServer = require("./GameServer");
+const GameConfig = require("../configs/GameConfig")();
 
 //
 // Routing Module
@@ -21,8 +22,11 @@ app.get('/', function (req, res) {
 // Game Server Modules
 //
 // Start http listening
+http.listen(GameConfig.PORT, function () {
+    console.log('listening on *: ', GameConfig.PORT);
+});
 
 // Start server
-let server = new GameServer(http, io);
+let server = new GameServer(io);
 
 server.init();
