@@ -2,65 +2,65 @@
 const GameConfig = require("../configs/GameConfig")();
 const Room = require("../models/Room");
 
-function GameServer(http, io) {
-    let module = {};
+class GameServer {
+    constructor(http, io) {
+        this.http = http;
+        this.io = io;
 
-    // All game players and all game rooms
-    let gamePlayers = {};
-    let gameRooms = {};
+        // All game players and all game rooms
+        this.gamePlayers = {};
+        this.gameRooms = {};
 
-    let __socket = io;
+        this.roomsExist = false;
+        this.nextRoomID = 0;
+    }
 
-    let roomsExist = false;
-    let nextRoomID = 0;
+    init() {
+        let self = this;
 
-    module.init = function () {
-
-        __socket.on('connection', function (socket) {
-
+        self.io.on('connection', function (socket) {
             // Add new player to a room upon receiving subscription message
             socket.on('subscribe', function () {
-                roomsExist = true;
-                socket.join(module.addNewPlayer(socket.id));
+                self.roomsExist = true;
+                socket.join(self.addNewPlayer(socket.id));
             });
 
             // Updates player's angle
             socket.on('angle', function (anglesBuffer) {
-                module.updatePlayerPosition(socket.id, anglesBuffer);
+                self.updatePlayerPosition(socket.id, anglesBuffer);
             });
 
             // Send player info for the first time he join
             socket.on('player_info', function (newPlayerInfo) {
-                module.setNewPlayerInfo(socket.id, newPlayerInfo);
+                self.setNewPlayerInfo(socket.id, newPlayerInfo);
             });
 
             // Remove player on disconnection
             socket.on('disconnect', function () {
-                module.removePlayer(socket.id);
+                self.removePlayer(socket.id);
             })
-
         });
 
-        http.listen(GameConfig.PORT, function () {
+        self.http.listen(GameConfig.PORT, function () {
             console.log('listening on *: ', GameConfig.PORT);
         });
 
         // Regenerate game gems
-        setInterval(module.regenerateGems, GameConfig.REGENERATE_GEMS_RATE);
+        setInterval(self.regenerateGems, GameConfig.REGENERATE_GEMS_RATE);
 
         // Send room statuses to clients
-        setInterval(module.sendRoomsGameStatuses, GameConfig.SEND_GAME_STATUSES_RATE);
+        setInterval(self.sendRoomsGameStatuses, GameConfig.SEND_GAME_STATUSES_RATE);
 
         // Send room leader boards to clients
-        // setInterval(module.sendRoomsLeaderBoards, GameConfig.SEND_LEADER_BOARD_RATE);
+        // setInterval(self§.sendRoomsLeaderBoards, GameConfig.SEND_LEADER_BOARD_RATE);
     };
 
-    module.addNewPlayer = function (playerSocketID) {
+    addNewPlayer(playerSocketID) {
         let roomID = -1;
 
         // Search for any game having a free slot
-        for (let room in gameRooms) {
-            let gameRoom = gameRooms[room];
+        for (let room in this.gameRooms) {
+            let gameRoom = this.gameRooms[room];
             if (gameRoom.getPlayersCount() < GameConfig.ROOM_MAX_PLAYERS) {
                 roomID = gameRoom.id;
             }
@@ -68,87 +68,85 @@ function GameServer(http, io) {
 
         if (roomID === -1) {
             // All rooms are full, create a new one
-            roomID = nextRoomID++;
-            gameRooms[roomID] = new Room(roomID);
+            roomID = this.nextRoomID++;
+            this.gameRooms[roomID] = new Room(roomID);
         }
 
-        let playerID = gameRooms[roomID].addPlayer();
-        gamePlayers[playerSocketID] = {roomID, playerID};
+        let playerID = this.gameRooms[roomID].addPlayer();
+        this.gamePlayers[playerSocketID] = {roomID, playerID};
 
-        module.sendPlayerInfo(playerSocketID, playerID, roomID);
+        this.sendPlayerInfo(playerSocketID, playerID, roomID);
 
         return roomID;
     };
 
-    module.sendPlayerInfo = function (playerSocketID, playerID, roomID) {
+    sendPlayerInfo(playerSocketID, playerID, roomID) {
         let playerInfo = {};
         playerInfo.id = playerID;
         playerInfo.lastReceivedAngleID = -1;
 
-        __socket.to(playerSocketID).emit('player_info', playerInfo);
-        __socket.to(playerSocketID).emit('game_status', gameRooms[roomID].getGameStatus(true));
+        this.io.to(playerSocketID).emit('player_info', playerInfo);
+        this.io.to(playerSocketID).emit('game_status', this.gameRooms[roomID].getGameStatus(true));
     };
 
-    module.updatePlayerPosition = function (playerSocketID, anglesBuffer) {
-        if (!gamePlayers.hasOwnProperty(playerSocketID)) return;
+    updatePlayerPosition(playerSocketID, anglesBuffer) {
+        if (!this.gamePlayers.hasOwnProperty(playerSocketID)) return;
 
-        let playerID = gamePlayers[playerSocketID].playerID;
-        let roomID = gamePlayers[playerSocketID].roomID;
+        let playerID = this.gamePlayers[playerSocketID].playerID;
+        let roomID = this.gamePlayers[playerSocketID].roomID;
 
-        if (gameRooms[roomID].isPlayerAlive(playerID)) {
-            gameRooms[roomID].simulatePlayer(playerID, anglesBuffer);
+        if (this.gameRooms[roomID].isPlayerAlive(playerID)) {
+            this.gameRooms[roomID].simulatePlayer(playerID, anglesBuffer);
         }
     };
 
-    module.setNewPlayerInfo = function (playerSocketID, newPlayerInfo) {
-        let playerID = gamePlayers[playerSocketID].playerID;
-        let roomID = gamePlayers[playerSocketID].roomID;
+    setNewPlayerInfo(playerSocketID, newPlayerInfo) {
+        let playerID = this.gamePlayers[playerSocketID].playerID;
+        let roomID = this.gamePlayers[playerSocketID].roomID;
 
-        if (gameRooms[roomID].isPlayerAlive(playerID)) {
-            gameRooms[roomID].setPlayerInfo(playerID, newPlayerInfo);
+        if (this.gameRooms[roomID].isPlayerAlive(playerID)) {
+            this.gameRooms[roomID].setPlayerInfo(playerID, newPlayerInfo);
         }
     };
 
-    module.removePlayer = function (playerSocketID) {
-        if (!gamePlayers.hasOwnProperty(playerSocketID)) return;
+    removePlayer(playerSocketID) {
+        if (!this.gamePlayers.hasOwnProperty(playerSocketID)) return;
 
         console.log("a Player Disconnected");
 
-        let playerID = gamePlayers[playerSocketID].playerID;
-        let roomID = gamePlayers[playerSocketID].roomID;
+        let playerID = this.gamePlayers[playerSocketID].playerID;
+        let roomID = this.gamePlayers[playerSocketID].roomID;
 
-        if (gameRooms[roomID].isPlayerAlive(playerID)) {
-            gameRooms[roomID].killPlayer(playerID);
+        if (this.gameRooms[roomID].isPlayerAlive(playerID)) {
+            this.gameRooms[roomID].killPlayer(playerID);
         }
     };
 
-    module.sendRoomsGameStatuses = function () {
+    sendRoomsGameStatuses() {
         // Loop over all game rooms and run simulate
-        for (let room in gameRooms) {
-            let gameRoom = gameRooms[room];
-            __socket.in(gameRoom.id).emit('game_status', gameRoom.getGameStatus(false));
+        for (let room in this.gameRooms) {
+            let gameRoom = this.gameRooms[room];
+            this.io.in(gameRoom.id).emit('game_status', gameRoom.getGameStatus(false));
         }
     };
 
-    module.regenerateGems = function () {
-        if (!roomsExist) return;
+    regenerateGems() {
+        if (!this.roomsExist) return;
 
         // Loop over all game rooms and run simulate
-        for (let room in gameRooms) {
-            let gameRoom = gameRooms[room];
+        for (let room in this.gameRooms) {
+            let gameRoom = this.gameRooms[room];
             gameRoom.addGems();
         }
     };
 
-    module.sendRoomsLeaderBoards = function () {
+    sendRoomsLeaderBoards() {
         // Loop over all game rooms and send leader board
-        for (let room in gameRooms) {
-            let gameRoom = gameRooms[room];
-            __socket.in(gameRoom.id).emit('game_leader_board', gameRoom.getLeaderBoard());
+        for (let room in this.gameRooms) {
+            let gameRoom = this.gameRooms[room];
+            this.io.in(gameRoom.id).emit('game_leader_board', gameRoom.getLeaderBoard());
         }
     };
-
-    return module;
 }
 
 module.exports = GameServer;

@@ -232,7 +232,7 @@ export default function () {
         };
 
         drawCircle(centerCircle);
-        // drawCircle(serverCenterCircle);
+        drawCircle(serverCenterCircle);
     };
 
     /**

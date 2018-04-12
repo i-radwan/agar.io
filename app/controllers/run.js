@@ -4,6 +4,7 @@ const app = express();
 const path = require('path');
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
+const GameServer = require("./GameServer");
 
 //
 // Routing Module
@@ -19,6 +20,9 @@ app.get('/', function (req, res) {
 //
 // Game Server Modules
 //
-const GameServer = new require("./GameServer")(http, io);
+// Start http listening
 
-GameServer.init();
+// Start server
+let server = new GameServer(http, io);
+
+server.init();
