@@ -241,6 +241,8 @@ class Room {
      * @param angle
      */
     setPlayerAngle(playerID, angle) {
+        if (!this.game.players.hasOwnProperty(playerID)) return;
+
         this.game.players[playerID].angle = angle;
     }
 
