@@ -19,7 +19,8 @@ function GameConfig() {
         QUAD_TREE_MAX_LEVELS: 5,
         SCALE_FACTOR: SCALE_FACTOR,
         UPDATE_PHYSICS_THRESHOLD: 15,
-        EPSILON: 0.000001
+        EPSILON: 0.000001,
+        PING_TIMEOUT: 5000
     };
 }
 
