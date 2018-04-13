@@ -1,5 +1,8 @@
+import Constants from "./Constants.js";
+
 export default function () {
     let module = {};
+    let constants = Constants();
 
     module.status = {
         env: {
@@ -37,6 +40,24 @@ export default function () {
         syncPlayers(serverGameStatus.players);
 
         module.status.env.serverResponseReceived = false;
+    };
+
+    /**
+     * Remove old items from angles buffer until size <= MAX_ANGLES_BUFFER_SIZE
+     */
+    module.enforceAnglesBufferMaxSize = function () {
+        console.log("Free");
+        // Check if the anglesBuffer is getting filled, remove rows until condition is broken
+        while (module.status.anglesQueue.anglesBufferSize > constants.general.MAX_ANGLES_BUFFER_SIZE) {
+            // Size to be decremented from the total buffer size (of the first row)
+            let size = module.status.anglesQueue.mouseAngles[0].angles.length;
+
+            // Remove the first row
+            module.status.anglesQueue.mouseAngles.splice(0, 1);
+
+            // Decrease the size
+            module.status.anglesQueue.anglesBufferSize -= size;
+        }
     };
 
     let syncGems = function (serverGameNewGems, serverGameDeletedGems) {

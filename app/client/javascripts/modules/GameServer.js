@@ -1,8 +1,5 @@
-import Constants from "./Constants.js";
-
 export default function (gameStatus, serverGameStatus) {
     let module = {};
-    let constants = Constants();
     let connectionEstablished = false;
     let _socket = io();
 
@@ -25,18 +22,7 @@ export default function (gameStatus, serverGameStatus) {
         _socket.emit('angle', angles);
 
         gameStatus.status.anglesQueue.mouseAngles.push({id: ++gameStatus.status.anglesQueue.lastAngleID, angles: []});
-
-        // Check if the anglesBuffer is getting filled, remove rows until condition is broken
-        while (gameStatus.status.anglesQueue.anglesBufferSize > constants.general.MAX_ANGLES_BUFFER_SIZE) {
-            // Size to be decremented from the total buffer size (of the first row)
-            let size = gameStatus.status.anglesQueue.mouseAngles[0].angles.length;
-
-            // Remove the first row
-            gameStatus.status.anglesQueue.mouseAngles.splice(0, 1);
-
-            // Decrease the size
-            gameStatus.status.anglesQueue.anglesBufferSize -= size;
-        }
+        gameStatus.enforceAnglesBufferMaxSize();
     };
 
     let setupReceivers = function (startGame) {
