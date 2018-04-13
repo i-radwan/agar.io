@@ -3,7 +3,11 @@ const express = require('express');
 const app = express();
 const path = require('path');
 const http = require('http').Server(app);
-const io = require('socket.io')(http);
+const io = require('socket.io')(http, {
+    pingInterval: 10000,
+    pingTimeout: 5000,
+});
+
 const GameServer = require("./GameServer");
 const GameConfig = require("../configs/GameConfig")();
 

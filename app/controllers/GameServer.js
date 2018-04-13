@@ -45,9 +45,6 @@ class GameServer {
 
         // Send room statuses to clients
         setInterval(self.sendRoomsGameStatuses.bind(self), GameConfig.SEND_GAME_STATUSES_RATE);
-
-        // Send room leader boards to clients
-        // setInterval(self.sendRoomsLeaderBoards, GameConfig.SEND_LEADER_BOARD_RATE);
     };
 
     addNewPlayer(playerSocketID) {
@@ -132,14 +129,6 @@ class GameServer {
         for (let room in this.gameRooms) {
             let gameRoom = this.gameRooms[room];
             gameRoom.addGems();
-        }
-    };
-
-    sendRoomsLeaderBoards() {
-        // Loop over all game rooms and send leader board
-        for (let room in this.gameRooms) {
-            let gameRoom = this.gameRooms[room];
-            this.io.in(gameRoom.id).emit('game_leader_board', gameRoom.getLeaderBoard());
         }
     };
 }
