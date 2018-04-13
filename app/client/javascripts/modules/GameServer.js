@@ -16,12 +16,22 @@ export default function (gameStatus, serverGameStatus) {
      * Send my angle to the server
      */
     module.sendAngle = function () {
+        // Get last angles row
         let angles = gameStatus.status.anglesQueue.mouseAngles.slice(-1)[0];
+
+        // If empty don't continue
+        if (angles.angles.length <= 0) return;
+
+        // Stamp the angles packet
         angles.timestamp = Date.now();
 
+        // Transmit
         _socket.emit('angle', angles);
 
+        // Push new row for new angles
         gameStatus.status.anglesQueue.mouseAngles.push({id: ++gameStatus.status.anglesQueue.lastAngleID, angles: []});
+
+        // Enforce the max size
         gameStatus.enforceAnglesBufferMaxSize();
     };
 

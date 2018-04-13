@@ -26,6 +26,8 @@ class GameServer {
 
             // Updates player's angle
             socket.on('angle', function (anglesBuffer) {
+                console.log(anglesBuffer);
+
                 self.updatePlayerPosition(socket.id, anglesBuffer);
             });
 
