@@ -1,12 +1,10 @@
-/**
- * Created by ibrahimradwan on 3/2/18.
- */
 // Imports
 import GameStatus from "./modules/GameStatus.js";
 import GameEngine from "./modules/GameEngine.js";
 import GameServer from "./modules/GameServer.js";
 import Constants from "./modules/Constants.js";
 
+// Initialize p5 library
 new p5();
 
 // Main game canvasObject

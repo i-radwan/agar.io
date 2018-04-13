@@ -1,7 +1,7 @@
 /**
  * Created by ASamir on 3/11/18.
  */
-const gameConfig = require("../configs/GameConfig")().gameConfig;
+const GameConfig = require("../configs/GameConfig")();
 const Rectangle = require("./Rectangle");
 
 // Quad tree class
@@ -94,7 +94,7 @@ class QuadTree {
         this.bodies.push(body);
 
         // Check if the current node exceeds it max objects limit
-        if (this.bodies.length > gameConfig.QUAD_TREE_NODE_MAX_OBJECTS && this.level < gameConfig.QUAD_TREE_MAX_LEVELS) {
+        if (this.bodies.length > GameConfig.QUAD_TREE_NODE_MAX_OBJECTS && this.level < GameConfig.QUAD_TREE_MAX_LEVELS) {
             if (this.nodes.length > 0) {
                 this.split();
             }

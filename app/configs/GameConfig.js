@@ -1,14 +1,8 @@
-/**
- * Created by ASamir on 3/10/18.
- */
-
 function GameConfig() {
-    let module = {};
-
     let GAME_SIZE = 6000;
     let SCALE_FACTOR = 2 / GAME_SIZE;
 
-    module.gameConfig = {
+    return {
         PORT: 3000,
         GAME_SIZE: GAME_SIZE,
         ROOM_MAX_PLAYERS: 5,
@@ -25,10 +19,9 @@ function GameConfig() {
         QUAD_TREE_MAX_LEVELS: 5,
         SCALE_FACTOR: SCALE_FACTOR,
         UPDATE_PHYSICS_THRESHOLD: 15,
-        EPSILON: 0.000001
+        EPSILON: 0.000001,
+        PING_TIMEOUT: 5000
     };
-
-    return module;
 }
 
 module.exports = GameConfig;
