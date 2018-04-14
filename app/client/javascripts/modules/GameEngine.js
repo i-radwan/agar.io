@@ -86,6 +86,7 @@ export default function (gameStatus, serverGameStatus) {
     };
 
     let forceServerPositions = function () {
+        console.log("FORCE");
         // Move players to server position
         gameStatus.status.players.concat(gameStatus.status.me).forEach(function (player) {
             physicsEngine.forceServerPosition(player);

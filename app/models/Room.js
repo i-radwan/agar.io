@@ -78,7 +78,9 @@ class Room {
 
         player.lastReceivedAngleID = anglesBuffer.id;
 
-        if (!this.checkAngles(anglesBuffer, player.lastAngleTimeStamp)) return;
+        if (!this.checkAngles(anglesBuffer, player.lastAngleTimeStamp)) {
+            console.log(anglesBuffer, player.lastAngleTimeStamp);
+        }
 
         player.lastAngleTimeStamp = anglesBuffer.timestamp;
 
