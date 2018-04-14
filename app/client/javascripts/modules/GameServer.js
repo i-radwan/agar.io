@@ -19,9 +19,6 @@ export default function (gameStatus, serverGameStatus) {
         // Get last angles row
         let angles = gameStatus.status.anglesQueue.mouseAngles.slice(-1)[0];
 
-        // If empty don't continue
-        if (angles.angles.length <= 0) return;
-
         // Stamp the angles packet
         angles.timestamp = Date.now();
 

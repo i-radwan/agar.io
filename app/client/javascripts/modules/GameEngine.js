@@ -34,9 +34,11 @@ export default function (gameStatus, serverGameStatus) {
         // Increase deltas to prepare for physics and forcing positions steps
         increaseTimers();
 
-        applyPhysics();
+        // If server status received
+        checkServerResponse();
 
-        forceServerPositions();
+        // Move players
+        applyPhysics();
 
         // Draw the game
         drawGame();
@@ -46,12 +48,12 @@ export default function (gameStatus, serverGameStatus) {
         uiEngine.draw(timers.lagToHandlePhysics, timers.elapsed, gameStatus.status.env.lerpingRatio);
     };
 
-    let updateGameStatus = function () {
-        // If server status received
-        checkServerResponse();
-
+    let updateGamePhysics = function () {
         // Get mouse angle
-        physicsEngine.getMouseAngle(gameStatus.status.me, {x: mouseX, y: mouseY}, gameStatus.status.anglesQueue);
+        physicsEngine.getMouseAngle(gameStatus.status.me, {
+            x: mouseX,
+            y: mouseY
+        }, gameStatus.status.anglesQueue, gameStatus.status.env.lerping);
 
         // Move players
         gameStatus.status.players.concat(gameStatus.status.me).forEach(function (player) {
@@ -68,25 +70,28 @@ export default function (gameStatus, serverGameStatus) {
     };
 
     let applyPhysics = function () {
+        // Lag is to much, happens with tab out, let's roll back to server now!
+        if (timers.lagToHandlePhysics > constants.general.FORCE_SERVER_POSITIONS_TIME) {
+            forceServerPositions();
+            return;
+        }
+
         // Perform physics in a loop by the number of the threshold spent before getting here again
         while (timers.lagToHandlePhysics >= constants.general.UPDATE_PHYSICS_THRESHOLD) {
             // Update the game status (My location, players, gems, score, ... etc) and physics
-            updateGameStatus();
+            updateGamePhysics();
 
             timers.lagToHandlePhysics -= constants.general.UPDATE_PHYSICS_THRESHOLD;
         }
     };
 
     let forceServerPositions = function () {
-        // Force server positions every FORCE_SERVER_POSITIONS_TIME
-        if (timers.forceServerPositionsTimer > constants.general.FORCE_SERVER_POSITIONS_TIME) {
-            // Move players to server position
-            gameStatus.status.players.forEach(function (player) {
-                physicsEngine.forceServerPosition(player);
-            });
+        // Move players to server position
+        gameStatus.status.players.concat(gameStatus.status.me).forEach(function (player) {
+            physicsEngine.forceServerPosition(player);
+        });
 
-            timers.forceServerPositionsTimer = 0;
-        }
+        timers.lagToHandlePhysics = 0;
     };
 
     /**

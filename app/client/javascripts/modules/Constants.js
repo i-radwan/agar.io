@@ -4,7 +4,7 @@ export default function () {
             SEND_ANGLE_TO_SERVER_RATE: (1000 / 120) * 10, // milliseconds
             MAX_ANGLES_BUFFER_SIZE: 20,
             UPDATE_PHYSICS_THRESHOLD: 15,
-            FORCE_SERVER_POSITIONS_TIME: 5000
+            FORCE_SERVER_POSITIONS_TIME: 1000
         },
         physics: {
             MOVEMENT_INTERPOLATION_FACTOR: 0.5

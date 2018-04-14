@@ -46,7 +46,6 @@ export default function () {
      * Remove old items from angles buffer until size <= MAX_ANGLES_BUFFER_SIZE
      */
     module.enforceAnglesBufferMaxSize = function () {
-        console.log("Free");
         // Check if the anglesBuffer is getting filled, remove rows until condition is broken
         while (module.status.anglesQueue.anglesBufferSize > constants.general.MAX_ANGLES_BUFFER_SIZE) {
             // Size to be decremented from the total buffer size (of the first row)
@@ -114,7 +113,6 @@ export default function () {
     };
 
     let syncAnglesBuffer = function (meOnServer) {
-
         // If the server sends same angle acceptance again
         if (module.status.anglesQueue.lastReceivedAngleID === meOnServer.lastReceivedAngleID) return;
 
@@ -140,8 +138,9 @@ export default function () {
             // Flush the buffer
             module.status.anglesQueue.mouseAngles = module.status.anglesQueue.mouseAngles.splice(-1, 1);
 
-            // Set new size with the size of the top row only
-            module.status.anglesQueue.anglesBufferSize = module.status.anglesQueue.mouseAngles[0].angles.length;
+            // Remove the taken angles so far, we don't want to send to server anything new until we reach its position
+            module.status.anglesQueue.anglesBufferSize = 0;
+            module.status.anglesQueue.mouseAngles[0].angles = [];
 
             // Start lerping to server position
             module.status.env.lerping = true;
