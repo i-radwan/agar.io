@@ -23,8 +23,6 @@ export default function (gameStatus, serverGameStatus) {
         angles.timestamp = Date.now();
 
         // Transmit
-        console.log(angles);
-
         _socket.emit('angle', angles);
 
         // Push new row for new angles

@@ -42,10 +42,8 @@ export default function () {
         if (!gameEnv.lerping) {
             gameEnv.noLerpingCount++;
             updatePlayerPosition(player);
-            console.log("NOT_______________________LERP");
         }
         else {
-            console.log("LERP");
             gameEnv.lerpingCount++;
             movePlayerToPosition(player, {x: player.x, y: player.y});
         }

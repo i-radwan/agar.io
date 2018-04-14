@@ -134,7 +134,7 @@ export default function () {
         }
 
         // Server is failing behind with huge margin -> ignore local -> lerp to server
-        if (!serverKeepingUp && !module.status.env.lerping) {
+        if ((!serverKeepingUp || meOnServer.forcePosition) && !module.status.env.lerping) {
             // Flush the buffer
             module.status.anglesQueue.mouseAngles = module.status.anglesQueue.mouseAngles.splice(-1, 1);
 

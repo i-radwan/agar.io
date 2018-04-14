@@ -78,8 +78,9 @@ class Room {
 
         player.lastReceivedAngleID = anglesBuffer.id;
 
-        if (!this.checkAngles(anglesBuffer, player.lastAngleTimeStamp)) {
-            console.log(anglesBuffer, player.lastAngleTimeStamp);
+        if ((player.forcePosition = !this.checkAngles(anglesBuffer, player.lastAngleTimeStamp)) ||
+            anglesBuffer.angles.length <= 0) {
+            return;
         }
 
         player.lastAngleTimeStamp = anglesBuffer.timestamp;
@@ -104,17 +105,14 @@ class Room {
 
     checkAngles(anglesBuffer, lastAngleTimeStamp) {
         // Check if the sent timestamp is in the future
-        if (anglesBuffer.timestamp > Date.now()) return false;
+        if (anglesBuffer.timestamp > Date.now()) {
+            return false;
+        }
 
         // Check for # of sent angles and if they could occur in this delta time(since last send)
         // keeping room for time functions differences (1 extra angle)
         if (Math.ceil((anglesBuffer.timestamp - lastAngleTimeStamp) / GameConfig.UPDATE_PHYSICS_THRESHOLD) <
-            anglesBuffer.angles.length - 1) return false;
-
-        // Check if the sent angles are too old (bad connection)
-        if (Date.now() - anglesBuffer.timestamp > 1000) {
-            // ToDo @Samir
-            // ToDo bad connection
+            anglesBuffer.angles.length - 1) {
             return false;
         }
 

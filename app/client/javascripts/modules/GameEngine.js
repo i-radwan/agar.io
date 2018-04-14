@@ -71,7 +71,7 @@ export default function (gameStatus, serverGameStatus) {
 
     let applyPhysics = function () {
         // Lag is to much, happens with tab out, let's roll back to server now!
-        if (timers.lagToHandlePhysics > constants.general.FORCE_SERVER_POSITIONS_TIME) {
+        if (timers.lagToHandlePhysics > constants.general.FORCE_SERVER_POSITIONS_TIME || gameStatus.status.me.forcePosition) {
             forceServerPositions();
             return;
         }
@@ -86,7 +86,6 @@ export default function (gameStatus, serverGameStatus) {
     };
 
     let forceServerPositions = function () {
-        console.log("FORCE");
         // Move players to server position
         gameStatus.status.players.concat(gameStatus.status.me).forEach(function (player) {
             physicsEngine.forceServerPosition(player);
