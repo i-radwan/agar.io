@@ -16,6 +16,7 @@ class GameServer {
 
     init() {
         let self = this;
+        module.LRAI = 0;
 
         self.io.on('connection', function (socket) {
             // Add new player to a room upon receiving subscription message
@@ -26,6 +27,8 @@ class GameServer {
 
             // Updates player's angle
             socket.on('angle', function (anglesBuffer) {
+                console.log(anglesBuffer.id - module.LRAI, anglesBuffer.angles.length);
+                module.LRAI = anglesBuffer.id;
                 self.updatePlayerPosition(socket.id, anglesBuffer);
             });
 

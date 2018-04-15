@@ -45,7 +45,8 @@ export default function () {
         }
         else {
             gameEnv.lerpingCount++;
-            movePlayerToPosition(player, {x: player.x, y: player.y});
+            module.forceServerPosition(player);
+            // movePlayerToPosition(player, {x: player.x, y: player.y});
         }
 
         gameEnv.lerpingRatio = (gameEnv.lerpingCount / (gameEnv.lerpingCount + gameEnv.noLerpingCount));

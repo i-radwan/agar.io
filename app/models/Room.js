@@ -78,10 +78,10 @@ class Room {
 
         player.lastReceivedAngleID = anglesBuffer.id;
 
-        if ((player.forcePosition = !this.checkAngles(anglesBuffer, player.lastAngleTimeStamp)) ||
-            anglesBuffer.angles.length <= 0) {
-            return;
-        }
+        // if ((player.forcePosition = !this.checkAngles(anglesBuffer, player.lastAngleTimeStamp)) ||
+        //     anglesBuffer.angles.length <= 0) {
+        //     return;
+        // }
 
         player.lastAngleTimeStamp = anglesBuffer.timestamp;
 
