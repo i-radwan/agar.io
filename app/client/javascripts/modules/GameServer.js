@@ -50,6 +50,11 @@ export default function (gameStatus, serverGameStatus) {
                 connectionEstablished = true;
             }
         });
+
+        // Receive pong from the server to get latency
+        _socket.on('pong', function (ms) {
+            gameStatus.status.env.ping = ms;
+        });
     };
 
     return module;

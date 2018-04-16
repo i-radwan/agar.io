@@ -7,6 +7,7 @@ export default function () {
     module.status = {
         env: {
             serverResponseReceived: false,
+            ping: 0,
             lerping: false,
             lerpingCount: 0,
             noLerpingCount: 0,
@@ -129,6 +130,11 @@ export default function () {
             // Remove the top value
             module.status.anglesQueue.mouseAngles.splice(0, 1);
 
+            if (module.status.env.lerping) {
+                module.status.me.canvasX = meOnServer.x;
+                module.status.me.canvasY = meOnServer.y;
+            }
+
             serverKeepingUp = true;
             module.status.env.lerping = false;
         }
@@ -142,11 +148,8 @@ export default function () {
             module.status.anglesQueue.anglesBufferSize = 0;
             module.status.anglesQueue.mouseAngles[0].angles = [];
 
-            module.status.me.canvasX = meOnServer.x;
-            module.status.me.canvasY = meOnServer.y;
-
             // Start lerping to server position
-            // module.status.env.lerping = true;
+            module.status.env.lerping = true;
         }
     };
 
