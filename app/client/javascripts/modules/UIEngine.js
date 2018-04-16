@@ -368,6 +368,9 @@ export default function () {
         hudCanvas = document.getElementById("hudCanvasId");
         hudCanvasContext = hudCanvas.getContext("2d");
 
+        // Listen for resizing the window
+        window.addEventListener('resize', windowResized);
+
         hudCanvas.width = Number(window.innerWidth);
         hudCanvas.height = Number(window.innerHeight);
 
@@ -383,6 +386,13 @@ export default function () {
         preventCanvasTouchMove(hudCanvas);
 
         return canvas;
+    };
+
+    let windowResized = function () {
+        resizeCanvas(window.innerWidth, window.innerHeight);
+
+        hudCanvas.width = Number(window.innerWidth);
+        hudCanvas.height = Number(window.innerHeight);
     };
 
     let preventCanvasTouchMove = function (canvas) {
