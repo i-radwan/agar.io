@@ -56,7 +56,7 @@ export default function () {
 
             // Update blob yOffset
             if (gameObjects[i].canvasObjectType === constants.graphics.CANVAS_OBJECT_PLAYER) {
-                gameObjects[i].yOffset += elapsed * constants.graphics.WABBLE_SPEED;
+                gameObjects[i].yOffset += elapsed * constants.graphics.WABBLE_SPEED / Math.sqrt(gameObjects[i].radius);
             }
         }
 
@@ -170,8 +170,16 @@ export default function () {
         translate(window.innerWidth / 2, window.innerHeight / 2);
 
         // Scaling (interpolated)
-        if ((targetZoom * mainPlayer.radius) > constants.graphics.MAX_ZOOM_THRESHOLD || (targetZoom * mainPlayer.radius) < constants.graphics.MIN_ZOOM_THRESHOLD)
-            targetZoom = constants.graphics.START_BLOB_RADIUS / mainPlayer.radius;
+        if (mainPlayer.radius >= constants.graphics.MAX_RADIUS_ZOOM_THRESHOLD) {
+            if (mainPlayer.radius <= constants.graphics.MAX_RADIUS_ZOOM_LEVEL)
+                targetZoom = constants.graphics.START_BLOB_RADIUS / mainPlayer.radius;
+            else
+                targetZoom = constants.graphics.START_BLOB_RADIUS / constants.graphics.MAX_RADIUS_ZOOM_LEVEL;
+        }
+        else {
+            targetZoom = constants.graphics.INITIAL_ZOOM;
+        }
+
 
         zoom = lerp(zoom, targetZoom * Math.sqrt((window.innerWidth * window.innerHeight) / (constants.graphics.GENERIC_WINDOW_AREA)), constants.graphics.ZOOM_INTERPOLATION_FACTOR);
         scale(zoom);
