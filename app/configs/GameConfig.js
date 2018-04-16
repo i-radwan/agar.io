@@ -6,7 +6,7 @@ function GameConfig() {
         PORT: 3000,
         GAME_SIZE: GAME_SIZE,
         ROOM_MAX_PLAYERS: 5,
-        ROOM_MAX_GEMS: 300,
+        ROOM_MAX_GEMS: 1000,
         SIMULATE_RUN_RATE: 1000 / 40,
         SEND_GAME_STATUSES_RATE: 40,
         REGENERATE_GEMS_RATE: 5000,

@@ -16,6 +16,7 @@ class GameServer {
 
     init() {
         let self = this;
+        module.LRAI = 0;
 
         self.io.on('connection', function (socket) {
             // Add new player to a room upon receiving subscription message

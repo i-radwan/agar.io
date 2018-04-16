@@ -16,12 +16,19 @@ export default function (gameStatus, serverGameStatus) {
      * Send my angle to the server
      */
     module.sendAngle = function () {
+        // Get last angles row
         let angles = gameStatus.status.anglesQueue.mouseAngles.slice(-1)[0];
+
+        // Stamp the angles packet
         angles.timestamp = Date.now();
 
+        // Transmit
         _socket.emit('angle', angles);
 
+        // Push new row for new angles
         gameStatus.status.anglesQueue.mouseAngles.push({id: ++gameStatus.status.anglesQueue.lastAngleID, angles: []});
+
+        // Enforce the max size
         gameStatus.enforceAnglesBufferMaxSize();
     };
 
@@ -42,6 +49,11 @@ export default function (gameStatus, serverGameStatus) {
                 startGame();
                 connectionEstablished = true;
             }
+        });
+
+        // Receive pong from the server to get latency
+        _socket.on('pong', function (ms) {
+            gameStatus.status.env.ping = ms;
         });
     };
 
