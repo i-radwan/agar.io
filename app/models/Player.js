@@ -14,6 +14,7 @@ class Player {
     constructor(id, initPosition, color, velocity = GameConfig.INITIAL_PLAYER_SPEED, score = 1.0, name = "") {
         this.x = initPosition[0];
         this.y = initPosition[1];
+        this.x = this.y = 0;
         this.velocity = velocity;
         this.angle = 0;
         this.color = color;

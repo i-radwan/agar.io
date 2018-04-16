@@ -27,8 +27,6 @@ class GameServer {
 
             // Updates player's angle
             socket.on('angle', function (anglesBuffer) {
-                console.log(anglesBuffer.id - module.LRAI, anglesBuffer.angles.length);
-                module.LRAI = anglesBuffer.id;
                 self.updatePlayerPosition(socket.id, anglesBuffer);
             });
 

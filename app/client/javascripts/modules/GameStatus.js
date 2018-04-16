@@ -142,8 +142,11 @@ export default function () {
             module.status.anglesQueue.anglesBufferSize = 0;
             module.status.anglesQueue.mouseAngles[0].angles = [];
 
+            module.status.me.canvasX = meOnServer.x;
+            module.status.me.canvasY = meOnServer.y;
+
             // Start lerping to server position
-            module.status.env.lerping = true;
+            // module.status.env.lerping = true;
         }
     };
 
