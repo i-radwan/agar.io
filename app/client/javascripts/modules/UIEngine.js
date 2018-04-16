@@ -54,8 +54,10 @@ export default function () {
             if (isObjectInsideMyViewWindow(gameObjects[i]))
                 gameObjects[i].draw();
 
-            // Update blob yOffset
+            // Update blob yOffset and display the player name
             if (gameObjects[i].canvasObjectType === constants.graphics.CANVAS_OBJECT_PLAYER) {
+                drawPlayerName(gameObjects[i]);
+
                 gameObjects[i].yOffset += elapsed * constants.graphics.WABBLE_SPEED / Math.sqrt(gameObjects[i].radius);
             }
         }
@@ -282,6 +284,16 @@ export default function () {
 
         endShape();
         pop();
+    };
+
+    /**
+     * Draw player names
+     */
+    let drawPlayerName = function (playerObject) {
+        textAlign(CENTER, CENTER);
+        textSize(playerObject.radius);
+        fill(255, 255, 255);
+        text(playerObject.name + "Test", playerObject.canvasX, playerObject.canvasY);
     };
 
     /**
