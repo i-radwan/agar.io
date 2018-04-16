@@ -39,7 +39,7 @@ export default function () {
      * @param gameEnv to check if game is lerping
      */
     module.movePlayer = function (player, isMe, gameEnv) {
-        if (!gameEnv.lerping) {
+        if (isMe && !gameEnv.lerping) {
             updatePlayerPosition(player);
         }
         else {
