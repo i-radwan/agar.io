@@ -35,10 +35,10 @@ class Player {
         let newX = this.x + Math.cos(this.angle) * this.velocity;
         let newY = this.y + Math.sin(this.angle) * this.velocity;
 
-        if (-1 - newX < GameConfig.EPSILON && 1 - newX > GameConfig.EPSILON) {
+        if (newX >= -1 && newX <= 1) {
             this.x = newX;
         }
-        if (-1 - newY < GameConfig.EPSILON && 1 - newY > GameConfig.EPSILON) {
+        if (newY >= -1 && newY <= 1) {
             this.y = newY;
         }
     }

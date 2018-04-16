@@ -75,9 +75,15 @@ export default function () {
      * @param player the player to be moved.
      */
     let updatePlayerPosition = function (player) {
-        // Move canvas object
-        player.canvasX += Math.cos(player.angle) * player.velocity;
-        player.canvasY += Math.sin(player.angle) * player.velocity;
+        let newCanvasX = player.canvasX + Math.cos(player.angle) * player.velocity;
+        let newCanvasY = player.canvasY + Math.sin(player.angle) * player.velocity;
+
+        if (newCanvasX >= constants.graphics.GAME_BORDER_LEFT && newCanvasX <= constants.graphics.GAME_BORDER_RIGHT) {
+            player.canvasX = newCanvasX;
+        }
+        if (newCanvasY >= constants.graphics.GAME_BORDER_DOWN && newCanvasY <= constants.graphics.GAME_BORDER_UP) {
+            player.canvasY = newCanvasY;
+        }
     };
 
     module.getAngleAndDistance = function (point1, point2) {

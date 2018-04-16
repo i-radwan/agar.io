@@ -10,6 +10,11 @@ export default function () {
             MOVEMENT_INTERPOLATION_FACTOR: 0.1
         },
         graphics: {
+            GAME_BORDER_LEFT: -1,
+            GAME_BORDER_RIGHT: 1,
+            GAME_BORDER_DOWN: -1,
+            GAME_BORDER_UP: 1,
+
             GAME_BACKGROUND: 0, // black
             GENERIC_WINDOW_AREA: 2000 * 1000,
             ZOOM_INTERPOLATION_FACTOR: 0.05,

@@ -99,8 +99,15 @@ export default function () {
         playerObject.strokeColor = constants.graphics.BLOB_STROKE_COLOR;
 
         playerObject.simulatePhysics = function (lag, direction) {
-            this.canvasX += Math.cos(this.angle) * this.velocity * (lag / constants.general.UPDATE_PHYSICS_THRESHOLD) * direction;
-            this.canvasY += Math.sin(this.angle) * this.velocity * (lag / constants.general.UPDATE_PHYSICS_THRESHOLD) * direction;
+            let newCanvasX = this.canvasX + Math.cos(this.angle) * this.velocity;
+            let newCanvasY = this.canvasY + Math.sin(this.angle) * this.velocity;
+
+            if (newCanvasX >= constants.graphics.GAME_BORDER_LEFT && newCanvasX <= constants.graphics.GAME_BORDER_RIGHT) {
+                this.canvasX += (newCanvasX - this.canvasX) *  (lag / constants.general.UPDATE_PHYSICS_THRESHOLD) * direction;
+            }
+            if (newCanvasY >= constants.graphics.GAME_BORDER_DOWN && newCanvasY <= constants.graphics.GAME_BORDER_UP) {
+                this.canvasY += (newCanvasY - this.canvasY)  *  (lag / constants.general.UPDATE_PHYSICS_THRESHOLD) * direction;
+            }
         };
 
         playerObject.interpolatePhysics = function (lag) {
@@ -240,7 +247,7 @@ export default function () {
         };
 
         drawCircle(centerCircle);
-        // drawCircle(serverCenterCircle);
+        drawCircle(serverCenterCircle);
     };
 
     /**
