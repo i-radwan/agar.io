@@ -31,7 +31,7 @@ export default function () {
      * @param lag the time between this function call and the last physics update
      * @param elapsed the time taken by previous game loop
      */
-    module.draw = function (lag, elapsed, lerpingRatio, ping) {
+    module.draw = function (lag, elapsed, ping) {
         // Interpolate some physics to handle lag
         for (let i = 0; i < gameObjects.length; i++) {
             gameObjects[i].interpolatePhysics(lag);
@@ -66,7 +66,7 @@ export default function () {
         clearHudCanvas();
 
         // Draw HUDs
-        drawHUDs(elapsed, lerpingRatio, ping);
+        drawHUDs(elapsed, ping);
 
         for (let i = 0; i < gameObjects.length; i++) {
             // Revert the applied physics
@@ -302,17 +302,10 @@ export default function () {
      *
      * @param elapsed
      */
-    let drawHUDs = function (elapsed, lerpingRatio, ping) {
-        drawLerpingRatio(lerpingRatio);
+    let drawHUDs = function (elapsed, ping) {
         drawFPS(elapsed);
         drawPing(ping);
         drawScore();
-    };
-
-    let drawLerpingRatio = function (lerpingRatio) {
-        hudCanvasContext.textBaseline = "top";
-        hudCanvasContext.textAlign = "left";
-        hudCanvasContext.fillText("LR: " + lerpingRatio, 150, 0);
     };
 
     let drawPing = function (ping) {

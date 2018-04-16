@@ -7,7 +7,7 @@ export default function () {
             FORCE_SERVER_POSITIONS_TIME: 3000
         },
         physics: {
-            MOVEMENT_INTERPOLATION_FACTOR: 0.5
+            MOVEMENT_INTERPOLATION_FACTOR: 0.1
         },
         graphics: {
             GAME_BACKGROUND: 0, // black

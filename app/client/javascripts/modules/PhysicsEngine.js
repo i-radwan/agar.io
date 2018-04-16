@@ -15,7 +15,7 @@ export default function () {
      * @param anglesQueue the queue that contains mouse angles (to be filled)
      */
     module.getMouseAngle = function (player, target, anglesQueue, lerping) {
-        if(lerping) return;
+        if (lerping) return;
 
         // To be changed when splitting happens (using get equivalent center)
         let angleAndDistance = module.getAngleAndDistance({
@@ -40,15 +40,11 @@ export default function () {
      */
     module.movePlayer = function (player, isMe, gameEnv) {
         if (!gameEnv.lerping) {
-            gameEnv.noLerpingCount++;
             updatePlayerPosition(player);
         }
         else {
-            gameEnv.lerpingCount++;
             movePlayerToPosition(player, {x: player.x, y: player.y});
         }
-
-        gameEnv.lerpingRatio = (gameEnv.lerpingCount / (gameEnv.lerpingCount + gameEnv.noLerpingCount));
     };
 
     /**

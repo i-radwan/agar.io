@@ -10,8 +10,7 @@ export default function () {
             ping: 0,
             lerping: false,
             lerpingCount: 0,
-            noLerpingCount: 0,
-            lerpingRatio: 0
+            noLerpingCount: 0
         },
         anglesQueue: {
             mouseAngles: [{id: 0, angles: []}],

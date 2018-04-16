@@ -45,7 +45,7 @@ export default function (gameStatus, serverGameStatus) {
     };
 
     let drawGame = function () {
-        uiEngine.draw(timers.lagToHandlePhysics, timers.elapsed, gameStatus.status.env.lerpingRatio, gameStatus.status.env.ping);
+        uiEngine.draw(timers.lagToHandlePhysics, timers.elapsed, gameStatus.status.env.ping);
     };
 
     let updateGamePhysics = function () {
