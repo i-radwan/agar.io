@@ -97,13 +97,8 @@ export default function (gameStatus, serverGameStatus) {
      * Check if server has sent new updates, and update the canvas objects if response is received
      */
     let checkServerResponse = function () {
-        if (gameStatus.status.env.serverResponseReceived) {
-            // Update local gameStatus by serverGameStatus
-            gameStatus.set(serverGameStatus);
-
-            // Update canvas objects
-            updateCanvasObjects();
-        }
+        // Update canvas objects
+        updateCanvasObjects();
     };
 
     /**

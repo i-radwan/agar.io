@@ -19,7 +19,7 @@ class Room {
     constructor(id) {
         // Room id
         this.id = id;
-
+        this.iid = 0;
         // Room objects
         this.players = {};
         this.gems = {};
@@ -117,7 +117,6 @@ class Room {
     checkAngles(anglesBuffer, lastAngleTimeStamp) {
         // Check if the sent timestamp is in the future
         if (anglesBuffer.timestamp > Date.now()) {
-            console.log("F1");
             return false;
         }
 
@@ -144,9 +143,7 @@ class Room {
 
     checkIfPlayerAtePlayer(player) {
         for (let playerBID in this.players) {
-            if (!this.players.hasOwnProperty(playerBID)) continue;
-
-            if (playerBID === player.id) continue;
+            if (!this.players.hasOwnProperty(playerBID) || playerBID === player.id) continue;
 
             let playerB = this.players[playerBID];
             if (!playerB.alive) continue;
@@ -193,6 +190,7 @@ class Room {
     getGameStatus(firstTime) {
         let gameStatus = {
             _id: this.id,
+            iid: this.iid++,
             players: this.players,
             newGems: (firstTime ? this.gems : this.newGems),
             deletedGemsIDs: this.deletedGemsIDs,
@@ -200,6 +198,8 @@ class Room {
         };
 
         gameStatus = JSON.stringify(gameStatus);
+
+        if (firstTime) return gameStatus;
 
         this.deletedGemsIDs = [];
         this.newGems = {};
