@@ -109,7 +109,6 @@ class Room {
     checkAngles(anglesBuffer, lastAngleTimeStamp) {
         // Check if the sent timestamp is in the future
         if (anglesBuffer.timestamp > Date.now()) {
-            console.log("F1");
             return false;
         }
 
