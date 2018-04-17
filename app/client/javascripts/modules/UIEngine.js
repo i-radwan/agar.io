@@ -11,10 +11,13 @@ export default function (p5Lib) {
     let mainPlayer;
     let zoom = 1, targetZoom = 1, zoomFactor = 1;
     let hudCanvas, hudCanvasContext;
+    let playerNameTextFont;
 
     let constants = Constants();
 
     module.init = function () {
+        playerNameTextFont = p5Lib.loadFont(constants.graphics.PLAYER_NAME_TEXT_FONT_PATH);
+
         // Create canvas
         makeCanvas();
 
@@ -295,9 +298,15 @@ export default function (p5Lib) {
      */
     let drawPlayerName = function (playerObject) {
         p5Lib.textAlign(p5Lib.CENTER, p5Lib.CENTER);
-        p5Lib.textSize(playerObject.radius);
-        p5Lib.fill(255, 255, 255);
+        p5Lib.textSize(playerObject.radius * constants.graphics.PLAYER_NAME_TEXT_FONT_SCALE);
+        p5Lib.strokeWeight(playerObject.radius * constants.graphics.PLAYER_NAME_TEXT_FONT_STROKE_SCALE);
+        p5Lib.stroke(constants.graphics.PLAYER_NAME_TEXT_STROKE_COLOR);
+        p5Lib.textFont(playerNameTextFont);
+        p5Lib.fill(constants.graphics.PLAYER_NAME_TEXT_COLOR);
+
         p5Lib.text(playerObject.name + "Test", playerObject.canvasX, playerObject.canvasY);
+
+        p5Lib.strokeWeight(0);
     };
 
     /**
