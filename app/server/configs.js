@@ -20,7 +20,7 @@ function GameConfig() {
         SCALE_FACTOR: SCALE_FACTOR,
         UPDATE_PHYSICS_THRESHOLD: 15,
         EPSILON: 0.000001,
-        PING_TIMEOUT: 50000
+        PING_TIMEOUT: 5000
     };
 }
 
