@@ -1,5 +1,4 @@
 const GameConfig = require("../configs")();
-const Game = require("./Game");
 const Gem = require("./Gem");
 const Player = require("./Player");
 const QuadTree = require("./QuadTree");
