@@ -1,6 +1,5 @@
 export default function (gameStatus, serverGameStatus) {
     let module = {};
-    let connectionEstablished = false;
     let _socket = io();
 
     module.init = function (setupGameEngine) {
@@ -32,7 +31,7 @@ export default function (gameStatus, serverGameStatus) {
         gameStatus.status.anglesQueue.mouseAngles.push({id: ++gameStatus.status.anglesQueue.lastAngleID, angles: []});
 
         // Enforce the max size
-        gameStatus.enforceAnglesBufferMaxSize();
+        gameStatus.reduceAnglesBufferSize();
     };
 
     let setupReceivers = function (startGame) {
@@ -46,14 +45,16 @@ export default function (gameStatus, serverGameStatus) {
             gameStatus.status.env.serverResponseReceived = true;
 
             serverGameStatus = Object.assign(serverGameStatus, JSON.parse(receivedGameStatus));
+        });
 
-            // Start game
-            if (!connectionEstablished) {
-                gameStatus.init(serverGameStatus);
+        _socket.on('initial_game_status', function (receivedGameStatus) {
+            gameStatus.status.env.serverResponseReceived = true;
 
-                startGame();
-                connectionEstablished = true;
-            }
+            serverGameStatus = Object.assign(serverGameStatus, JSON.parse(receivedGameStatus));
+
+            gameStatus.init(serverGameStatus);
+
+            startGame();
         });
 
         _socket.on('disconnect', function () {

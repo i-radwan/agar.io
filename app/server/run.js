@@ -1,6 +1,6 @@
 // Imports
-const GameServer = require("./GameServer");
-const GameConfig = require("../configs/GameConfig")();
+const GameServer = require("./server");
+const GameConfig = require("./configs")();
 
 const express = require('express');
 const app = express();

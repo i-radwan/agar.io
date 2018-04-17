@@ -1,7 +1,7 @@
 /**
  * Created by ASamir on 3/11/18.
  */
-const GameConfig = require("../configs/GameConfig")();
+const GameConfig = require("../configs")();
 const Rectangle = require("./Rectangle");
 
 // Quad tree class

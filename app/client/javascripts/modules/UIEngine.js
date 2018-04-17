@@ -9,7 +9,7 @@ export default function (p5Lib) {
     let gameObjects = [];
     let stars = [];
     let mainPlayer;
-    let zoom = 1, targetZoom = 1;
+    let zoom = 1, targetZoom = 1, zoomFactor = 1;
     let hudCanvas, hudCanvasContext;
 
     let constants = Constants();
@@ -23,6 +23,9 @@ export default function (p5Lib) {
 
         // Remove strokes
         strokeWeight(0);
+
+        // Setup initial canvas sizing
+        updateGameSize();
     };
 
     /**
@@ -65,7 +68,7 @@ export default function (p5Lib) {
         p5Lib.pop();
 
         //Clear Hud Canvas
-        clearHudCanvas();
+        clearHUDCanvas();
 
         // Draw HUDs
         drawHUD(elapsed, ping);
@@ -187,8 +190,7 @@ export default function (p5Lib) {
             targetZoom = constants.graphics.INITIAL_ZOOM;
         }
 
-
-        zoom = p5Lib.lerp(zoom, targetZoom * Math.sqrt((window.innerWidth * window.innerHeight) / (constants.graphics.GENERIC_WINDOW_AREA)), constants.graphics.ZOOM_INTERPOLATION_FACTOR);
+        zoom = p5Lib.lerp(zoom, targetZoom * zoomFactor, constants.graphics.ZOOM_INTERPOLATION_FACTOR);
         p5Lib.scale(zoom);
 
         // Translate camera to player center
@@ -227,10 +229,10 @@ export default function (p5Lib) {
      */
     let drawBlob = function (blob) {
         // Draw the large noisy circle
-        drawNoisyCircle(blob, blob.radius * (1 + constants.graphics.MAX_BLOB_WABBLE_RADIUS_OFFSET), blob.strokeColor);
+        drawNoisyCircle(blob, blob.radius, blob.strokeColor);
 
         // Draw the small noisy circle
-        drawNoisyCircle(blob, blob.radius, blob.color);
+        drawNoisyCircle(blob, blob.radius * (1 - constants.graphics.MAX_BLOB_WABBLE_RADIUS_OFFSET), blob.color);
 
         // Draw My center and Server Center (Debugging)
         let serverCenterCircle = {
@@ -400,6 +402,9 @@ export default function (p5Lib) {
     };
 
     let updateGameSize = function () {
+        // Calculate screen specific zoom factor
+        zoomFactor = Math.sqrt((window.innerWidth * window.innerHeight) / (constants.graphics.GENERIC_WINDOW_AREA));
+
         p5Lib.resizeCanvas(window.innerWidth, window.innerHeight);
 
         hudCanvas.width = Number(window.innerWidth);
@@ -413,7 +418,7 @@ export default function (p5Lib) {
         });
     };
 
-    let clearHudCanvas = function () {
+    let clearHUDCanvas = function () {
         hudCanvasContext.clearRect(0, 0, window.innerWidth, window.innerHeight);
     };
 
@@ -423,8 +428,8 @@ export default function (p5Lib) {
      * @param object
      */
     let isObjectInsideMyViewWindow = function (object) {
-        let maxDistX = window.innerWidth / (2 * zoom);
-        let maxDistY = window.innerHeight / (2 * zoom);
+        let maxDistX = window.innerWidth / (zoom << 1);
+        let maxDistY = window.innerHeight / (zoom << 1);
 
         return Math.abs(object.canvasX - mainPlayer.canvasX) < maxDistX + object.radius &&
             Math.abs(object.canvasY - mainPlayer.canvasY) < maxDistY + object.radius;

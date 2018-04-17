@@ -1,6 +1,6 @@
 // Imports
-const GameConfig = require("../configs/GameConfig")();
-const Room = require("../models/Room");
+const GameConfig = require("./configs")();
+const Room = require("./models/Room");
 
 class GameServer {
     constructor(io) {
@@ -81,7 +81,7 @@ class GameServer {
         playerInfo.lastAngleTimeStamp = lastAngleTimeStamp;
 
         this.io.to(playerSocketID).emit('player_info', playerInfo);
-        this.io.to(playerSocketID).emit('game_status', this.gameRooms[roomID].getGameStatus(true));
+        this.io.to(playerSocketID).emit('initial_game_status', this.gameRooms[roomID].getGameStatus(true));
     };
 
     updatePlayerPosition(playerSocketID, anglesBuffer) {

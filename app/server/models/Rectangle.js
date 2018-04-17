@@ -1,7 +1,7 @@
 /**
  * Created by ASamir on 3/11/18.
  */
-const GameConfig = require("../configs/GameConfig")();
+const GameConfig = require("../configs")();
 
 // Gem model class
 class Rectangle {

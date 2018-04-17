@@ -59,7 +59,7 @@ export default function () {
     /**
      * Remove old items from angles buffer until size <= MAX_ANGLES_BUFFER_SIZE
      */
-    module.enforceAnglesBufferMaxSize = function () {
+    module.reduceAnglesBufferSize = function () {
         // Check if the anglesBuffer is getting filled, remove rows until condition is broken
         while (module.status.anglesQueue.anglesBufferSize > constants.general.MAX_ANGLES_BUFFER_SIZE) {
             // Size to be decremented from the total buffer size (of the first row)

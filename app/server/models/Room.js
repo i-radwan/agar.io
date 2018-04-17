@@ -1,4 +1,4 @@
-const GameConfig = require("../configs/GameConfig")();
+const GameConfig = require("../configs")();
 const Game = require("./Game");
 const Gem = require("./Gem");
 const Player = require("./Player");
@@ -13,8 +13,9 @@ class Room {
         // Room id
         this.id = id;
 
-        // Room game status
-        this.game = new Game(id);
+        // Room objects
+        this.players = {};
+        this.gems = {};
 
         // Room leader board
         this.leaderBoard = [];
@@ -48,7 +49,7 @@ class Room {
             this.nextPlayerID, [x, y], COLORS[this.nextPlayerID % COLORS.length]
         );
 
-        this.game.players[this.nextPlayerID] = player;
+        this.players[this.nextPlayerID] = player;
 
         this.nextPlayerID++;
 
@@ -59,9 +60,9 @@ class Room {
      * Add gems
      */
     addGems() {
-        if (Object.keys(this.game.gems).length >= GameConfig.ROOM_MAX_GEMS) return;
+        if (Object.keys(this.gems).length >= GameConfig.ROOM_MAX_GEMS) return;
 
-        for (let i = Object.keys(this.game.gems).length; i < GameConfig.ROOM_MAX_GEMS; i++) {
+        for (let i = Object.keys(this.gems).length; i < GameConfig.ROOM_MAX_GEMS; i++) {
 
             // Generate random positions (normalized)
             let x = ((Math.random() * 2 - 1));
@@ -69,8 +70,8 @@ class Room {
 
             let color = Math.floor(Math.random() * COLORS.length);
 
-            this.game.gems[this.nextGemID] = new Gem(this.nextGemID, [x, y], COLORS[color], 1);
-            this.newGems[this.nextGemID] = this.game.gems[this.nextGemID++];
+            this.gems[this.nextGemID] = new Gem(this.nextGemID, [x, y], COLORS[color], 1);
+            this.newGems[this.nextGemID] = this.gems[this.nextGemID++];
         }
     };
 
@@ -78,7 +79,7 @@ class Room {
      * Simulate single player
      */
     simulatePlayer(playerID, anglesBuffer) {
-        let player = this.game.players[playerID];
+        let player = this.players[playerID];
 
         let lastAngleTimeStamp = player.lastAngleTimeStamp;
         player.lastReceivedAngleID = anglesBuffer.id;
@@ -124,9 +125,9 @@ class Room {
     };
 
     checkIfPlayerAteGem(player) {
-        for (let gemID in this.game.gems) {
-            if (!this.game.gems.hasOwnProperty(gemID)) continue;
-            let gem = this.game.gems[gemID];
+        for (let gemID in this.gems) {
+            if (!this.gems.hasOwnProperty(gemID)) continue;
+            let gem = this.gems[gemID];
 
             if (Room.playerAteGem(player, gem)) {
                 this.removeGem(player.id, gemID);
@@ -135,12 +136,12 @@ class Room {
     };
 
     checkIfPlayerAtePlayer(player) {
-        for (let playerBID in this.game.players) {
-            if (!this.game.players.hasOwnProperty(playerBID)) continue;
+        for (let playerBID in this.players) {
+            if (!this.players.hasOwnProperty(playerBID)) continue;
 
             if (playerBID === player.id) continue;
 
-            let playerB = this.game.players[playerBID];
+            let playerB = this.players[playerBID];
             if (!playerB.alive) continue;
 
             if (Room.playerAtePlayer(player, playerB)) {
@@ -158,12 +159,12 @@ class Room {
      * Eat gems
      */
     removeGem(playerID, gemID) {
-        delete this.game.gems[gemID];
+        delete this.gems[gemID];
 
         this.deletedGemsIDs.push(gemID);
 
         // Update player's score
-        let player = this.game.players[playerID];
+        let player = this.players[playerID];
         player.incrementScore(1);
     };
 
@@ -173,7 +174,7 @@ class Room {
      * @param playerID
      */
     killPlayer(playerID) {
-        delete this.game.players[playerID];
+        delete this.players[playerID];
     };
 
     /**
@@ -184,9 +185,9 @@ class Room {
      */
     getGameStatus(firstTime) {
         let gameStatus = {
-            _id: this.game._id,
-            players: this.game.players,
-            newGems: (firstTime ? this.game.gems : this.newGems),
+            _id: this.id,
+            players: this.players,
+            newGems: (firstTime ? this.gems : this.newGems),
             deletedGemsIDs: this.deletedGemsIDs,
             leaderBoard: this.leaderBoard
         };
@@ -206,10 +207,10 @@ class Room {
         // Create a new array holding each player id and his score
         this.leaderBoard = [];
 
-        for (let i = 0; i < Object.keys(this.game.players).length; i++) {
-            if (!this.game.players.hasOwnProperty(i)) continue;
+        for (let i = 0; i < Object.keys(this.players).length; i++) {
+            if (!this.players.hasOwnProperty(i)) continue;
 
-            let player = this.game.players[i];
+            let player = this.players[i];
             this.leaderBoard.push({player: player.id, score: player.score});
         }
 
@@ -223,7 +224,7 @@ class Room {
      * @returns {Number}
      */
     getPlayersCount() {
-        return Object.keys(this.game.players).length;
+        return Object.keys(this.players).length;
     }
 
     /**
@@ -233,9 +234,9 @@ class Room {
      * @returns {boolean}
      */
     isPlayerAlive(playerID) {
-        if (!this.game.players.hasOwnProperty(playerID)) return false;
+        if (!this.players.hasOwnProperty(playerID)) return false;
 
-        return this.game.players[playerID].alive;
+        return this.players[playerID].alive;
     }
 
     /**
@@ -245,14 +246,14 @@ class Room {
      * @param angle
      */
     setPlayerAngle(playerID, angle) {
-        if (!this.game.players.hasOwnProperty(playerID)) return;
+        if (!this.players.hasOwnProperty(playerID)) return;
 
-        this.game.players[playerID].angle = angle;
+        this.players[playerID].angle = angle;
     }
 
     setPlayerInfo(playerID, newPlayerInfo) {
-        this.game.players[playerID].x = newPlayerInfo.x;
-        this.game.players[playerID].y = newPlayerInfo.y;
+        this.players[playerID].x = newPlayerInfo.x;
+        this.players[playerID].y = newPlayerInfo.y;
     }
 
     /**
