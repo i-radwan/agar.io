@@ -19,11 +19,12 @@ export default function (gameStatus, serverGameStatus) {
     };
 
     module.init = function () {
-        config();
+        // Initialize p5 library
+        module.p5Lib = new p5();
 
-        physicsEngine = PhysicsEngine();
+        physicsEngine = PhysicsEngine(module.p5Lib);
 
-        uiEngine = UIEngine();
+        uiEngine = UIEngine(module.p5Lib);
         uiEngine.init(); // Initial drawing
 
         // Draw initial game status
@@ -150,13 +151,6 @@ export default function (gameStatus, serverGameStatus) {
 
         // Fix z index of objects
         uiEngine.fixObjectsZIndex();
-    };
-
-    let config = function () {
-        // Stop scrolling for mobile devices
-        $('body').bind('touchmove', function (e) {
-            e.preventDefault();
-        });
     };
 
     return module;

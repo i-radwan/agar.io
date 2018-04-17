@@ -3,7 +3,7 @@
  */
 import Constants from "./Constants.js";
 
-export default function () {
+export default function (p5Lib) {
     let module = {};
 
     let gameObjects = [];
@@ -37,13 +37,13 @@ export default function () {
             gameObjects[i].interpolatePhysics(lag);
         }
 
-        push();
+        p5Lib.push();
 
         // Camera setup and translating to user location
         setupCamera();
 
         // Clear everything
-        background(constants.graphics.GAME_BACKGROUND);
+        p5Lib.background(constants.graphics.GAME_BACKGROUND);
 
         // Draw stars
         drawStars();
@@ -62,13 +62,13 @@ export default function () {
             }
         }
 
-        pop();
+        p5Lib.pop();
 
         //Clear Hud Canvas
         clearHudCanvas();
 
         // Draw HUDs
-        drawHUDs(elapsed, ping);
+        drawHUD(elapsed, ping);
 
         for (let i = 0; i < gameObjects.length; i++) {
             // Revert the applied physics
@@ -105,10 +105,10 @@ export default function () {
             let newCanvasY = this.canvasY + Math.sin(this.angle) * this.velocity;
 
             if (newCanvasX >= constants.graphics.GAME_BORDER_LEFT && newCanvasX <= constants.graphics.GAME_BORDER_RIGHT) {
-                this.canvasX += (newCanvasX - this.canvasX) *  (lag / constants.general.UPDATE_PHYSICS_THRESHOLD) * direction;
+                this.canvasX += (newCanvasX - this.canvasX) * (lag / constants.general.UPDATE_PHYSICS_THRESHOLD) * direction;
             }
             if (newCanvasY >= constants.graphics.GAME_BORDER_DOWN && newCanvasY <= constants.graphics.GAME_BORDER_UP) {
-                this.canvasY += (newCanvasY - this.canvasY)  *  (lag / constants.general.UPDATE_PHYSICS_THRESHOLD) * direction;
+                this.canvasY += (newCanvasY - this.canvasY) * (lag / constants.general.UPDATE_PHYSICS_THRESHOLD) * direction;
             }
         };
 
@@ -176,7 +176,7 @@ export default function () {
      */
     let setupCamera = function () {
         // Translate camera to screen center
-        translate(window.innerWidth / 2, window.innerHeight / 2);
+        p5Lib.translate(window.innerWidth / 2, window.innerHeight / 2);
 
         // Scaling (interpolated)
         if (mainPlayer.radius >= constants.graphics.MAX_RADIUS_ZOOM_THRESHOLD) {
@@ -190,11 +190,11 @@ export default function () {
         }
 
 
-        zoom = lerp(zoom, targetZoom * Math.sqrt((window.innerWidth * window.innerHeight) / (constants.graphics.GENERIC_WINDOW_AREA)), constants.graphics.ZOOM_INTERPOLATION_FACTOR);
-        scale(zoom);
+        zoom = p5Lib.lerp(zoom, targetZoom * Math.sqrt((window.innerWidth * window.innerHeight) / (constants.graphics.GENERIC_WINDOW_AREA)), constants.graphics.ZOOM_INTERPOLATION_FACTOR);
+        p5Lib.scale(zoom);
 
         // Translate camera to player center
-        translate(-mainPlayer.canvasX, -mainPlayer.canvasY);
+        p5Lib.translate(-mainPlayer.canvasX, -mainPlayer.canvasY);
     };
 
     /**
@@ -218,8 +218,8 @@ export default function () {
      * @param circle
      */
     let drawCircle = function (circle) {
-        fill(circle.color);
-        ellipse(circle.canvasX, circle.canvasY, circle.radius * 2, circle.radius * 2);
+        p5Lib.fill(circle.color);
+        p5Lib.ellipse(circle.canvasX, circle.canvasY, circle.radius * 2, circle.radius * 2);
     };
 
     /**
@@ -260,40 +260,44 @@ export default function () {
      * @param color the circle filling color
      */
     let drawNoisyCircle = function (blob, radius, color) {
-        push();
-        beginShape();
+        p5Lib.push();
+        p5Lib.beginShape();
 
         // Fill the drawing with the required color
-        fill(color);
+        p5Lib.fill(color);
 
         let r = radius;
         let xOffset = 0;
 
-        for (let theta = 0; theta < TWO_PI - 0.1; theta += 0.1) {
+        for (let theta = 0; theta < p5Lib.TWO_PI - 0.1; theta += 0.1) {
             // Make radius with ± noise
-            let rad = map(noise(xOffset, blob.yOffset), 0, 1, r, r * (1 + constants.graphics.MAX_BLOB_WABBLE_RADIUS_OFFSET));
+            let rad = p5Lib.map(
+                p5Lib.noise(xOffset, blob.yOffset),
+                0, 1,
+                r, r * (1 + constants.graphics.MAX_BLOB_WABBLE_RADIUS_OFFSET)
+            );
 
             // Add the vertex of the circle
             let x = blob.canvasX + rad * Math.cos(theta);
             let y = blob.canvasY + rad * Math.sin(theta);
-            vertex(x, y);
+            p5Lib.vertex(x, y);
 
             // Increase the xOffset to get another noisy pattern in the next loop (for the blob animation)
             xOffset += 0.1;
         }
 
-        endShape();
-        pop();
+        p5Lib.endShape();
+        p5Lib.pop();
     };
 
     /**
      * Draw player names
      */
     let drawPlayerName = function (playerObject) {
-        textAlign(CENTER, CENTER);
-        textSize(playerObject.radius);
-        fill(255, 255, 255);
-        text(playerObject.name + "Test", playerObject.canvasX, playerObject.canvasY);
+        p5Lib.textAlign(p5Lib.CENTER, p5Lib.CENTER);
+        p5Lib.textSize(playerObject.radius);
+        p5Lib.fill(255, 255, 255);
+        p5Lib.text(playerObject.name + "Test", playerObject.canvasX, playerObject.canvasY);
     };
 
     /**
@@ -325,11 +329,11 @@ export default function () {
     };
 
     /**
-     * Call all functions that draw head ups
+     * Call all functions that draw head up
      *
      * @param elapsed
      */
-    let drawHUDs = function (elapsed, ping) {
+    let drawHUD = function (elapsed, ping) {
         drawFPS(elapsed);
         drawPing(ping);
         drawScore();
@@ -361,15 +365,23 @@ export default function () {
      * @return canvas object
      */
     let makeCanvas = function () {
-        let canvas = createCanvas(window.innerWidth, window.innerHeight);
+        //
+        // P5 canvas
+        //
+        let canvas = p5Lib.createCanvas(window.innerWidth, window.innerHeight);
         canvas.position(0, 0);
         canvas.style('z-index', -1);
 
+        // For frame-rate optimization ? https://forum.processing.org/two/discussion/11462/help-in-p5-js-performance-improvement-on-mobile-devices
+        canvas.elt.style.width = '100%';
+        canvas.elt.style.height = '100%';
+        console.log(canvas.elt);
+
+        //
+        // Head up display canvas
+        //
         hudCanvas = document.getElementById("hudCanvasId");
         hudCanvasContext = hudCanvas.getContext("2d");
-
-        // Listen for resizing the window
-        window.addEventListener('resize', windowResized);
 
         hudCanvas.width = Number(window.innerWidth);
         hudCanvas.height = Number(window.innerHeight);
@@ -377,28 +389,31 @@ export default function () {
         hudCanvasContext.font = constants.graphics.TEXT_STYLE;
         hudCanvasContext.fillStyle = constants.graphics.TEXT_COLOR;
 
-        // For frame-rate optimization ? https://forum.processing.org/two/discussion/11462/help-in-p5-js-performance-improvement-on-mobile-devices
-        canvas.elt.style.width = '100%';
-        canvas.elt.style.height = '100%';
+        //
+        // Events
+        //
+
+        // Listen for resizing the window
+        window.addEventListener('resize', updateGameSize);
 
         // Correctly disables touch on mobile devices
-        preventCanvasTouchMove(document.getElementById(canvas.elt.id));
-        preventCanvasTouchMove(hudCanvas);
+        preventScrolling();
 
         return canvas;
     };
 
-    let windowResized = function () {
-        resizeCanvas(window.innerWidth, window.innerHeight);
+    let updateGameSize = function () {
+        p5Lib.resizeCanvas(window.innerWidth, window.innerHeight);
 
         hudCanvas.width = Number(window.innerWidth);
         hudCanvas.height = Number(window.innerHeight);
     };
 
-    let preventCanvasTouchMove = function (canvas) {
-        canvas.addEventListener('touchmove', function (e) {
+    let preventScrolling = function () {
+        // Stop scrolling for touch devices
+        $('body, canvas').bind('touchmove', function (e) {
             e.preventDefault();
-        }, false);
+        });
     };
 
     let clearHudCanvas = function () {

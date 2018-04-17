@@ -3,7 +3,7 @@
  */
 import Constants from "./Constants.js";
 
-export default function () {
+export default function (p5Lib) {
     let module = {};
     let constants = Constants();
 
@@ -65,8 +65,8 @@ export default function () {
      */
     let movePlayerToPosition = function (player, position) {
         // Interpolate user location until we reach target
-        player.canvasX = lerp(player.canvasX, position.x, constants.physics.MOVEMENT_INTERPOLATION_FACTOR);
-        player.canvasY = lerp(player.canvasY, position.y, constants.physics.MOVEMENT_INTERPOLATION_FACTOR);
+        player.canvasX = p5Lib.lerp(player.canvasX, position.x, constants.physics.MOVEMENT_INTERPOLATION_FACTOR);
+        player.canvasY = p5Lib.lerp(player.canvasY, position.y, constants.physics.MOVEMENT_INTERPOLATION_FACTOR);
     };
 
     /**
