@@ -1,13 +1,21 @@
-const GameConfig = require("../configs")();
+// Imports
+const constants = require("../constants")();
 const Gem = require("./Gem");
 const Player = require("./Player");
 const QuadTree = require("./QuadTree");
 const Rectangle = require("./Rectangle");
 
+// Constants
 const COLORS = ["red", "green", "blue", "yellow", "orange", "purple", "pink"];
+
 
 class Room {
 
+    /**
+     * Room model constructor.
+     *
+     * @param id    room unique id
+     */
     constructor(id) {
         // Room id
         this.id = id;
@@ -28,7 +36,7 @@ class Room {
         this.newGems = {};
 
         // Create a quad tree to carry gems
-        let quadTree = new QuadTree(0, new Rectangle(0, 0, GameConfig.GAME_SIZE, GameConfig.GAME_SIZE));
+        let quadTree = new QuadTree(0, new Rectangle(0, 0, constants.GAME_SIZE, constants.GAME_SIZE));
 
         // Add default gems
         this.addGems();
@@ -59,9 +67,9 @@ class Room {
      * Add gems
      */
     addGems() {
-        if (Object.keys(this.gems).length >= GameConfig.ROOM_MAX_GEMS) return;
+        if (Object.keys(this.gems).length >= constants.ROOM_MAX_GEMS) return;
 
-        for (let i = Object.keys(this.gems).length; i < GameConfig.ROOM_MAX_GEMS; i++) {
+        for (let i = Object.keys(this.gems).length; i < constants.ROOM_MAX_GEMS; i++) {
 
             // Generate random positions (normalized)
             let x = ((Math.random() * 2 - 1));
@@ -115,7 +123,7 @@ class Room {
 
         // Check for # of sent angles and if they could occur in this delta time(since last send)
         // keeping room for time functions differences (1 extra angle)
-        if (Math.ceil((anglesBuffer.timestamp - lastAngleTimeStamp) / GameConfig.UPDATE_PHYSICS_THRESHOLD) <
+        if (Math.ceil((anglesBuffer.timestamp - lastAngleTimeStamp) / constants.UPDATE_PHYSICS_THRESHOLD) <
             anglesBuffer.angles.length - 1) {
             return false;
         }
@@ -250,11 +258,6 @@ class Room {
         this.players[playerID].angle = angle;
     }
 
-    setPlayerInfo(playerID, newPlayerInfo) {
-        this.players[playerID].x = newPlayerInfo.x;
-        this.players[playerID].y = newPlayerInfo.y;
-    }
-
     /**
      * Check if a gem has been eaten by a player
      *
@@ -279,7 +282,7 @@ class Room {
 
         let radiiSumSquared = (playerA.radius + playerB.radius) * (playerA.radius + playerB.radius);
 
-        return radiiSumSquared - distanceSquared > GameConfig.EPSILON && Room.calculatePlayerArea(playerA) - 1.1 * Room.calculatePlayerArea(playerB) > GameConfig.EPSILON;
+        return radiiSumSquared - distanceSquared > constants.EPSILON && Room.calculatePlayerArea(playerA) - 1.1 * Room.calculatePlayerArea(playerB) > constants.EPSILON;
     }
 
     /**

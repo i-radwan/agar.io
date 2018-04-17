@@ -1,13 +1,15 @@
-const GameConfig = require("../configs")();
+// Imports
+const constants = require("../constants")();
 
-// Gem model class
+
 class Gem {
+
     /**
-     * Gem constructor
+     * Gem model constructor.
      *
-     * @param id The gem unique id in the game room
-     * @param position: object contains {x, y}
-     * @param color: object contains {r, g, b}
+     * @param id        gem unique id in the game room
+     * @param position  position object contains {x, y}
+     * @param color     color object contains {r, g, b}
      */
     constructor(id, position, color) {
         this.id = id;
@@ -17,7 +19,7 @@ class Gem {
 
         this.color = color;
 
-        this.radius = GameConfig.GEM_RADIUS;
+        this.radius = constants.GEM_RADIUS;
     }
 }
 

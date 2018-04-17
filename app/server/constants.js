@@ -1,4 +1,4 @@
-function GameConfig() {
+function Constants() {
     let GAME_SIZE = 6000;
     let SCALE_FACTOR = 2 / GAME_SIZE;
 
@@ -8,7 +8,7 @@ function GameConfig() {
         ROOM_MAX_PLAYERS: 5,
         ROOM_MAX_GEMS: 1000,
         SIMULATE_RUN_RATE: 1000 / 40,
-        SEND_GAME_STATUSES_RATE: 40,
+        SEND_GAME_STATUS_RATE: 40,
         REGENERATE_GEMS_RATE: 5000,
         SEND_LEADER_BOARD_RATE: 4000,
         GEM_RADIUS: 10 * SCALE_FACTOR,
@@ -24,4 +24,4 @@ function GameConfig() {
     };
 }
 
-module.exports = GameConfig;
+module.exports = Constants;

@@ -1,45 +1,58 @@
 // Imports
-const GameServer = require("./server");
-const GameConfig = require("./configs")();
+const constants = require("./constants")();
+const gameServer = require("./server");
 
 const express = require('express');
 const app = express();
 const path = require('path');
-const http = require('http').Server(app);
-const io = require('socket.io')(http, {
+const httpServer = require('http').Server(app);
+const io = require('socket.io')(httpServer, {
     pingInterval: 500,
-    pingTimeout: GameConfig.PING_TIMEOUT,
+    pingTimeout: constants.PING_TIMEOUT,
 });
 
-let game = {
-    run: function () {
-        this.setupRoutes();
-        this.setupServer();
-        this.startServer();
-    },
 
-    setupRoutes: function () {
-        // Set static path to provide required assets
-        app.use(express.static(path.resolve('../client/')));
+/**
+ * The starting main function of the server.
+ */
+function run() {
+    setupRoutes();
+    setupServer();
+    startServer();
+}
 
-        // Main game screen
-        app.get('/', function (req, res) {
-            res.sendFile(path.resolve('../client/views/index.html'));
-        });
-    },
+/**
+ * Registers different routing endpoints.
+ */
+function setupRoutes() {
+    // Set static path to provide required assets
+    app.use(express.static(path.resolve('../client/')));
 
-    setupServer: function () {
-        // Start http listening
-        http.listen(GameConfig.PORT, function () {
-            console.log('listening on *: ', GameConfig.PORT);
-        });
-    },
+    // Main game screen
+    app.get('/', function (req, res) {
+        res.sendFile(path.resolve('../client/views/index.html'));
+    });
+}
 
-    startServer: function () {
-        let server = new GameServer(io);
+/**
+ * Setup the server to start listening on a specific port.
+ */
+function setupServer() {
+    // Start listening on port 3000
+    httpServer.listen(constants.PORT, function () {
+        console.log('listening on *: ', constants.PORT);
+    });
+}
 
-        server.init();
-    }
-};
+/**
+ * Starts the actual game server.
+ */
+function startServer() {
+    let server = new gameServer(io);
+    server.init();
+}
 
-game.run();
+//
+// Start running the server-side code
+//
+run();

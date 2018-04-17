@@ -1,13 +1,12 @@
-/**
- * Created by ASamir on 3/11/18.
- */
-const GameConfig = require("../configs")();
+// Imports
+const constants = require("../constants")();
 
-// Gem model class
+
 class Rectangle {
 
     /**
-     * Rectangle constructor
+     * Rectangle model constructor.
+     *
      * @param x
      * @param y
      * @param rLength

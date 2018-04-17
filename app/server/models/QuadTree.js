@@ -1,13 +1,11 @@
-/**
- * Created by ASamir on 3/11/18.
- */
-const GameConfig = require("../configs")();
+// Imports
+const constants = require("../constants")();
 const Rectangle = require("./Rectangle");
 
-// Quad tree class
+
 class QuadTree {
 
-    /** Quad tree constructor
+    /** Quad tree constructor.
      *
      * @param pLevel
      * @param pBounds
@@ -94,7 +92,7 @@ class QuadTree {
         this.bodies.push(body);
 
         // Check if the current node exceeds it max objects limit
-        if (this.bodies.length > GameConfig.QUAD_TREE_NODE_MAX_OBJECTS && this.level < GameConfig.QUAD_TREE_MAX_LEVELS) {
+        if (this.bodies.length > constants.QUAD_TREE_NODE_MAX_OBJECTS && this.level < constants.QUAD_TREE_MAX_LEVELS) {
             if (this.nodes.length > 0) {
                 this.split();
             }

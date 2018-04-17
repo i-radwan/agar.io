@@ -7,6 +7,7 @@ export default function (gameStatus, serverGameStatus) {
 
         _socket.on('connect', function () {
             // Send subscription request
+            // @OmarBazaraa - Is it enough to use only connect event?
             _socket.emit('subscribe', {});
         });
     };
