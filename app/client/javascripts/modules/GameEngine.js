@@ -50,16 +50,13 @@ export default function (gameStatus, serverGameStatus) {
     };
 
     let updateGamePhysics = function () {
-        // Get mouse angle
-        physicsEngine.getMouseAngle(gameStatus.status.me, {
-            x: mouseX,
-            y: mouseY
-        }, gameStatus.status.anglesQueue, gameStatus.status.env.lerping);
-
         // Move players
-        gameStatus.status.players.concat(gameStatus.status.me).forEach(function (player) {
-            physicsEngine.movePlayer(player, player.id === gameStatus.status.me.id, gameStatus.status.env);
+        gameStatus.status.players.forEach(function (player) {
+            physicsEngine.movePlayerToPosition(player, {x: player.x, y: player.y});
         });
+
+        // Move main player
+        physicsEngine.moveMainPlayer(gameStatus.status.me, gameStatus.status.anglesQueue, gameStatus.status.env.lerping);
     };
 
     let increaseTimers = function () {
@@ -117,7 +114,7 @@ export default function (gameStatus, serverGameStatus) {
         gameStatus.status.gems.forEach(function (gem, idx) {
             uiEngine.updateGem(gem);
 
-            if (gem.removed) {
+            if (gem.eaten) {
                 gameStatus.status.gems.splice(idx, 1);
             }
         });
@@ -126,13 +123,13 @@ export default function (gameStatus, serverGameStatus) {
         gameStatus.status.players.concat(gameStatus.status.me).forEach(function (player, idx) {
             uiEngine.updatePlayer(player);
 
-            if (player.removed) {
+            if (!player.alive) {
                 gameStatus.status.players.splice(idx, 1);
             }
         });
 
         // Fix z index of objects
-        uiEngine.fixObjectsZIndex();
+        uiEngine.sortObjectsBySize();
     };
 
     let initGameCanvasObjects = function () {
@@ -150,7 +147,7 @@ export default function (gameStatus, serverGameStatus) {
         uiEngine.addMainPlayer(gameStatus.status.me);
 
         // Fix z index of objects
-        uiEngine.fixObjectsZIndex();
+        uiEngine.sortObjectsBySize();
     };
 
     return module;

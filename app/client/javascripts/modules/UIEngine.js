@@ -132,7 +132,7 @@ export default function (p5Lib) {
      * @param gemObject
      */
     module.updateGem = function (gemObject) {
-        if (gemObject.removed) { // Gem has been eaten
+        if (gemObject.eaten) { // Gem has been eaten
             gameObjects.splice(gameObjects.indexOf(gemObject), 1);
         }
         else if (!gemObject.hasOwnProperty("canvasObjectType")) { // New gem generated -> Draw it
@@ -146,22 +146,20 @@ export default function (p5Lib) {
      * @param playerObject
      */
     module.updatePlayer = function (playerObject) {
-        if (playerObject.removed) { // Player is dead
+        if (!playerObject.alive) { // Player is dead
             gameObjects.splice(gameObjects.indexOf(playerObject), 1);
         }
         else if (!playerObject.hasOwnProperty("canvasObjectType")) { // New player generated -> Draw it
             module.addPlayer(playerObject);
-        }
-        else { // Player existed and still -> update radius
-            playerObject.radius = (playerObject.radius);
         }
     };
 
     /**
      * Sort the canvas objects array (the order in which the objects are drawn),
      * such that smaller items are drawn first (to be beneath the larger items)
+     * (i.e. fix Z-Index)
      */
-    module.fixObjectsZIndex = function () {
+    module.sortObjectsBySize = function () {
         // Sort the array
         gameObjects.sort(function (a, b) {
             return (a.radius - b.radius);
@@ -375,7 +373,6 @@ export default function (p5Lib) {
         // For frame-rate optimization ? https://forum.processing.org/two/discussion/11462/help-in-p5-js-performance-improvement-on-mobile-devices
         canvas.elt.style.width = '100%';
         canvas.elt.style.height = '100%';
-        console.log(canvas.elt);
 
         //
         // Head up display canvas

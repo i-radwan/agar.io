@@ -7,10 +7,10 @@ export default function () {
     module.status = {
         env: {
             serverResponseReceived: false,
-            ping: 0,
             lerping: false,
             lerpingCount: 0,
-            noLerpingCount: 0
+            noLerpingCount: 0,
+            ping: 0
         },
         anglesQueue: {
             mouseAngles: [{id: 0, angles: []}],
@@ -20,16 +20,28 @@ export default function () {
             lastAngleTimeStamp: 0,
             serverAngleTimeStamp: 0
         },
-        me: {}
+        me: { // Fields to be filled later
+            id: 0,
+            name: "",
+            color: "",
+            score: 0,
+            x: 0,
+            y: 0,
+            radius: 0,
+            angle: 0,
+            velocity: 0,
+            canvasX: 0,
+            canvasY: 0,
+            lastAngleTimeStamp: 0,
+            lastReceivedAngleID: -1,
+            alive: true,
+            forcePosition: false
+        },
+        gems: [],
+        players: []
     };
 
     module.init = function (serverGameStatus) {
-        // Initialize
-        module.status.me.alive = true;
-
-        module.status.gems = [];
-        module.status.players = [];
-
         // Set the local arrays
         module.set(serverGameStatus);
     };
@@ -67,7 +79,7 @@ export default function () {
             let gem = module.status.gems[i];
 
             if (serverGameDeletedGems.indexOf(gem.id.toString()) > -1) {
-                gem.removed = true;
+                gem.eaten = true;
             }
         }
 
@@ -90,7 +102,7 @@ export default function () {
 
             // Player is dead
             if (!serverGamePlayers.hasOwnProperty(player.id)) {
-                player.removed = true;
+                player.alive = false;
                 continue;
             }
 

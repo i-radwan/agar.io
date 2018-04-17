@@ -8,15 +8,13 @@ export default function (p5Lib) {
     let constants = Constants();
 
     /**
-     * Move some player to follow the mouse
+     * Push mouse angle into mouse angles buffer
      *
      * @param player the player to be moved
      * @param target object contains the targeted x, y coordinates
      * @param anglesQueue the queue that contains mouse angles (to be filled)
      */
-    module.getMouseAngle = function (player, target, anglesQueue, lerping) {
-        if (lerping) return;
-
+    let updateAnglesBuffer = function (player, target, anglesQueue) {
         // To be changed when splitting happens (using get equivalent center)
         let angleAndDistance = module.getAngleAndDistance({
             x: window.innerWidth / 2,
@@ -32,19 +30,38 @@ export default function (p5Lib) {
     };
 
     /**
-     * Move some player normal movement (player's velocity and angle)
+     * Move main player normal movement (player's velocity and angle)
+     *
+     * @param me main player object.
+     * @param anglesQueue mouse angles queue
+     * @param lerping to check if game is lerping
+     */
+    module.moveMainPlayer = function (me, anglesQueue, lerping) {
+        if (lerping) {
+            module.movePlayerToPosition(me, {x: me.x, y: me.y});
+            return;
+        }
+
+        // Get mouse angle
+        updateAnglesBuffer(me, {
+            x: p5Lib.mouseX,
+            y: p5Lib.mouseY
+        }, anglesQueue);
+
+        // Move player by his angle and velocity
+        updatePlayerPosition(me);
+    };
+
+    /**
+     * Move some player to target
      *
      * @param player the player to be moved.
-     * @param isMe is this player the main player?
-     * @param gameEnv to check if game is lerping
+     * @param position the point to be moved to.
      */
-    module.movePlayer = function (player, isMe, gameEnv) {
-        if (isMe && !gameEnv.lerping) {
-            updatePlayerPosition(player);
-        }
-        else {
-            movePlayerToPosition(player, {x: player.x, y: player.y});
-        }
+    module.movePlayerToPosition = function (player, position) {
+        // Interpolate user location until we reach target
+        player.canvasX = p5Lib.lerp(player.canvasX, position.x, constants.physics.MOVEMENT_INTERPOLATION_FACTOR);
+        player.canvasY = p5Lib.lerp(player.canvasY, position.y, constants.physics.MOVEMENT_INTERPOLATION_FACTOR);
     };
 
     /**
@@ -55,18 +72,6 @@ export default function (p5Lib) {
     module.forceServerPosition = function (player) {
         player.canvasX = player.x;
         player.canvasY = player.y;
-    };
-
-    /**
-     * Move some player to target
-     *
-     * @param player the player to be moved.
-     * @param position the point to be moved to.
-     */
-    let movePlayerToPosition = function (player, position) {
-        // Interpolate user location until we reach target
-        player.canvasX = p5Lib.lerp(player.canvasX, position.x, constants.physics.MOVEMENT_INTERPOLATION_FACTOR);
-        player.canvasY = p5Lib.lerp(player.canvasY, position.y, constants.physics.MOVEMENT_INTERPOLATION_FACTOR);
     };
 
     /**
