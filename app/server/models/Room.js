@@ -135,9 +135,7 @@ class Room {
 
     checkIfPlayerAtePlayer(player) {
         for (let playerBID in this.players) {
-            if (!this.players.hasOwnProperty(playerBID)) continue;
-
-            if (playerBID === player.id) continue;
+            if (!this.players.hasOwnProperty(playerBID) || playerBID === player.id) continue;
 
             let playerB = this.players[playerBID];
             if (!playerB.alive) continue;
