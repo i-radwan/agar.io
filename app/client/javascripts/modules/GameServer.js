@@ -42,7 +42,7 @@ export default function (gameStatus, serverGameStatus) {
         });
 
         _socket.on('game_status', function (receivedGameStatus) {
-            // Update local gameStatus by serverGameStatus
+            // Update local gameStatus by receivedGameStatus
             gameStatus.set(JSON.parse(receivedGameStatus));
         });
 
