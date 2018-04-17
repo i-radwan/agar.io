@@ -20,7 +20,10 @@ export default function (gameStatus, serverGameStatus) {
         let angles = gameStatus.status.anglesQueue.mouseAngles.slice(-1)[0];
 
         // Stamp the angles packet
-        angles.timestamp = Date.now();
+        let currentTime = Date.now();
+        gameStatus.status.env.serverAngleTimeStamp += currentTime - gameStatus.status.env.lastAngleTimeStamp;
+        gameStatus.status.env.lastAngleTimeStamp = currentTime;
+        angles.timestamp = gameStatus.status.env.serverAngleTimeStamp;
 
         // Transmit
         _socket.emit('angle', angles);
@@ -35,6 +38,8 @@ export default function (gameStatus, serverGameStatus) {
     let setupReceivers = function (startGame) {
         _socket.on('player_info', function (playerInfo) {
             gameStatus.status.me = Object.assign({}, playerInfo);
+            gameStatus.status.env.lastAngleTimeStamp = Date.now();
+            gameStatus.status.env.serverAngleTimeStamp = gameStatus.status.me.lastAngleTimeStamp;
         });
 
         _socket.on('game_status', function (receivedGameStatus) {
@@ -49,6 +54,10 @@ export default function (gameStatus, serverGameStatus) {
                 startGame();
                 connectionEstablished = true;
             }
+        });
+
+        _socket.on('disconnect', function () {
+            gameStatus.status.me.alive = false;
         });
 
         // Receive pong from the server to get latency

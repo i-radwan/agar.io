@@ -16,7 +16,9 @@ export default function () {
             mouseAngles: [{id: 0, angles: []}],
             anglesBufferSize: 0,
             lastAngleID: 0,
-            lastReceivedAngleID: -1
+            lastReceivedAngleID: -1,
+            lastAngleTimeStamp: 0,
+            serverAngleTimeStamp: 0
         },
         me: {}
     };

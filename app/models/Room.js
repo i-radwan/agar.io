@@ -44,11 +44,15 @@ class Room {
         let x = ((Math.random() * 2 - 1));
         let y = ((Math.random() * 2 - 1));
 
-        this.game.players[this.nextPlayerID] = (new Player(
+        let player = new Player(
             this.nextPlayerID, [x, y], COLORS[this.nextPlayerID % COLORS.length]
-        ));
+        );
 
-        return this.nextPlayerID++;
+        this.game.players[this.nextPlayerID] = player;
+
+        this.nextPlayerID++;
+
+        return player;
     };
 
     /**
@@ -76,14 +80,13 @@ class Room {
     simulatePlayer(playerID, anglesBuffer) {
         let player = this.game.players[playerID];
 
+        let lastAngleTimeStamp = player.lastAngleTimeStamp;
         player.lastReceivedAngleID = anglesBuffer.id;
-
-        // if ((player.forcePosition = !this.checkAngles(anglesBuffer, player.lastAngleTimeStamp)) ||
-        //     anglesBuffer.angles.length <= 0) {
-        //     return;
-        // }
-
         player.lastAngleTimeStamp = anglesBuffer.timestamp;
+
+        if (player.forcePosition = !this.checkAngles(anglesBuffer, lastAngleTimeStamp)) {
+            return;
+        }
 
         // Update physics using all received angles
         for (let i = 0; i < anglesBuffer.angles.length; i++) {
@@ -106,6 +109,7 @@ class Room {
     checkAngles(anglesBuffer, lastAngleTimeStamp) {
         // Check if the sent timestamp is in the future
         if (anglesBuffer.timestamp > Date.now()) {
+            console.log("F1");
             return false;
         }
 

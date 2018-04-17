@@ -65,18 +65,20 @@ class GameServer {
             this.gameRooms[roomID] = new Room(roomID);
         }
 
-        let playerID = this.gameRooms[roomID].addPlayer();
+        let player = this.gameRooms[roomID].addPlayer();
+        let playerID = player.id;
         this.gamePlayers[playerSocketID] = {roomID, playerID};
 
-        this.sendPlayerInfo(playerSocketID, playerID, roomID);
+        this.sendPlayerInfo(playerSocketID, playerID, roomID, player.lastAngleTimeStamp);
 
         return roomID;
     };
 
-    sendPlayerInfo(playerSocketID, playerID, roomID) {
+    sendPlayerInfo(playerSocketID, playerID, roomID, lastAngleTimeStamp) {
         let playerInfo = {};
         playerInfo.id = playerID;
         playerInfo.lastReceivedAngleID = -1;
+        playerInfo.lastAngleTimeStamp = lastAngleTimeStamp;
 
         this.io.to(playerSocketID).emit('player_info', playerInfo);
         this.io.to(playerSocketID).emit('game_status', this.gameRooms[roomID].getGameStatus(true));
