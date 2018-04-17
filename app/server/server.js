@@ -30,11 +30,6 @@ class GameServer {
                 self.updatePlayerPosition(socket.id, anglesBuffer);
             });
 
-            // Send player info for the first time he join
-            socket.on('player_info', function (newPlayerInfo) {
-                self.setNewPlayerInfo(socket.id, newPlayerInfo);
-            });
-
             // Remove player on disconnection
             socket.on('disconnect', function () {
                 self.removePlayer(socket.id);

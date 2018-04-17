@@ -192,6 +192,8 @@ class Room {
 
         gameStatus = JSON.stringify(gameStatus);
 
+        if (firstTime) return gameStatus;
+
         this.deletedGemsIDs = [];
         this.newGems = {};
 
