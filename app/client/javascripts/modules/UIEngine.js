@@ -332,6 +332,7 @@ export default function (p5Lib) {
      * Call all functions that draw head up
      *
      * @param elapsed
+     * @param ping
      */
     let drawHUD = function (elapsed, ping) {
         drawFPS(elapsed);

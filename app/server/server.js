@@ -107,7 +107,7 @@ class GameServer {
     removePlayer(playerSocketID) {
         if (!this.gamePlayers.hasOwnProperty(playerSocketID)) return;
 
-        console.log("a Player Disconnected");
+        console.log("A Player Disconnected");
 
         let playerID = this.gamePlayers[playerSocketID].playerID;
         let roomID = this.gamePlayers[playerSocketID].roomID;
