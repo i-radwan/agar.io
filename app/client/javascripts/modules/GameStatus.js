@@ -6,7 +6,6 @@ export default function () {
 
     module.status = {
         env: {
-            serverResponseReceived: false,
             lerping: false,
             lerpingCount: 0,
             noLerpingCount: 0,
@@ -39,11 +38,6 @@ export default function () {
         },
         gems: [],
         players: []
-    };
-
-    module.init = function (serverGameStatus) {
-        // Set the local arrays
-        module.set(serverGameStatus);
     };
 
     /**

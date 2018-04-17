@@ -42,18 +42,12 @@ export default function (gameStatus, serverGameStatus) {
         });
 
         _socket.on('game_status', function (receivedGameStatus) {
-            gameStatus.status.env.serverResponseReceived = true;
-
-            serverGameStatus = Object.assign(serverGameStatus, JSON.parse(receivedGameStatus));
+            // Update local gameStatus by serverGameStatus
+            gameStatus.set(JSON.parse(receivedGameStatus));
         });
 
         _socket.on('initial_game_status', function (receivedGameStatus) {
-            gameStatus.status.env.serverResponseReceived = true;
-
-            serverGameStatus = Object.assign(serverGameStatus, JSON.parse(receivedGameStatus));
-
-            gameStatus.init(serverGameStatus);
-
+            gameStatus.set(JSON.parse(receivedGameStatus));
             startGame();
         });
 
