@@ -54,9 +54,11 @@ export default function () {
             if (isObjectInsideMyViewWindow(gameObjects[i]))
                 gameObjects[i].draw();
 
-            // Update blob yOffset
+            // Update blob yOffset and display the player name
             if (gameObjects[i].canvasObjectType === constants.graphics.CANVAS_OBJECT_PLAYER) {
-                gameObjects[i].yOffset += elapsed * constants.graphics.WABBLE_SPEED;
+                drawPlayerName(gameObjects[i]);
+
+                gameObjects[i].yOffset += elapsed * constants.graphics.WABBLE_SPEED / Math.sqrt(gameObjects[i].radius);
             }
         }
 
@@ -99,8 +101,15 @@ export default function () {
         playerObject.strokeColor = constants.graphics.BLOB_STROKE_COLOR;
 
         playerObject.simulatePhysics = function (lag, direction) {
-            this.canvasX += Math.cos(this.angle) * this.velocity * (lag / constants.general.UPDATE_PHYSICS_THRESHOLD) * direction;
-            this.canvasY += Math.sin(this.angle) * this.velocity * (lag / constants.general.UPDATE_PHYSICS_THRESHOLD) * direction;
+            let newCanvasX = this.canvasX + Math.cos(this.angle) * this.velocity;
+            let newCanvasY = this.canvasY + Math.sin(this.angle) * this.velocity;
+
+            if (newCanvasX >= constants.graphics.GAME_BORDER_LEFT && newCanvasX <= constants.graphics.GAME_BORDER_RIGHT) {
+                this.canvasX += (newCanvasX - this.canvasX) *  (lag / constants.general.UPDATE_PHYSICS_THRESHOLD) * direction;
+            }
+            if (newCanvasY >= constants.graphics.GAME_BORDER_DOWN && newCanvasY <= constants.graphics.GAME_BORDER_UP) {
+                this.canvasY += (newCanvasY - this.canvasY)  *  (lag / constants.general.UPDATE_PHYSICS_THRESHOLD) * direction;
+            }
         };
 
         playerObject.interpolatePhysics = function (lag) {
@@ -170,8 +179,16 @@ export default function () {
         translate(window.innerWidth / 2, window.innerHeight / 2);
 
         // Scaling (interpolated)
-        if ((targetZoom * mainPlayer.radius) > constants.graphics.MAX_ZOOM_THRESHOLD || (targetZoom * mainPlayer.radius) < constants.graphics.MIN_ZOOM_THRESHOLD)
-            targetZoom = constants.graphics.START_BLOB_RADIUS / mainPlayer.radius;
+        if (mainPlayer.radius >= constants.graphics.MAX_RADIUS_ZOOM_THRESHOLD) {
+            if (mainPlayer.radius <= constants.graphics.MAX_RADIUS_ZOOM_LEVEL)
+                targetZoom = constants.graphics.START_BLOB_RADIUS / mainPlayer.radius;
+            else
+                targetZoom = constants.graphics.START_BLOB_RADIUS / constants.graphics.MAX_RADIUS_ZOOM_LEVEL;
+        }
+        else {
+            targetZoom = constants.graphics.INITIAL_ZOOM;
+        }
+
 
         zoom = lerp(zoom, targetZoom * Math.sqrt((window.innerWidth * window.innerHeight) / (constants.graphics.GENERIC_WINDOW_AREA)), constants.graphics.ZOOM_INTERPOLATION_FACTOR);
         scale(zoom);
@@ -232,7 +249,7 @@ export default function () {
         };
 
         drawCircle(centerCircle);
-        // drawCircle(serverCenterCircle);
+        drawCircle(serverCenterCircle);
     };
 
     /**
@@ -267,6 +284,16 @@ export default function () {
 
         endShape();
         pop();
+    };
+
+    /**
+     * Draw player names
+     */
+    let drawPlayerName = function (playerObject) {
+        textAlign(CENTER, CENTER);
+        textSize(playerObject.radius);
+        fill(255, 255, 255);
+        text(playerObject.name + "Test", playerObject.canvasX, playerObject.canvasY);
     };
 
     /**
@@ -341,6 +368,9 @@ export default function () {
         hudCanvas = document.getElementById("hudCanvasId");
         hudCanvasContext = hudCanvas.getContext("2d");
 
+        // Listen for resizing the window
+        window.addEventListener('resize', windowResized);
+
         hudCanvas.width = Number(window.innerWidth);
         hudCanvas.height = Number(window.innerHeight);
 
@@ -356,6 +386,13 @@ export default function () {
         preventCanvasTouchMove(hudCanvas);
 
         return canvas;
+    };
+
+    let windowResized = function () {
+        resizeCanvas(window.innerWidth, window.innerHeight);
+
+        hudCanvas.width = Number(window.innerWidth);
+        hudCanvas.height = Number(window.innerHeight);
     };
 
     let preventCanvasTouchMove = function (canvas) {
