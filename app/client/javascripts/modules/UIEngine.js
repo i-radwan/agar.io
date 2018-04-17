@@ -410,6 +410,8 @@ export default function (p5Lib) {
 
         hudCanvas.width = Number(window.innerWidth);
         hudCanvas.height = Number(window.innerHeight);
+        hudCanvasContext.font = constants.graphics.TEXT_STYLE;
+        hudCanvasContext.fillStyle = constants.graphics.TEXT_COLOR;
     };
 
     let preventScrolling = function () {
