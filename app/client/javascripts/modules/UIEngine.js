@@ -372,6 +372,7 @@ export default function (p5Lib) {
         let canvas = p5Lib.createCanvas(window.innerWidth, window.innerHeight);
         canvas.position(0, 0);
         canvas.style('z-index', -1);
+        p5Lib.pixelDensity(1);
 
         // For frame-rate optimization ? https://forum.processing.org/two/discussion/11462/help-in-p5-js-performance-improvement-on-mobile-devices
         canvas.elt.style.width = '100%';
