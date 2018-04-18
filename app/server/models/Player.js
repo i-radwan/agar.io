@@ -1,6 +1,6 @@
 // Imports
 const Constants = require("../utils/Constants")();
-const Utilities = require("../utils/Utilities")();
+const Utilities = require("../utils/Utilities");
 
 class Player {
 

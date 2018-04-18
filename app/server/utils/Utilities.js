@@ -2,8 +2,7 @@
 const Constants = require("../utils/Constants")();
 
 
-function Utilities() {
-    let module = {};
+class Utilities {
 
     /**
      * Returns a random number between min (inclusive) and max (exclusive)
@@ -12,9 +11,9 @@ function Utilities() {
      * @param max           the random number maximum possible value
      * @returns {Number}    a random number
      */
-    module.getRandomFloat = function (min, max) {
+    static getRandomFloat(min, max) {
         return Math.random() * (max - min) + min;
-    };
+    }
 
     /**
      * Returns a random integer between min (inclusive) and max (exclusive)
@@ -23,9 +22,9 @@ function Utilities() {
      * @param max           the random number maximum possible value
      * @returns {Number}    a random number
      */
-    module.getRandomInt = function (min, max) {
+    static getRandomInt(min, max) {
         return Math.floor(Math.random() * (max - min)) + min;
-    };
+    }
 
     /**
      * Returns the square of the distance between the given two points.
@@ -34,14 +33,12 @@ function Utilities() {
      * @param pointB        the second point
      * @returns {number}    the square of the distance
      */
-    module.distanceSquared = function (point1, point2) {
+    static distanceSquared(point1, point2) {
         let dx = point1.x - point2.x;
         let dy = point1.y - point2.y;
 
         return dx * dx + dy * dy;
-    };
-
-    return module;
+    }
 }
 
 module.exports = Utilities;

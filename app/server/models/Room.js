@@ -1,6 +1,6 @@
 // Imports
 const Constants = require("../utils/Constants")();
-const Utilities = require("../utils/Utilities")();
+const Utilities = require("../utils/Utilities");
 const Gem = require("./Gem");
 const Player = require("./Player");
 const QuadTree = require("../utils/QuadTree");
@@ -31,7 +31,7 @@ class Room {
         this.deletedGemsIDs = [];
 
         // Create a quad tree to carry gems
-        //let quadTree = new QuadTree(0, new Rectangle(0, 0, Constants.GAME_SIZE, Constants.GAME_SIZE));
+        let quadTree = new QuadTree(0, new Rectangle(0, 0, Constants.GAME_SIZE, Constants.GAME_SIZE));
 
         // Add default gems
         this.addGems();
