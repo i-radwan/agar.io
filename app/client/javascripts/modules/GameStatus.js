@@ -11,6 +11,7 @@ export default function () {
         },
         anglesQueue: {
             mouseAngles: [{id: 0, angles: []}],
+            firstIdx: 0,
             anglesBufferSize: 0,
             lastAngleID: 0,
             lastReceivedAngleID: -1,
@@ -146,14 +147,15 @@ export default function () {
         module.status.anglesQueue.lastReceivedAngleID = meOnServer.lastReceivedAngleID;
 
         let serverKeepingUp = false;
+        let firstIdx = module.status.anglesQueue.firstIdx;
 
         // Flush all angles corresponding to missed packets
-        while (meOnServer.lastReceivedAngleID >= module.status.anglesQueue.mouseAngles[0].id) {
+        while (meOnServer.lastReceivedAngleID >= module.status.anglesQueue.mouseAngles[firstIdx].id) {
             // Reduce total buffer size
-            module.status.anglesQueue.anglesBufferSize -= module.status.anglesQueue.mouseAngles[0].angles.length;
+            module.status.anglesQueue.anglesBufferSize -= module.status.anglesQueue.mouseAngles[firstIdx].angles.length;
 
             // Remove the top value
-            module.status.anglesQueue.mouseAngles.splice(0, 1);
+            delete module.status.anglesQueue.mouseAngles[firstIdx++];
 
             if (module.status.env.lerping) {
                 module.status.me.canvasX = meOnServer.x;
@@ -166,16 +168,21 @@ export default function () {
 
         // Server is failing behind with huge margin -> ignore local -> lerp to server
         if ((!serverKeepingUp || meOnServer.forcePosition) && !module.status.env.lerping) {
+            // Reset buffer left pointer
+            firstIdx = 0;
+
             // Flush the buffer
-            module.status.anglesQueue.mouseAngles = module.status.anglesQueue.mouseAngles.splice(-1, 1);
+            module.status.anglesQueue.mouseAngles = [module.status.anglesQueue.mouseAngles.pop()];
 
             // Remove the taken angles so far, we don't want to send to server anything new until we reach its position
             module.status.anglesQueue.anglesBufferSize = 0;
-            module.status.anglesQueue.mouseAngles[0].angles = [];
+            module.status.anglesQueue.mouseAngles[firstIdx].angles = [];
 
             // Start lerping to server position
             module.status.env.lerping = true;
         }
+
+        module.status.anglesQueue.firstIdx = firstIdx;
     };
 
     return module;
