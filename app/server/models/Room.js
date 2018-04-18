@@ -125,13 +125,20 @@ class Room {
         for (let playerID in this.players) {
             let foe = this.players[playerID];
 
-            if (playerID === player.id || !foe.alive) {
+            if (!this.players.hasOwnProperty(playerID) || playerID === player.id || !foe.alive) {
                 continue;
             }
 
             if (player.atePlayer(foe)) {
                 player.incrementScore(foe.score);
                 this.killPlayer(foe.id);
+                return;
+            }
+
+            if (foe.atePlayer(player)) {
+                foe.incrementScore(player.score);
+                this.killPlayer(player.id);
+                return;
             }
         }
     };
