@@ -31,12 +31,9 @@ class GameServer {
         // Register event listeners
         //
         self.io.on('connection', function (socket) {
-
-            // Add new player to a room upon receiving subscription event
-            socket.on('subscribe', function () {
-                socket.join(self.addNewPlayer(socket.id));
-                console.log("a player connected");
-            });
+            // Add new player to a room upon receiving connection event
+            socket.join(self.addNewPlayer(socket.id));
+            console.log("a player connected");
 
             // Updates player's angle
             socket.on('angle', function (anglesBuffer) {

@@ -88,6 +88,7 @@ export default function (p5Lib) {
         }
     };
 
+    // TODO: remove distance if not needed
     module.getAngleAndDistance = function (point1, point2) {
         // Calculate distance
         let distance = Math.sqrt(Math.pow(point2.x - point1.x, 2) +
