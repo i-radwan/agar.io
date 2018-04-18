@@ -3,7 +3,8 @@ import Constants from "./Constants.js";
 export default function (p5Lib) {
     let module = {};
 
-    let gameObjects = [];
+    let playersObjects = [];
+    let gemsObjects = [];
     let stars = [];
     let mainPlayer;
     let zoom = 1, targetZoom = 1, zoomFactor = 1;
@@ -37,8 +38,8 @@ export default function (p5Lib) {
      */
     module.draw = function (lag, elapsed, ping) {
         // Interpolate some physics to handle lag
-        gameObjects.forEach(function (obj) {
-            obj.interpolatePhysics(lag);
+        playersObjects.forEach(function (player) {
+            simulatePhysics(player, lag, 1);
         });
 
         p5Lib.push();
@@ -52,19 +53,23 @@ export default function (p5Lib) {
         // Draw stars
         drawStars();
 
-        // Draw all objects
-
-        gameObjects.forEach(function (obj) {
+        // Draw all gems
+        gemsObjects.forEach(function (obj) {
             // Draw object
             if (isObjectInsideMyViewWindow(obj))
-                obj.draw();
+                drawCircle(obj);
+        });
+
+        // Draw all players
+        playersObjects.forEach(function (obj) {
+            // Draw object
+            if (isObjectInsideMyViewWindow(obj))
+                drawBlob(obj);
 
             // Update blob yOffset and display the player name
-            if (obj.canvasObjectType === constants.graphics.CANVAS_OBJECT_PLAYER) {
-                drawPlayerName(obj);
+            drawPlayerName(obj);
 
-                obj.yOffset += elapsed * constants.graphics.WABBLE_SPEED / Math.sqrt(obj.radius);
-            }
+            obj.yOffset += elapsed * constants.graphics.WABBLE_SPEED / Math.sqrt(obj.radius);
         });
 
         p5Lib.pop();
@@ -75,29 +80,22 @@ export default function (p5Lib) {
         // Draw HUDs
         drawHUD(elapsed, ping);
 
-        gameObjects.forEach(function (obj) {
-            // Revert the applied physics
-            obj.undoPhysics(lag);
+        // Revert the applied physics
+        playersObjects.forEach(function (player) {
+            simulatePhysics(player, lag, -1);
         });
     };
 
     module.addGem = function (gemObject) {
-        attachCircle(gemObject, drawCircle);
-
         // Set graphics attributes
         gemObject.canvasX = gemObject.x;
         gemObject.canvasY = gemObject.y;
         gemObject.canvasObjectType = constants.graphics.CANVAS_OBJECT_GEM;
 
-        gemObject.interpolatePhysics = function (lag) {
-        };
-        gemObject.undoPhysics = function (lag) {
-        };
+        gemsObjects.push(gemObject);
     };
 
     module.addPlayer = function (playerObject) {
-        attachCircle(playerObject, drawBlob);
-
         // Set graphics attributes
         playerObject.canvasX = playerObject.x;
         playerObject.canvasY = playerObject.y;
@@ -105,25 +103,7 @@ export default function (p5Lib) {
         playerObject.yOffset = 0; // Used for noisy bubble
         playerObject.strokeColor = constants.graphics.BLOB_STROKE_COLOR;
 
-        playerObject.simulatePhysics = function (lag, direction) {
-            let newCanvasX = this.canvasX + Math.cos(this.angle) * this.velocity;
-            let newCanvasY = this.canvasY + Math.sin(this.angle) * this.velocity;
-
-            if (newCanvasX >= constants.graphics.GAME_BORDER_LEFT && newCanvasX <= constants.graphics.GAME_BORDER_RIGHT) {
-                this.canvasX += (newCanvasX - this.canvasX) * (lag / constants.general.UPDATE_PHYSICS_THRESHOLD) * direction;
-            }
-            if (newCanvasY >= constants.graphics.GAME_BORDER_DOWN && newCanvasY <= constants.graphics.GAME_BORDER_UP) {
-                this.canvasY += (newCanvasY - this.canvasY) * (lag / constants.general.UPDATE_PHYSICS_THRESHOLD) * direction;
-            }
-        };
-
-        playerObject.interpolatePhysics = function (lag) {
-            this.simulatePhysics(lag, 1);
-        };
-
-        playerObject.undoPhysics = function (lag) {
-            this.simulatePhysics(lag, -1);
-        };
+        playersObjects.push(playerObject);
     };
 
     module.addMainPlayer = function (myselfObject) {
@@ -138,7 +118,7 @@ export default function (p5Lib) {
      */
     module.updateGem = function (gemObject) {
         if (gemObject.eaten) { // Gem has been eaten
-            delete gameObjects[gameObjects.indexOf(gemObject)];
+            delete gemsObjects[gemsObjects.indexOf(gemObject)];
         }
         else if (!gemObject.hasOwnProperty("canvasObjectType")) { // New gem generated -> Draw it
             module.addGem(gemObject);
@@ -152,7 +132,7 @@ export default function (p5Lib) {
      */
     module.updatePlayer = function (playerObject) {
         if (!playerObject.alive) { // Player is dead
-            delete gameObjects[gameObjects.indexOf(playerObject)];
+            delete playersObjects[playersObjects.indexOf(playerObject)];
         }
         else if (!playerObject.hasOwnProperty("canvasObjectType")) { // New player generated -> Draw it
             module.addPlayer(playerObject);
@@ -160,13 +140,13 @@ export default function (p5Lib) {
     };
 
     /**
-     * Sort the canvas objects array (the order in which the objects are drawn),
+     * Sort the canvas playersObjects array (the order in which the objects are drawn),
      * such that smaller items are drawn first (to be beneath the larger items)
      * (i.e. fix Z-Index)
      */
-    module.sortObjectsBySize = function () {
+    module.sortPlayersBySize = function () {
         // Sort the array
-        gameObjects.sort(function (a, b) {
+        playersObjects.sort(function (a, b) {
             return (a.radius - b.radius);
         });
     };
@@ -197,21 +177,6 @@ export default function (p5Lib) {
 
         // Translate camera to player center
         p5Lib.translate(-mainPlayer.canvasX, -mainPlayer.canvasY);
-    };
-
-    /**
-     * Attach a new circle to canvas and return the object pointing to it
-     *
-     * @param object the object that needs some canvas functions
-     * @param drawFunction the drawing functions which is responsible for drawing this object
-     */
-    let attachCircle = function (object, drawFunction) {
-        object.draw = function () {
-            drawFunction(object);
-        };
-
-        // Push to canvas objects
-        gameObjects.push(object);
     };
 
     /**
@@ -445,6 +410,26 @@ export default function (p5Lib) {
 
         return Math.abs(object.canvasX - mainPlayer.canvasX) < maxDistX + object.radius &&
             Math.abs(object.canvasY - mainPlayer.canvasY) < maxDistY + object.radius;
+    };
+
+    /**
+     * Simulates player physics that could have happened in the given lag,
+     * the physics take effect in the given direction
+     *
+     * @param player
+     * @param lag
+     * @param direction
+     */
+    let simulatePhysics = function (player, lag, direction) {
+        let newCanvasX = player.canvasX + Math.cos(player.angle) * player.velocity;
+        let newCanvasY = player.canvasY + Math.sin(player.angle) * player.velocity;
+
+        if (newCanvasX >= constants.graphics.GAME_BORDER_LEFT && newCanvasX <= constants.graphics.GAME_BORDER_RIGHT) {
+            player.canvasX += (newCanvasX - player.canvasX) * (lag / constants.general.UPDATE_PHYSICS_THRESHOLD) * direction;
+        }
+        if (newCanvasY >= constants.graphics.GAME_BORDER_DOWN && newCanvasY <= constants.graphics.GAME_BORDER_UP) {
+            player.canvasY += (newCanvasY - player.canvasY) * (lag / constants.general.UPDATE_PHYSICS_THRESHOLD) * direction;
+        }
     };
 
     return module;

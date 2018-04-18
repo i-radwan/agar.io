@@ -123,7 +123,7 @@ export default function (gameStatus) {
         });
 
         // Fix z index of objects
-        uiEngine.sortObjectsBySize();
+        uiEngine.sortPlayersBySize();
     };
 
     let initGameCanvasObjects = function () {
@@ -141,7 +141,7 @@ export default function (gameStatus) {
         uiEngine.addMainPlayer(gameStatus.status.me);
 
         // Fix z index of objects
-        uiEngine.sortObjectsBySize();
+        uiEngine.sortPlayersBySize();
     };
 
     return module;
