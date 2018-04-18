@@ -9,6 +9,8 @@ const Rectangle = require("../utils/Rectangle");
 
 class Room {
 
+    // TODO @Samir55 select using quad trees
+
     /**
      * Room model constructor.
      *
@@ -18,13 +20,15 @@ class Room {
         // Room id
         this.id = id;
 
-        // Room objects
+        // Room Players
         this.players = {};
-        this.gems = {};
-
-        // Next available gems & player ids
-        this.nextGemID = 0;
+        this.playersCount = 0;
         this.nextPlayerID = 0;
+
+        // Room gems
+        this.gems = {};
+        this.gemsCount = 0;
+        this.nextGemID = 0;
 
         // The newly added and deleted gems
         this.newGems = {};
@@ -43,18 +47,21 @@ class Room {
      * @returns {Player}    the newly added player
      */
     addPlayer() {
-        // TODO @Samir55 select using quad trees
         let player = new Player(this.nextPlayerID);
-        return this.players[this.nextPlayerID++] = player;
+
+        this.players[this.nextPlayerID++] = player;
+        this.playersCount++;
+
+        return player;
     };
 
     /**
      * Adds gems to the room.
      */
     addGems() {
-        for (let i = Object.keys(this.gems).length; i < Constants.ROOM_MAX_GEMS; ++i) {
-            this.gems[this.nextGemID] = new Gem(this.nextGemID);
-            this.newGems[this.nextGemID] = this.gems[this.nextGemID];
+        while (this.gemsCount < Constants.ROOM_MAX_GEMS) {
+            this.gems[this.nextGemID] = this.newGems[this.nextGemID] = new Gem(this.nextGemID);
+            this.gemsCount++;
             this.nextGemID++;
         }
     };
@@ -107,26 +114,24 @@ class Room {
         for (let gemID in this.gems) {
             let gem = this.gems[gemID];
 
-            if (Room.playerAteGem(player, gem)) {
+            if (player.ateGem(gem)) {
+                player.incrementScore(1);
                 this.removeGem(player.id, gemID);
             }
         }
     };
 
     checkIfPlayerAtePlayer(player) {
-        for (let playerBID in this.players) {
-            if (!this.players.hasOwnProperty(playerBID) || playerBID === player.id) continue;
+        for (let playerID in this.players) {
+            let foe = this.players[playerID];
 
-            let playerB = this.players[playerBID];
-            if (!playerB.alive) continue;
-
-            if (Room.playerAtePlayer(player, playerB)) {
-                player.incrementScore(playerB.score);
-                this.killPlayer(playerB.id);
+            if (playerID === player.id || !foe.alive) {
+                continue;
             }
-            else if (Room.playerAtePlayer(playerB, player)) {
-                playerB.incrementScore(playerB.score);
-                this.killPlayer(player.id);
+
+            if (player.atePlayer(foe)) {
+                player.incrementScore(foe.score);
+                this.killPlayer(foe.id);
             }
         }
     };
@@ -135,13 +140,9 @@ class Room {
      * Eat gems
      */
     removeGem(playerID, gemID) {
-        delete this.gems[gemID];
-
         this.deletedGemsIDs.push(gemID);
-
-        // Update player's score
-        let player = this.players[playerID];
-        player.incrementScore(1);
+        this.gemsCount--;
+        delete this.gems[gemID];
     };
 
     /**
@@ -150,6 +151,7 @@ class Room {
      * @param playerID
      */
     killPlayer(playerID) {
+        this.playersCount--;
         delete this.players[playerID];
     };
 
@@ -183,7 +185,7 @@ class Room {
      * @returns {Number}
      */
     getPlayersCount() {
-        return Object.keys(this.players).length;
+        return this.playersCount;
     }
 
     /**
@@ -208,37 +210,6 @@ class Room {
         if (!this.players.hasOwnProperty(playerID)) return;
 
         this.players[playerID].angle = angle;
-    }
-
-    /**
-     * Check if a gem has been eaten by a player
-     *
-     * @param gem the gem object
-     * @param player the player object
-     * @returns {boolean} true when the gem is in the player's blob and false otherwise
-     */
-    static playerAteGem(player, gem) {
-        return (player.x - gem.x) * (player.x - gem.x) + (player.y - gem.y) * (player.y - gem.y) <= (player.radius + gem.radius) * (player.radius + gem.radius);
-    }
-
-    /**
-     * Check whether playerA has eaten playerB
-     *
-     * @param playerA
-     * @param playerB
-     * @returns {boolean}
-     */
-    static playerAtePlayer(playerA, playerB) {
-        let distanceSquared = Utilities.distanceSquared(
-            {x: playerA.x, y: playerA.y},
-            {x: playerB.x, y: playerB.y}
-        );
-
-        let radiiSum = playerA.radius + playerB.radius;
-        let radiiSumSquared = radiiSum * radiiSum;
-
-        return radiiSumSquared - distanceSquared > Constants.EPSILON &&
-            playerA.getArea() - 1.1 * playerB.getArea() > Constants.EPSILON;
     }
 }
 

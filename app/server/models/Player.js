@@ -74,6 +74,42 @@ class Player {
             Constants.INITIAL_PLAYER_SPEED - 0.00291 * this.radius
         );
     }
+
+    /**
+     * Checks whether the given player has been eaten by the current player.
+     *
+     * @param player        a player object
+     * @returns {boolean}   true if the current player located on the given player, false otherwise
+     */
+    atePlayer(player) {
+        if (this.getArea() - 1.1 * player.getArea() <= Constants.EPSILON) {
+            return false;
+        }
+
+        let dx = this.x - player.x;
+        let dy = this.y - player.y;
+        let distanceSquared = dx * dx + dy * dy;
+
+        let radiiSum = this.radius + player.radius;
+        let radiiSumSquared = radiiSum * radiiSum;
+
+        return radiiSumSquared - distanceSquared > Constants.EPSILON;
+    }
+
+    /**
+     * Checks whether the given gem has been eaten by the current player.
+     *
+     * @param gem           a gem object
+     * @returns {boolean}   true if the current player located on the gem, false otherwise
+     */
+    ateGem(gem) {
+        let dx = this.x - gem.x;
+        let dy = this.y - gem.y;
+        let radiiSum = this.radius + gem.radius;
+
+        return dx * dx + dy * dy <= radiiSum * radiiSum;
+    }
+
 }
 
 module.exports = Player;

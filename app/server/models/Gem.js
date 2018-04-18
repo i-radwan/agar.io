@@ -24,6 +24,14 @@ class Gem {
         // Pick a random color
         this.color = Constants.COLORS[Utilities.getRandomInt(0, Constants.COLORS.length)];
     }
+
+    /**
+     * Returns the current gem's area.
+     * @returns {number}    the gem's area.
+     */
+    getArea() {
+        return Math.PI * this.radius * this.radius;
+    }
 }
 
 module.exports = Gem;
