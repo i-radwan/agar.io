@@ -35,8 +35,8 @@ export default function (gameStatus) {
         // Increase deltas to prepare for physics and forcing positions steps
         increaseTimers();
 
-        // If server status received
-        checkServerResponse();
+        // Update canvas objects
+        updateCanvasObjects();
 
         // Move players
         applyPhysics();
@@ -91,14 +91,6 @@ export default function (gameStatus) {
         });
 
         timers.lagToHandlePhysics = 0;
-    };
-
-    /**
-     * Check if server has sent new updates, and update the canvas objects if response is received
-     */
-    let checkServerResponse = function () {
-        // Update canvas objects
-        updateCanvasObjects();
     };
 
     /**
