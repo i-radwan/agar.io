@@ -7,8 +7,6 @@ export default function () {
     module.status = {
         env: {
             lerping: false,
-            lerpingCount: 0,
-            noLerpingCount: 0,
             ping: 0
         },
         anglesQueue: {
@@ -48,6 +46,26 @@ export default function () {
         syncPlayers(serverGameStatus.players);
 
         module.status.env.serverResponseReceived = false;
+    };
+
+    /**
+     * Resets the game status to the initial state, to prepare the user for new round
+     */
+    module.reset = function () {
+        delete module.gems;
+        delete module.player;
+
+        module.status.lerping = false;
+
+        module.status.anglesQueue.mouseAngles = [{id: 0, angles: []}];
+        module.status.anglesQueue.anglesBufferSize = 0;
+        module.status.anglesQueue.lastAngleID = 0;
+        module.status.anglesQueue.lastReceivedAngleID = -1;
+        module.status.anglesQueue.lastAngleTimeStamp = 0;
+        module.status.anglesQueue.serverAngleTimeStamp = 0;
+
+        module.status.gems = [];
+        module.status.players = [];
     };
 
     /**

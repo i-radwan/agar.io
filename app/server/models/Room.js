@@ -19,7 +19,6 @@ class Room {
     constructor(id) {
         // Room id
         this.id = id;
-        this.iid = 0;
         // Room objects
         this.players = {};
         this.gems = {};
@@ -190,7 +189,6 @@ class Room {
     getGameStatus(firstTime) {
         let gameStatus = {
             _id: this.id,
-            iid: this.iid++,
             players: this.players,
             newGems: (firstTime ? this.gems : this.newGems),
             deletedGemsIDs: this.deletedGemsIDs,

@@ -3,7 +3,7 @@ import PhysicsEngine from "./PhysicsEngine.js";
 import UIEngine from "./UIEngine.js";
 import Constants from "./Constants.js";
 
-export default function (gameStatus, serverGameStatus) {
+export default function (gameStatus) {
     let module = {};
     let constants = Constants();
 
