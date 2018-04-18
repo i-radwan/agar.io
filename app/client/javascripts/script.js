@@ -10,10 +10,9 @@ let game = {
         game.constants = Constants();
 
         game.gameStatus = GameStatus();
-        game.serverGameStatus = {};
 
         // Establish server communication
-        game.gameServer = GameServer(game.gameStatus, game.serverGameStatus);
+        game.gameServer = GameServer(game.gameStatus);
         game.gameServer.init(game.startGame);
     },
 
@@ -21,7 +20,7 @@ let game = {
      * Callback function to be called when the server responds with room status
      */
     startGame: function () {
-        game.gameEngine = GameEngine(game.gameStatus, game.serverGameStatus);
+        game.gameEngine = GameEngine(game.gameStatus);
         game.gameEngine.init();
 
         // Graphics loop
@@ -52,7 +51,12 @@ let game = {
     },
 
     gameOver: function () {
-        alert("Sry!");
+        // Clear gameStatus
+        game.gameStatus.reset();
+
+        if (confirm("Sry, new round?")) {
+            game.gameServer.emitSubscribeRequest();
+        }
     }
 };
 

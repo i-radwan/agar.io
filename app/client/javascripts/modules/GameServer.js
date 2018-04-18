@@ -1,4 +1,4 @@
-export default function (gameStatus, serverGameStatus) {
+export default function (gameStatus) {
     let module = {};
     let _socket = io();
 
@@ -8,8 +8,12 @@ export default function (gameStatus, serverGameStatus) {
         _socket.on('connect', function () {
             // Send subscription request
             // @OmarBazaraa - Is it enough to use only connect event?
-            _socket.emit('subscribe', {});
+            module.emitSubscribeRequest();
         });
+    };
+
+    module.emitSubscribeRequest = function () {
+        _socket.emit('subscribe', {});
     };
 
     /**
