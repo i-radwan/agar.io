@@ -1,5 +1,5 @@
 // Imports
-const constants = require("../constants")();
+const Constants = require("../utils/Constants")();
 const Rectangle = require("./Rectangle");
 
 
@@ -92,7 +92,7 @@ class QuadTree {
         this.bodies.push(body);
 
         // Check if the current node exceeds it max objects limit
-        if (this.bodies.length > constants.QUAD_TREE_NODE_MAX_OBJECTS && this.level < constants.QUAD_TREE_MAX_LEVELS) {
+        if (this.bodies.length > Constants.QUAD_TREE_NODE_MAX_OBJECTS && this.level < Constants.QUAD_TREE_MAX_LEVELS) {
             if (this.nodes.length > 0) {
                 this.split();
             }

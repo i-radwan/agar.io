@@ -1,5 +1,5 @@
 // Imports
-const constants = require("../constants")();
+const Constants = require("../utils/Constants")();
 
 
 class Gem {
@@ -19,7 +19,7 @@ class Gem {
 
         this.color = color;
 
-        this.radius = constants.GEM_RADIUS;
+        this.radius = Constants.GEM_RADIUS;
     }
 }
 

@@ -1,5 +1,5 @@
 // Imports
-const constants = require("../constants")();
+const Constants = require("../utils/Constants")();
 
 
 class Player {
@@ -14,14 +14,14 @@ class Player {
      * @param color: object contains {r, g, b}
      * @param score: integer
      */
-    constructor(id, initPosition, color, velocity = constants.INITIAL_PLAYER_SPEED, score = 1.0, name = "") {
+    constructor(id, initPosition, color, velocity = Constants.INITIAL_PLAYER_SPEED, score = 1.0, name = "") {
         this.x = initPosition[0];
         this.y = initPosition[1];
         this.x = this.y = 0;
         this.velocity = velocity;
         this.angle = 0;
         this.color = color;
-        this.radius = constants.INITIAL_PLAYER_RADIUS;
+        this.radius = Constants.INITIAL_PLAYER_RADIUS;
         this.name = name;
         this.score = score;
         this.id = id;
@@ -52,10 +52,10 @@ class Player {
     incrementScore(value) {
         this.score += value;
 
-        this.radius += value * constants.SCALE_FACTOR;
+        this.radius += value * Constants.SCALE_FACTOR;
 
-        this.velocity = Math.max(constants.LOWEST_PLAYER_SPEED,
-            constants.INITIAL_PLAYER_SPEED - 0.00291 * this.radius);
+        this.velocity = Math.max(Constants.LOWEST_PLAYER_SPEED,
+            Constants.INITIAL_PLAYER_SPEED - 0.00291 * this.radius);
     }
 
     /**

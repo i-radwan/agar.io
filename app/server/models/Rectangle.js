@@ -1,5 +1,5 @@
 // Imports
-const constants = require("../constants")();
+const Constants = require("../utils/Constants")();
 
 
 class Rectangle {

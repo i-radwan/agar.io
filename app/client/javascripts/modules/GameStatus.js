@@ -53,7 +53,7 @@ export default function () {
      */
     module.reset = function () {
         delete module.gems;
-        delete module.player;
+        delete module.players;
 
         module.status.lerping = false;
 

@@ -1,5 +1,5 @@
 // Imports
-const constants = require("../constants")();
+const Constants = require("../utils/Constants")();
 const Gem = require("./Gem");
 const Player = require("./Player");
 const QuadTree = require("./QuadTree");
@@ -35,7 +35,7 @@ class Room {
         this.newGems = {};
 
         // Create a quad tree to carry gems
-        let quadTree = new QuadTree(0, new Rectangle(0, 0, constants.GAME_SIZE, constants.GAME_SIZE));
+        let quadTree = new QuadTree(0, new Rectangle(0, 0, Constants.GAME_SIZE, Constants.GAME_SIZE));
 
         // Add default gems
         this.addGems();
@@ -66,9 +66,9 @@ class Room {
      * Add gems
      */
     addGems() {
-        if (Object.keys(this.gems).length >= constants.ROOM_MAX_GEMS) return;
+        if (Object.keys(this.gems).length >= Constants.ROOM_MAX_GEMS) return;
 
-        for (let i = Object.keys(this.gems).length; i < constants.ROOM_MAX_GEMS; i++) {
+        for (let i = Object.keys(this.gems).length; i < Constants.ROOM_MAX_GEMS; i++) {
 
             // Generate random positions (normalized)
             let x = ((Math.random() * 2 - 1));
@@ -121,7 +121,7 @@ class Room {
 
         // Check for # of sent angles and if they could occur in this delta time(since last send)
         // keeping room for time functions differences (1 extra angle)
-        if (Math.ceil((anglesBuffer.timestamp - lastAngleTimeStamp) / constants.UPDATE_PHYSICS_THRESHOLD) <
+        if (Math.ceil((anglesBuffer.timestamp - lastAngleTimeStamp) / Constants.UPDATE_PHYSICS_THRESHOLD) <
             anglesBuffer.angles.length - 1) {
             return false;
         }
@@ -280,7 +280,7 @@ class Room {
 
         let radiiSumSquared = (playerA.radius + playerB.radius) * (playerA.radius + playerB.radius);
 
-        return radiiSumSquared - distanceSquared > constants.EPSILON && Room.calculatePlayerArea(playerA) - 1.1 * Room.calculatePlayerArea(playerB) > constants.EPSILON;
+        return radiiSumSquared - distanceSquared > Constants.EPSILON && Room.calculatePlayerArea(playerA) - 1.1 * Room.calculatePlayerArea(playerB) > Constants.EPSILON;
     }
 
     /**

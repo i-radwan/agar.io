@@ -1,5 +1,5 @@
 // Imports
-const constants = require("./constants")();
+const Constants = require("./utils/Constants")();
 const Room = require("./models/Room");
 
 
@@ -44,14 +44,14 @@ class GameServer {
             socket.on('disconnect', function () {
                 self.removePlayer(socket.id);
                 console.log("a player disconnected");
-            })
+            });
         });
 
         //
         // Register callback functions to be called every specific interval of time
         //
-        setInterval(self.sendRoomsGameStatus.bind(self), constants.SEND_GAME_STATUS_RATE);
-        setInterval(self.regenerateGems.bind(self), constants.REGENERATE_GEMS_RATE);
+        setInterval(self.sendRoomsGameStatus.bind(self), Constants.SEND_GAME_STATUS_RATE);
+        setInterval(self.regenerateGems.bind(self), Constants.REGENERATE_GEMS_RATE);
     };
 
     /**
@@ -85,7 +85,7 @@ class GameServer {
         for (let i in this.gameRooms) {
             let room = this.gameRooms[i];
 
-            if (room.getPlayersCount() < constants.ROOM_MAX_PLAYERS) {
+            if (room.getPlayersCount() < Constants.ROOM_MAX_PLAYERS) {
                 return room.id;
             }
         }

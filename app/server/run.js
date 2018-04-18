@@ -1,6 +1,6 @@
 // Imports
-const constants = require("./constants")();
-const gameServer = require("./server");
+const Constants = require("./utils/Constants")();
+const GameServer = require("./server");
 
 const express = require('express');
 const app = express();
@@ -8,7 +8,7 @@ const path = require('path');
 const httpServer = require('http').Server(app);
 const io = require('socket.io')(httpServer, {
     pingInterval: 500,
-    pingTimeout: constants.PING_TIMEOUT,
+    pingTimeout: Constants.PING_TIMEOUT,
 });
 
 
@@ -39,8 +39,8 @@ function setupRoutes() {
  */
 function setupServer() {
     // Start listening on port 3000
-    httpServer.listen(constants.PORT, function () {
-        console.log('listening on *: ', constants.PORT);
+    httpServer.listen(Constants.PORT, function () {
+        console.log('listening on *: ', Constants.PORT);
     });
 }
 
@@ -48,7 +48,7 @@ function setupServer() {
  * Starts the actual game server.
  */
 function startServer() {
-    let server = new gameServer(io);
+    let server = new GameServer(io);
     server.init();
 }
 
