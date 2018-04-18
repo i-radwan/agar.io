@@ -44,7 +44,7 @@ export default function (p5Lib) {
      */
     module.draw = function (lag, elapsed, ping) {
         // Interpolate some physics to handle lag
-        players.forEach(function (player) {
+        players.concat(mainPlayer).forEach(function (player) {
             simulatePhysics(player, lag, 1);
         });
 
@@ -68,15 +68,14 @@ export default function (p5Lib) {
         }
 
         // Draw all players
-        players.concat(mainPlayer).forEach(function (obj) {
-            // Draw object
-            if (isObjectInsideMyViewWindow(obj))
-                drawBlob(obj);
+        players.concat(mainPlayer).forEach(function (player) {
+            if (isObjectInsideMyViewWindow(player)) {
+                drawBlob(player);
+                drawPlayerName(player);
+            }
 
-            // Update blob yOffset and display the player name
-            drawPlayerName(obj);
-
-            obj.yOffset += elapsed * constants.graphics.WABBLE_SPEED / Math.sqrt(obj.radius);
+            // Update blob yOffset
+            player.yOffset += elapsed * constants.graphics.WABBLE_SPEED / Math.sqrt(player.radius);
         });
 
         p5Lib.pop();
@@ -88,7 +87,7 @@ export default function (p5Lib) {
         drawHUD(elapsed, ping);
 
         // Revert the applied physics
-        players.forEach(function (player) {
+        players.concat(mainPlayer).forEach(function (player) {
             simulatePhysics(player, lag, -1);
         });
     };

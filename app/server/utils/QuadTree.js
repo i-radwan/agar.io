@@ -1,5 +1,5 @@
 // Imports
-const Constants = require("../utils/Constants")();
+const Constants = require("./Constants")();
 const Rectangle = require("./Rectangle");
 
 

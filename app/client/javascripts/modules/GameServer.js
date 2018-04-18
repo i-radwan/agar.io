@@ -1,21 +1,29 @@
 export default function (gameStatus) {
     let module = {};
-    let _socket = io();
+    let socket = io();
 
+    /**
+     * Initializes communication with the server and register event listeners.
+     *
+     * @param setupGameEngine   a callback function to be called when receiving initial room game states
+     */
     module.init = function (setupGameEngine) {
         setupReceivers(setupGameEngine);
 
-        _socket.on('connect', function () {
-            module.emitSubscribeRequest();
+        socket.on('connect', function () {
+            module.sendSubscribeRequest();
         });
     };
 
-    module.emitSubscribeRequest = function () {
-        _socket.emit('subscribe', {});
+    /**
+     * Sends a subscribe request to join a game room and start playing.
+     */
+    module.sendSubscribeRequest = function () {
+        socket.emit('subscribe', {});
     };
 
     /**
-     * Send my angle to the server
+     * Sends my angle to the server.
      */
     module.sendAngle = function () {
         // Get last angles row
@@ -27,8 +35,8 @@ export default function (gameStatus) {
         gameStatus.status.env.lastAngleTimeStamp = currentTime;
         angles.timestamp = gameStatus.status.env.serverAngleTimeStamp;
 
-        // Transmit
-        _socket.emit('angle', angles);
+        // Transmit a sequence of angles
+        socket.emit('angle', angles);
 
         // Push new row for new angles
         gameStatus.status.anglesQueue.mouseAngles.push({id: ++gameStatus.status.anglesQueue.lastAngleID, angles: []});
@@ -37,29 +45,39 @@ export default function (gameStatus) {
         gameStatus.reduceAnglesBufferSize();
     };
 
+    /**
+     * Registers event listeners from the server.
+     *
+     * @param startGame     a callback function to be called when receiving initial room game states
+     */
     let setupReceivers = function (startGame) {
-        _socket.on('player_info', function (playerInfo) {
+        // Receive main player info
+        socket.on('player_info', function (playerInfo) {
             gameStatus.status.me = Object.assign({}, playerInfo);
             gameStatus.status.env.lastAngleTimeStamp = Date.now();
             gameStatus.status.env.serverAngleTimeStamp = gameStatus.status.me.lastAngleTimeStamp;
         });
 
-        _socket.on('game_status', function (receivedGameStatus) {
-            // Update local gameStatus by receivedGameStatus
-            gameStatus.set(JSON.parse(receivedGameStatus));
-        });
-
-        _socket.on('initial_game_status', function (receivedGameStatus) {
+        // Receive initial game status
+        socket.on('initial_game_status', function (receivedGameStatus) {
             gameStatus.set(JSON.parse(receivedGameStatus));
             startGame();
         });
 
-        _socket.on('disconnect', function () {
+        // Receive game status
+        socket.on('game_status', function (receivedGameStatus) {
+            // Update local gameStatus by receivedGameStatus
+            gameStatus.set(JSON.parse(receivedGameStatus));
+        });
+
+        // TODO: does this get actually called?
+        socket.on('disconnect', function () {
+            console.log("ASD");
             gameStatus.status.me.alive = false;
         });
 
         // Receive pong from the server to get latency
-        _socket.on('pong', function (ms) {
+        socket.on('pong', function (ms) {
             gameStatus.status.env.ping = ms;
         });
     };
