@@ -25,10 +25,7 @@ export default function (gameStatus) {
         physicsEngine = PhysicsEngine(module.p5Lib);
 
         uiEngine = UIEngine(module.p5Lib);
-        uiEngine.init(); // Initial drawing
-
-        // Draw initial game status
-        initGameCanvasObjects();
+        uiEngine.init(gameStatus.status.me, gameStatus.status.players, gameStatus.status.gems); // Initial drawing
     };
 
     module.gameEngineLoop = function () {
@@ -97,40 +94,29 @@ export default function (gameStatus) {
      * Update the objects on the canvas (after getting update from server)
      */
     let updateCanvasObjects = function () {
-        // Update gems
-        gameStatus.status.gems.forEach(function (gem, key) {
-            uiEngine.updateGem(gem);
+        // Add new gems canvas params
+        for (let key in gameStatus.status.newGems) {
+            let gem = gameStatus.status.newGems[key];
 
-            if (gem.eaten)
-                delete gameStatus.status.gems[key];
-        });
+            gameStatus.status.gems[gem.id] = gem;
 
-        // Update players (including me)
-        gameStatus.status.players.concat(gameStatus.status.me).forEach(function (player, key) {
-            uiEngine.updatePlayer(player);
+            uiEngine.addGemCanvasParams(gameStatus.status.gems[gem.id]);
+        }
 
-            if (!player.alive) {
+        // Flush new gems array
+        gameStatus.status.newGems = {};
+
+        // Update players
+        for (let key in gameStatus.status.players) {
+            let player = gameStatus.status.players[key];
+
+            if (!player.alive) { // Player is dead
                 delete gameStatus.status.players[key];
             }
-        });
-
-        // Fix z index of objects
-        uiEngine.sortPlayersBySize();
-    };
-
-    let initGameCanvasObjects = function () {
-        // Draw gems
-        gameStatus.status.gems.forEach(function (gem) {
-            uiEngine.addGem(gem);
-        });
-
-        // Draw players
-        gameStatus.status.players.forEach(function (player) {
-            uiEngine.addPlayer(player);
-        });
-
-        // Draw myself
-        uiEngine.addMainPlayer(gameStatus.status.me);
+            else if (!player.hasOwnProperty("canvasObjectType")) { // New player generated -> Draw it
+                uiEngine.addPlayerCanvasParams(player);
+            }
+        }
 
         // Fix z index of objects
         uiEngine.sortPlayersBySize();

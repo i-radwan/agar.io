@@ -3,8 +3,8 @@ import Constants from "./Constants.js";
 export default function (p5Lib) {
     let module = {};
 
-    let playersObjects = [];
-    let gemsObjects = [];
+    let players;
+    let gems;
     let stars = [];
     let mainPlayer;
     let zoom = 1, targetZoom = 1, zoomFactor = 1;
@@ -13,8 +13,12 @@ export default function (p5Lib) {
 
     let constants = Constants();
 
-    module.init = function () {
+    module.init = function (me, playersObjects, gemsObjects) {
         playerNameTextFont = p5Lib.loadFont(constants.graphics.PLAYER_NAME_TEXT_FONT_PATH);
+
+        // Assign gems and players to the game status arrays
+        players = playersObjects;
+        gems = gemsObjects;
 
         // Create canvas
         makeCanvas();
@@ -27,6 +31,8 @@ export default function (p5Lib) {
 
         // Setup initial canvas sizing
         updateGameSize();
+
+        addMainPlayer(me);
     };
 
     /**
@@ -38,7 +44,7 @@ export default function (p5Lib) {
      */
     module.draw = function (lag, elapsed, ping) {
         // Interpolate some physics to handle lag
-        playersObjects.forEach(function (player) {
+        players.forEach(function (player) {
             simulatePhysics(player, lag, 1);
         });
 
@@ -54,14 +60,15 @@ export default function (p5Lib) {
         drawStars();
 
         // Draw all gems
-        gemsObjects.forEach(function (obj) {
-            // Draw object
-            if (isObjectInsideMyViewWindow(obj))
-                drawCircle(obj);
-        });
+        for (let key in gems){
+            let gem = gems[key];
+
+            if (isObjectInsideMyViewWindow(gem))
+                drawCircle(gem);
+        }
 
         // Draw all players
-        playersObjects.forEach(function (obj) {
+        players.concat(mainPlayer).forEach(function (obj) {
             // Draw object
             if (isObjectInsideMyViewWindow(obj))
                 drawBlob(obj);
@@ -81,62 +88,25 @@ export default function (p5Lib) {
         drawHUD(elapsed, ping);
 
         // Revert the applied physics
-        playersObjects.forEach(function (player) {
+        players.forEach(function (player) {
             simulatePhysics(player, lag, -1);
         });
     };
 
-    module.addGem = function (gemObject) {
+    module.addGemCanvasParams = function (gem) {
         // Set graphics attributes
-        gemObject.canvasX = gemObject.x;
-        gemObject.canvasY = gemObject.y;
-        gemObject.canvasObjectType = constants.graphics.CANVAS_OBJECT_GEM;
-
-        gemsObjects.push(gemObject);
+        gem.canvasX = gem.x;
+        gem.canvasY = gem.y;
+        gem.canvasObjectType = constants.graphics.CANVAS_OBJECT_GEM;
     };
 
-    module.addPlayer = function (playerObject) {
+    module.addPlayerCanvasParams = function (player) {
         // Set graphics attributes
-        playerObject.canvasX = playerObject.x;
-        playerObject.canvasY = playerObject.y;
-        playerObject.canvasObjectType = constants.graphics.CANVAS_OBJECT_PLAYER;
-        playerObject.yOffset = 0; // Used for noisy bubble
-        playerObject.strokeColor = constants.graphics.BLOB_STROKE_COLOR;
-
-        playersObjects.push(playerObject);
-    };
-
-    module.addMainPlayer = function (myselfObject) {
-        module.addPlayer(myselfObject);
-        mainPlayer = myselfObject;
-    };
-
-    /**
-     * Update gem canvas object to follow the updates in the gemObject
-     *
-     * @param gemObject
-     */
-    module.updateGem = function (gemObject) {
-        if (gemObject.eaten) { // Gem has been eaten
-            delete gemsObjects[gemsObjects.indexOf(gemObject)];
-        }
-        else if (!gemObject.hasOwnProperty("canvasObjectType")) { // New gem generated -> Draw it
-            module.addGem(gemObject);
-        }
-    };
-
-    /**
-     * Update player canvas object to follow the updates in the playerObject
-     *
-     * @param playerObject
-     */
-    module.updatePlayer = function (playerObject) {
-        if (!playerObject.alive) { // Player is dead
-            delete playersObjects[playersObjects.indexOf(playerObject)];
-        }
-        else if (!playerObject.hasOwnProperty("canvasObjectType")) { // New player generated -> Draw it
-            module.addPlayer(playerObject);
-        }
+        player.canvasX = player.x;
+        player.canvasY = player.y;
+        player.canvasObjectType = constants.graphics.CANVAS_OBJECT_PLAYER;
+        player.yOffset = 0; // Used for noisy bubble
+        player.strokeColor = constants.graphics.BLOB_STROKE_COLOR;
     };
 
     /**
@@ -146,9 +116,14 @@ export default function (p5Lib) {
      */
     module.sortPlayersBySize = function () {
         // Sort the array
-        playersObjects.sort(function (a, b) {
+        players.sort(function (a, b) {
             return (a.radius - b.radius);
         });
+    };
+
+    let addMainPlayer = function (myselfObject) {
+        module.addPlayerCanvasParams(myselfObject);
+        mainPlayer = myselfObject;
     };
 
     /**
@@ -228,6 +203,7 @@ export default function (p5Lib) {
      */
     let drawNoisyCircle = function (blob, radius, color) {
         p5Lib.push();
+
         p5Lib.beginShape();
 
         // Fill the drawing with the required color

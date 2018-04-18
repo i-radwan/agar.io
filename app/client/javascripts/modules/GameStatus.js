@@ -35,7 +35,8 @@ export default function () {
             alive: true,
             forcePosition: false
         },
-        gems: [],
+        gems: {},
+        newGems: [],
         players: []
     };
 
@@ -66,6 +67,7 @@ export default function () {
         module.status.anglesQueue.serverAngleTimeStamp = 0;
 
         module.status.gems = [];
+        module.status.newGems = [];
         module.status.players = [];
     };
 
@@ -88,18 +90,12 @@ export default function () {
 
     let syncGems = function (serverGameNewGems, serverGameDeletedGems) {
         // Sync local gems
-        for (let i in module.status.gems) {
-            let gem = module.status.gems[i];
-
-            if (serverGameDeletedGems.indexOf(gem.id.toString()) > -1) {
-                gem.eaten = true;
-            }
+        for (let i in serverGameDeletedGems) {
+            delete module.status.gems[serverGameDeletedGems[i]];
         }
 
-        // Add new gems
-        for (let i in serverGameNewGems) {
-            module.status.gems.push(serverGameNewGems[i]);
-        }
+        // Append new gems
+        module.status.newGems = Object.assign(module.status.newGems, serverGameNewGems);
     };
 
     let syncPlayers = function (serverGamePlayers) {
@@ -119,7 +115,7 @@ export default function () {
                 continue;
             }
 
-            player = Object.assign(player, serverGamePlayers[player.id]);
+            Object.assign(player, serverGamePlayers[player.id]);
 
             // Remove from the server array (after loop we will have the new players only)
             delete serverGamePlayers[player.id];
@@ -136,7 +132,7 @@ export default function () {
         syncAnglesBuffer(mainPlayerServerVersion);
 
         // Update myself
-        module.status.me = Object.assign(module.status.me, mainPlayerServerVersion);
+        Object.assign(module.status.me, mainPlayerServerVersion);
     };
 
     let syncAnglesBuffer = function (meOnServer) {
