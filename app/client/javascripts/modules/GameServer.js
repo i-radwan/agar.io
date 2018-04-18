@@ -1,9 +1,17 @@
-export default function (gameStatus, serverGameStatus) {
+export default function (gameStatus) {
     let module = {};
     let _socket = io();
 
     module.init = function (setupGameEngine) {
         setupReceivers(setupGameEngine);
+
+        _socket.on('connect', function () {
+            module.emitSubscribeRequest();
+        });
+    };
+
+    module.emitSubscribeRequest = function () {
+        _socket.emit('subscribe', {});
     };
 
     /**

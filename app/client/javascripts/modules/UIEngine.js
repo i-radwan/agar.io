@@ -33,12 +33,13 @@ export default function (p5Lib) {
      *
      * @param lag the time between this function call and the last physics update
      * @param elapsed the time taken by previous game loop
+     * @param ping connection ping value
      */
     module.draw = function (lag, elapsed, ping) {
         // Interpolate some physics to handle lag
-        for (let i = 0; i < gameObjects.length; i++) {
-            gameObjects[i].interpolatePhysics(lag);
-        }
+        gameObjects.forEach(function (obj) {
+            obj.interpolatePhysics(lag);
+        });
 
         p5Lib.push();
 
@@ -52,18 +53,19 @@ export default function (p5Lib) {
         drawStars();
 
         // Draw all objects
-        for (let i = 0; i < gameObjects.length; i++) {
+
+        gameObjects.forEach(function (obj) {
             // Draw object
-            if (isObjectInsideMyViewWindow(gameObjects[i]))
-                gameObjects[i].draw();
+            if (isObjectInsideMyViewWindow(obj))
+                obj.draw();
 
             // Update blob yOffset and display the player name
-            if (gameObjects[i].canvasObjectType === constants.graphics.CANVAS_OBJECT_PLAYER) {
-                drawPlayerName(gameObjects[i]);
+            if (obj.canvasObjectType === constants.graphics.CANVAS_OBJECT_PLAYER) {
+                drawPlayerName(obj);
 
-                gameObjects[i].yOffset += elapsed * constants.graphics.WABBLE_SPEED / Math.sqrt(gameObjects[i].radius);
+                obj.yOffset += elapsed * constants.graphics.WABBLE_SPEED / Math.sqrt(obj.radius);
             }
-        }
+        });
 
         p5Lib.pop();
 
@@ -73,10 +75,10 @@ export default function (p5Lib) {
         // Draw HUDs
         drawHUD(elapsed, ping);
 
-        for (let i = 0; i < gameObjects.length; i++) {
+        gameObjects.forEach(function (obj) {
             // Revert the applied physics
-            gameObjects[i].undoPhysics(lag);
-        }
+            obj.undoPhysics(lag);
+        });
     };
 
     module.addGem = function (gemObject) {
@@ -136,7 +138,7 @@ export default function (p5Lib) {
      */
     module.updateGem = function (gemObject) {
         if (gemObject.eaten) { // Gem has been eaten
-            gameObjects.splice(gameObjects.indexOf(gemObject), 1);
+            delete gameObjects[gameObjects.indexOf(gemObject)];
         }
         else if (!gemObject.hasOwnProperty("canvasObjectType")) { // New gem generated -> Draw it
             module.addGem(gemObject);
@@ -150,7 +152,7 @@ export default function (p5Lib) {
      */
     module.updatePlayer = function (playerObject) {
         if (!playerObject.alive) { // Player is dead
-            gameObjects.splice(gameObjects.indexOf(playerObject), 1);
+            delete gameObjects[gameObjects.indexOf(playerObject)];
         }
         else if (!playerObject.hasOwnProperty("canvasObjectType")) { // New player generated -> Draw it
             module.addPlayer(playerObject);

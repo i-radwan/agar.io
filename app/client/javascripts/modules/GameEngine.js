@@ -106,20 +106,19 @@ export default function (gameStatus) {
      */
     let updateCanvasObjects = function () {
         // Update gems
-        gameStatus.status.gems.forEach(function (gem, idx) {
+        gameStatus.status.gems.forEach(function (gem, key) {
             uiEngine.updateGem(gem);
 
-            if (gem.eaten) {
-                gameStatus.status.gems.splice(idx, 1);
-            }
+            if (gem.eaten)
+                delete gameStatus.status.gems[key];
         });
 
         // Update players (including me)
-        gameStatus.status.players.concat(gameStatus.status.me).forEach(function (player, idx) {
+        gameStatus.status.players.concat(gameStatus.status.me).forEach(function (player, key) {
             uiEngine.updatePlayer(player);
 
             if (!player.alive) {
-                gameStatus.status.players.splice(idx, 1);
+                delete gameStatus.status.players[key];
             }
         });
 
@@ -129,14 +128,14 @@ export default function (gameStatus) {
 
     let initGameCanvasObjects = function () {
         // Draw gems
-        for (let i = 0; i < gameStatus.status.gems.length; i++) {
-            uiEngine.addGem(gameStatus.status.gems[i]);
-        }
+        gameStatus.status.gems.forEach(function (gem) {
+            uiEngine.addGem(gem);
+        });
 
         // Draw players
-        for (let i = 0; i < gameStatus.status.players.length; i++) {
-            uiEngine.addPlayer(gameStatus.status.players[i]);
-        }
+        gameStatus.status.players.forEach(function (player) {
+            uiEngine.addPlayer(player);
+        });
 
         // Draw myself
         uiEngine.addMainPlayer(gameStatus.status.me);

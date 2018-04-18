@@ -109,7 +109,7 @@ export default function () {
         }
 
         // Sync local players (not including me)
-        for (let i = 0; i < module.status.players.length; i++) {
+        for (let i in module.status.players) {
             let player = module.status.players[i];
 
             // Player is dead
