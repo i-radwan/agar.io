@@ -105,7 +105,9 @@ export default function () {
             return;
         }
 
-        // Sync local players (not including me)
+        let mainPlayerServerVersion = serverGamePlayers[module.status.me.id];
+
+        // Sync local players (including me)
         for (let i in module.status.players) {
             let player = module.status.players[i];
 
@@ -123,16 +125,10 @@ export default function () {
 
         // Add new players
         for (let playerID in serverGamePlayers) {
-            if (Number(playerID) !== module.status.me.id)
-                module.status.players.push(serverGamePlayers[playerID]);
+            module.status.players.push(serverGamePlayers[playerID]);
         }
 
-        let mainPlayerServerVersion = serverGamePlayers[module.status.me.id];
-
         syncAnglesBuffer(mainPlayerServerVersion);
-
-        // Update myself
-        Object.assign(module.status.me, mainPlayerServerVersion);
     };
 
     let syncAnglesBuffer = function (meOnServer) {
@@ -145,7 +141,7 @@ export default function () {
         let serverKeepingUp = false;
         let firstIdx = module.status.anglesQueue.firstIdx;
 
-        // Flush all angles corresponding to missed packets
+        // Flush all angles corresponding to overridden packets
         while (meOnServer.lastReceivedAngleID >= module.status.anglesQueue.mouseAngles[firstIdx].id) {
             // Reduce total buffer size
             module.status.anglesQueue.anglesBufferSize -= module.status.anglesQueue.mouseAngles[firstIdx].angles.length;

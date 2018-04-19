@@ -54,6 +54,8 @@ export default function (gameStatus) {
         // Receive main player info
         socket.on('player_info', function (playerInfo) {
             gameStatus.status.me = Object.assign({}, playerInfo);
+            gameStatus.status.players[gameStatus.status.me.id] = gameStatus.status.me;
+
             gameStatus.status.env.lastAngleTimeStamp = Date.now();
             gameStatus.status.env.serverAngleTimeStamp = gameStatus.status.me.lastAngleTimeStamp;
         });

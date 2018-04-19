@@ -49,6 +49,8 @@ export default function (gameStatus) {
     let updateGamePhysics = function () {
         // Move players
         gameStatus.status.players.forEach(function (player) {
+            if (player.id === gameStatus.status.me.id) return;
+
             physicsEngine.movePlayerToPosition(player, {x: player.x, y: player.y});
         });
 
@@ -83,9 +85,12 @@ export default function (gameStatus) {
 
     let forceServerPositions = function () {
         // Move players to server position
-        gameStatus.status.players.concat(gameStatus.status.me).forEach(function (player) {
+        gameStatus.status.players.forEach(function (player) {
             physicsEngine.forceServerPosition(player);
         });
+
+        // Force my position
+        physicsEngine.forceServerPosition(gameStatus.status.me);
 
         timers.lagToHandlePhysics = 0;
     };

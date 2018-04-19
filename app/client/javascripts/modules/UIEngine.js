@@ -44,9 +44,9 @@ export default function (p5Lib) {
      */
     module.draw = function (lag, elapsed, ping) {
         // Interpolate some physics to handle lag
-        players.concat(mainPlayer).forEach(function (player) {
-            simulatePhysics(player, lag, 1);
-        });
+        for (let key in players) {
+            simulatePhysics(players[key], lag, 1);
+        }
 
         p5Lib.push();
 
@@ -60,7 +60,7 @@ export default function (p5Lib) {
         drawStars();
 
         // Draw all gems
-        for (let key in gems){
+        for (let key in gems) {
             let gem = gems[key];
 
             if (isObjectInsideMyViewWindow(gem))
@@ -68,15 +68,17 @@ export default function (p5Lib) {
         }
 
         // Draw all players
-        players.concat(mainPlayer).forEach(function (player) {
+        for (let key in players) {
+            let player = players[key];
+
+            // Draw player object and name
             if (isObjectInsideMyViewWindow(player)) {
                 drawBlob(player);
                 drawPlayerName(player);
             }
 
-            // Update blob yOffset
             player.yOffset += elapsed * constants.graphics.WABBLE_SPEED / Math.sqrt(player.radius);
-        });
+        }
 
         p5Lib.pop();
 
@@ -87,9 +89,9 @@ export default function (p5Lib) {
         drawHUD(elapsed, ping);
 
         // Revert the applied physics
-        players.concat(mainPlayer).forEach(function (player) {
-            simulatePhysics(player, lag, -1);
-        });
+        for (let key in players) {
+            simulatePhysics(players[key], lag, -1);
+        }
     };
 
     module.addGemCanvasParams = function (gem) {
