@@ -3,24 +3,34 @@ function Constants() {
     let SCALE_FACTOR = 2 / GAME_SIZE;
 
     return {
+        //
+        // Server related constants
+        //
         PORT: 3000,
-        GAME_SIZE: GAME_SIZE,
-        ROOM_MAX_PLAYERS: 5,
-        ROOM_MAX_GEMS: 1000,
-        SIMULATE_RUN_RATE: 1000 / 40,
+        PING_TIMEOUT: 5000,
+        UPDATE_PHYSICS_THRESHOLD: 15,
         SEND_GAME_STATUS_RATE: 40,
         REGENERATE_GEMS_RATE: 5000,
-        SEND_LEADER_BOARD_RATE: 4000,
+
+        //
+        // Game related constants
+        //
+        GAME_SIZE: GAME_SIZE,
+        SCALE_FACTOR: SCALE_FACTOR,
+        ROOM_MAX_PLAYERS: 5,
+        ROOM_MAX_GEMS: 1000,
         GEM_RADIUS: 10 * SCALE_FACTOR,
         LOWEST_PLAYER_SPEED: 0.2 * SCALE_FACTOR,
         INITIAL_PLAYER_SPEED: 5 * SCALE_FACTOR,
         INITIAL_PLAYER_RADIUS: 30 * SCALE_FACTOR,
-        QUAD_TREE_NODE_MAX_OBJECTS: 15,
-        QUAD_TREE_MAX_LEVELS: 5,
-        SCALE_FACTOR: SCALE_FACTOR,
-        UPDATE_PHYSICS_THRESHOLD: 15,
         EPSILON: 0.000001,
-        PING_TIMEOUT: 5000
+        COLORS: ["red", "green", "blue", "yellow", "orange", "purple", "pink"],
+
+        //
+        // Quad tree constants
+        //
+        QUAD_TREE_NODE_MAX_OBJECTS: 15,
+        QUAD_TREE_MAX_LEVELS: 5
     };
 }
 

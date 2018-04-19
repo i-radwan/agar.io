@@ -70,13 +70,12 @@ export default function (p5Lib) {
         // Draw all players
         for (let key in players) {
             let player = players[key];
-            
-            // Draw object
-            if (isObjectInsideMyViewWindow(player))
-                drawBlob(player);
 
-            // Update blob yOffset and display the player name
-            drawPlayerName(player);
+            // Draw player object and name
+            if (isObjectInsideMyViewWindow(player)) {
+                drawBlob(player);
+                drawPlayerName(player);
+            }
 
             player.yOffset += elapsed * constants.graphics.WABBLE_SPEED / Math.sqrt(player.radius);
         }

@@ -70,7 +70,7 @@ class GameServer {
         let playerID = player.id;
         this.gamePlayers[playerSocketID] = {roomID, playerID};
 
-        this.sendGameStatus(playerSocketID, playerID, roomID, player.lastAngleTimeStamp);
+        this.sendInitialGameStatus(playerSocketID, playerID, roomID, player.lastAngleTimeStamp);
 
         return roomID;
     };
@@ -108,7 +108,7 @@ class GameServer {
      * @param roomID            the player assigned room id
      * @param timestamp         a reference timestamp needed for synchronization
      */
-    sendGameStatus(playerSocketID, playerID, roomID, timestamp) {
+    sendInitialGameStatus(playerSocketID, playerID, roomID, timestamp) {
         let playerInfo = {
             id: playerID,
             lastReceivedAngleID: -1,

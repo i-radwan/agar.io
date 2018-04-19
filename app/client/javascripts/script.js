@@ -55,7 +55,7 @@ let game = {
         game.gameStatus.reset();
 
         if (confirm("Sry, new round?")) {
-            game.gameServer.emitSubscribeRequest();
+            game.gameServer.sendSubscribeRequest();
         }
     }
 };
