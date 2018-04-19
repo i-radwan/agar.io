@@ -34,7 +34,7 @@ class GameServer {
             // Add new player to a room upon receiving connection event
             socket.on('subscribe', function () {
                 socket.join(self.addNewPlayer(socket.id));
-                console.log("a player connected");
+                console.log("a player connected", socket.id);
             });
 
             // Updates player's angle
@@ -45,7 +45,7 @@ class GameServer {
             // Remove player on disconnection
             socket.on('disconnect', function () {
                 self.removePlayer(socket.id);
-                console.log("a player disconnected");
+                console.log("a player disconnected", socket.id);
             });
         });
 

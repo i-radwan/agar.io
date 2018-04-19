@@ -1,6 +1,6 @@
 export default function (gameStatus) {
     let module = {};
-    let socket = io();
+    let socket = io({reconnection: false});
 
     /**
      * Initializes communication with the server and register event listeners.
@@ -74,7 +74,6 @@ export default function (gameStatus) {
 
         // TODO: does this get actually called?
         socket.on('disconnect', function () {
-            console.log("ASD");
             gameStatus.status.me.alive = false;
         });
 
