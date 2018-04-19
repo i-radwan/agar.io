@@ -153,7 +153,7 @@ class GameServer {
 
         // Remove player from his room
         if (this.rooms[roomID].isPlayerAlive(playerID)) {
-            this.rooms[roomID].killPlayer(playerID);
+            this.rooms[roomID].removePlayer(playerID);
         }
 
         // Remove player entry from map
@@ -184,7 +184,7 @@ class GameServer {
     regenerateGems() {
         // Loop over all game rooms and regenerate gems
         for (let i in this.rooms) {
-            this.rooms[i].addGems();
+            this.rooms[i].generateGems();
         }
     };
 }

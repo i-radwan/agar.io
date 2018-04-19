@@ -1,6 +1,5 @@
 // Imports
 const Constants = require("../utils/Constants")();
-const Utilities = require("../utils/Utilities");
 const Gem = require("./Gem");
 const Player = require("./Player");
 const QuadTree = require("../utils/QuadTree");
@@ -38,33 +37,8 @@ class Room {
         let quadTree = new QuadTree(0, new Rectangle(0, 0, Constants.GAME_SIZE, Constants.GAME_SIZE));
 
         // Add default gems
-        this.addGems();
+        this.generateGems();
     }
-
-    /**
-     * Adds a new player to the room.
-     *
-     * @returns {Player}    the newly added player
-     */
-    addPlayer() {
-        let player = new Player(this.nextPlayerID);
-
-        this.players[this.nextPlayerID++] = player;
-        this.playersCount++;
-
-        return player;
-    };
-
-    /**
-     * Adds new gems to the room.
-     */
-    addGems() {
-        while (this.gemsCount < Constants.ROOM_MAX_GEMS) {
-            this.gems[this.nextGemID] = this.newGems[this.nextGemID] = new Gem(this.nextGemID);
-            this.gemsCount++;
-            this.nextGemID++;
-        }
-    };
 
     /**
      * Simulates the movements of the given player based on the received angles sequence.
@@ -100,7 +74,7 @@ class Room {
 
             if (player.ateGem(gem)) {
                 player.incrementScore(1);
-                this.removeGem(player.id, gemID);
+                this.removeGem(gemID);
             }
         }
     };
@@ -116,35 +90,16 @@ class Room {
             // I was eaten
             if (foePlayer.atePlayer(player)) {
                 foePlayer.incrementScore(player.score);
-                this.killPlayer(player.id);
+                this.removePlayer(player.id);
                 return;
             }
 
             // I ate another player
             if (player.atePlayer(foePlayer)) {
                 player.incrementScore(foePlayer.score);
-                this.killPlayer(foePlayer.id);
+                this.removePlayer(foePlayer.id);
             }
         }
-    };
-
-    /**
-     * Eat gems
-     */
-    removeGem(playerID, gemID) {
-        this.deletedGemsIDs.push(gemID);
-        this.gemsCount--;
-        delete this.gems[gemID];
-    };
-
-    /**
-     * Kill player
-     *
-     * @param playerID
-     */
-    killPlayer(playerID) {
-        this.playersCount--;
-        delete this.players[playerID];
     };
 
     /**
@@ -158,9 +113,55 @@ class Room {
     }
 
     /**
+     * Adds a new player to the room.
+     *
+     * @returns {Player}    the newly added player
+     */
+    addPlayer() {
+        let player = new Player(this.nextPlayerID);
+
+        this.players[this.nextPlayerID++] = player;
+        this.playersCount++;
+
+        return player;
+    };
+
+    /**
+     * Removes the given player from the room.
+     *
+     * @param playerID      the player id to be removed
+     */
+    removePlayer(playerID) {
+        this.playersCount--;
+        delete this.players[playerID];
+    };
+
+    /**
+     * Generates new gems to the room.
+     */
+    generateGems() {
+        while (this.gemsCount < Constants.ROOM_MAX_GEMS) {
+            this.gems[this.nextGemID] = this.newGems[this.nextGemID] = new Gem(this.nextGemID);
+            this.gemsCount++;
+            this.nextGemID++;
+        }
+    };
+
+    /**
+     * Removes the given gem from the room.
+     *
+     * @param gemID         the gem id to be removed
+     */
+    removeGem(gemID) {
+        this.deletedGemsIDs.push(gemID);
+        this.gemsCount--;
+        delete this.gems[gemID];
+    };
+
+    /**
      * Returns a JSON string holding all room game status.
      *
-     * @returns {string}
+     * @returns {string}    game status
      */
     getInitialRoomStatus() {
         let gameStatus = {
@@ -176,7 +177,7 @@ class Room {
     /**
      * Returns a JSON string holding the game changes in the room since last send.
      *
-     * @returns {string}
+     * @returns {string}    game status
      */
     getChangedRoomStatus() {
         let gameStatus = {
