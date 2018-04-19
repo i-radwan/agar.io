@@ -14,26 +14,24 @@ class Player {
         // Set id (unique within room) and name
         this.id = id;
         this.name = name;
+        this.score = 1.0;
+        this.alive = true;
 
         // Generate random normalized position
         this.x = 0;//Utilities.getRandomFloat(-1, 1);
         this.y = 0;//Utilities.getRandomFloat(-1, 1);
 
+        // Set initial movement angle
+        this.angle = 0;
+        this.velocity = Constants.INITIAL_PLAYER_SPEED;
+
         // Set radius
         this.radius = Constants.INITIAL_PLAYER_RADIUS;
-
-        // TODO: radius is enough: velocity & score are dependant on the radius
 
         // Pick a random color
         this.color = Constants.COLORS[Utilities.getRandomInt(0, Constants.COLORS.length)];
 
-        // Set player velocity and angle
-        this.velocity = Constants.INITIAL_PLAYER_SPEED;
-        this.angle = 0;
-
-        // Set other player properties
-        this.alive = true;
-        this.score = 1.0;
+        // Set synchronization properties
         this.lastAngleTimeStamp = Date.now();
         this.lastReceivedAngleID = -1;
         this.forcePosition = false;
@@ -41,6 +39,7 @@ class Player {
 
     /**
      * Returns the current player's blob area.
+     *
      * @returns {number}    the player's area.
      */
     getArea() {
@@ -48,7 +47,36 @@ class Player {
     }
 
     /**
-     * Moves player with his current velocity and angle
+     * Updates player sync parameters and
+     * checks whether the received angles buffer is valid regarding timestamps.
+     *
+     * @param anglesBuffer  the received angle buffer
+     * @returns {boolean}   true if the received angles buffer is valid, false otherwise
+     */
+    validateSyncParams(anglesBuffer) {
+        // Update sync properties
+        let lastAngleTimeStamp = this.lastAngleTimeStamp;
+        this.lastAngleTimeStamp = anglesBuffer.timestamp;
+        this.lastReceivedAngleID = anglesBuffer.id;
+
+        // Check if the sent timestamp is in the future
+        // TODO: what about different timezones?
+        if (anglesBuffer.timestamp > Date.now()) {
+            return false;
+        }
+
+        // Check for the number of sent angles and if they could occur
+        // in this delta time (since last send)
+        // keeping room for one extra angle due to time functions differences.
+        let delta = (anglesBuffer.timestamp - lastAngleTimeStamp);
+        let expectedAnglesCount = Math.ceil(delta / Constants.UPDATE_PHYSICS_THRESHOLD);
+
+        // Compare expected and received
+        return (expectedAnglesCount >= anglesBuffer.angles.length - 1);
+    }
+
+    /**
+     * Moves player with his current velocity and angle.
      */
     movePlayer() {
         let newX = this.x + Math.cos(this.angle) * this.velocity;
@@ -109,7 +137,6 @@ class Player {
 
         return dx * dx + dy * dy <= radiiSum * radiiSum;
     }
-
 }
 
 module.exports = Player;

@@ -56,7 +56,7 @@ class Room {
     };
 
     /**
-     * Adds gems to the room.
+     * Adds new gems to the room.
      */
     addGems() {
         while (this.gemsCount < Constants.ROOM_MAX_GEMS) {
@@ -67,25 +67,23 @@ class Room {
     };
 
     /**
-     * Simulate single player
+     * Simulates the movements of the given player based on the received angles sequence.
+     *
+     * @param playerID      the player id to simulate
+     * @param anglesBuffer  the received player angles sequence buffer
      */
     simulatePlayer(playerID, anglesBuffer) {
         let player = this.players[playerID];
 
-        let lastAngleTimeStamp = player.lastAngleTimeStamp;
-        player.lastReceivedAngleID = anglesBuffer.id;
-        player.lastAngleTimeStamp = anglesBuffer.timestamp;
-
-        if (player.forcePosition = !this.checkAngles(anglesBuffer, lastAngleTimeStamp)) {
+        // Return if invalid angles was received
+        if (player.forcePosition = !player.validateSyncParams(anglesBuffer)) {
             return;
         }
 
-        // Update physics using all received angles
+        // Simulate every player received angle
         for (let i = 0; i < anglesBuffer.angles.length; i++) {
-            // Set user angle
-            this.setPlayerAngle(playerID, anglesBuffer.angles[i]);
-
-            // Move player
+            // Set player angle then move.
+            player.angle = anglesBuffer.angles[i];
             player.movePlayer();
 
             // Check gem eaten & update score of the player
@@ -94,20 +92,6 @@ class Room {
             // Check player eaten & update score of the player
             this.checkIfPlayerAtePlayer(player);
         }
-    };
-
-    checkAngles(anglesBuffer, lastAngleTimeStamp) {
-        // Check if the sent timestamp is in the future
-        // TODO: what about different timezones?
-        if (anglesBuffer.timestamp > Date.now()) {
-            return false;
-        }
-
-        // Check for # of sent angles and if they could occur in this delta time(since last send)
-        // keeping room for time functions differences (1 extra angle)
-        let expectedAnglesCount = Math.ceil((anglesBuffer.timestamp - lastAngleTimeStamp) / Constants.UPDATE_PHYSICS_THRESHOLD);
-
-        return (expectedAnglesCount >= anglesBuffer.angles.length - 1);
     };
 
     checkIfPlayerAteGem(player) {
@@ -164,60 +148,47 @@ class Room {
     };
 
     /**
-     * Get current game status
+     * Checks whether the player is alive or not.
      *
-     * @param firstTime indicates new player joining the room
-     * @returns {{_id: *, Players: *, newGems: ( []|*), deletedGemsIDs: Array}}
+     * @param playerID      the id of the player to check
+     * @returns {boolean}   true if the given player is alive, false otherwise
      */
-    getGameStatus(firstTime) {
+    isPlayerAlive(playerID) {
+        return this.players.hasOwnProperty(playerID);
+    }
+
+    /**
+     * Returns a JSON string holding all room game status.
+     *
+     * @returns {string}
+     */
+    getInitialRoomStatus() {
         let gameStatus = {
-            _id: this.id,
+            room_id: this.id,
             players: this.players,
-            newGems: (firstTime ? this.gems : this.newGems),
+            newGems: this.gems,
             deletedGemsIDs: this.deletedGemsIDs,
         };
 
-        gameStatus = JSON.stringify(gameStatus);
+        return JSON.stringify(gameStatus);
+    }
 
-        if (firstTime) return gameStatus;
+    /**
+     * Returns a JSON string holding the game changes in the room since last send.
+     *
+     * @returns {string}
+     */
+    getChangedRoomStatus() {
+        let gameStatus = {
+            players: this.players,
+            newGems: this.newGems,
+            deletedGemsIDs: this.deletedGemsIDs,
+        };
 
-        this.deletedGemsIDs = [];
         this.newGems = {};
+        this.deletedGemsIDs = [];
 
-        return gameStatus;
-    }
-
-    /**
-     * Get players count
-     *
-     * @returns {Number}
-     */
-    getPlayersCount() {
-        return this.playersCount;
-    }
-
-    /**
-     * Check whether the player is alive or not
-     *
-     * @param playerID
-     * @returns {boolean}
-     */
-    isPlayerAlive(playerID) {
-        if (!this.players.hasOwnProperty(playerID)) return false;
-
-        return this.players[playerID].alive;
-    }
-
-    /**
-     * Update player angle
-     *
-     * @param playerID
-     * @param angle
-     */
-    setPlayerAngle(playerID, angle) {
-        if (!this.players.hasOwnProperty(playerID)) return;
-
-        this.players[playerID].angle = angle;
+        return JSON.stringify(gameStatus);
     }
 }
 

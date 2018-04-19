@@ -13,11 +13,11 @@ class GameServer {
     constructor(io) {
         this.io = io;
 
-        // All game players and all game rooms
-        // TODO: delete removed players and empty rooms
-        this.gamePlayers = {};  // map from player socket id to a pair of room id and player id in his assigned room
-        this.gameRooms = {};
+        // Map from player socket id to a pair of room id and player id in his assigned room
+        this.playersMap = {};
 
+        // Game rooms
+        this.rooms = {};
         this.nextRoomID = 0;
     }
 
@@ -66,9 +66,9 @@ class GameServer {
     addNewPlayer(playerSocketID) {
         let roomID = this.getAvailableRoom();
 
-        let player = this.gameRooms[roomID].addPlayer();
+        let player = this.rooms[roomID].addPlayer();
         let playerID = player.id;
-        this.gamePlayers[playerSocketID] = {roomID, playerID};
+        this.playersMap[playerSocketID] = {roomID, playerID};
 
         this.sendInitialGameStatus(playerSocketID, playerID, roomID, player.lastAngleTimeStamp);
 
@@ -84,17 +84,17 @@ class GameServer {
      */
     getAvailableRoom() {
         // Search for any room having a free slot
-        for (let i in this.gameRooms) {
-            let room = this.gameRooms[i];
+        for (let i in this.rooms) {
+            let room = this.rooms[i];
 
-            if (room.getPlayersCount() < Constants.ROOM_MAX_PLAYERS) {
+            if (room.playersCount < Constants.ROOM_MAX_PLAYERS) {
                 return room.id;
             }
         }
 
         // All rooms are full, create a new one
         let id = this.nextRoomID++;
-        this.gameRooms[id] = new Room(id);
+        this.rooms[id] = new Room(id);
 
         return id;
     }
@@ -116,7 +116,7 @@ class GameServer {
         };
 
         this.io.to(playerSocketID).emit('player_info', playerInfo);
-        this.io.to(playerSocketID).emit('initial_game_status', this.gameRooms[roomID].getGameStatus(true));
+        this.io.to(playerSocketID).emit('initial_game_status', this.rooms[roomID].getInitialRoomStatus());
     };
 
     /**
@@ -127,13 +127,15 @@ class GameServer {
      * @param anglesBuffer      a sequence of angles to move the player with
      */
     updatePlayerPosition(playerSocketID, anglesBuffer) {
-        if (!this.gamePlayers.hasOwnProperty(playerSocketID)) return;
+        if (!this.playersMap.hasOwnProperty(playerSocketID)) return;
 
-        let playerID = this.gamePlayers[playerSocketID].playerID;
-        let roomID = this.gamePlayers[playerSocketID].roomID;
+        // Get ids
+        let playerID = this.playersMap[playerSocketID].playerID;
+        let roomID = this.playersMap[playerSocketID].roomID;
 
-        if (this.gameRooms[roomID].isPlayerAlive(playerID)) {
-            this.gameRooms[roomID].simulatePlayer(playerID, anglesBuffer);
+        // Simulate player movements based on the received angles sequence
+        if (this.rooms[roomID].isPlayerAlive(playerID)) {
+            this.rooms[roomID].simulatePlayer(playerID, anglesBuffer);
         }
     };
 
@@ -143,14 +145,24 @@ class GameServer {
      * @param playerSocketID    the player socket id
      */
     removePlayer(playerSocketID) {
-        if (!this.gamePlayers.hasOwnProperty(playerSocketID)) return;
+        if (!this.playersMap.hasOwnProperty(playerSocketID)) return;
 
-        let playerID = this.gamePlayers[playerSocketID].playerID;
-        let roomID = this.gamePlayers[playerSocketID].roomID;
+        // Get ids
+        let playerID = this.playersMap[playerSocketID].playerID;
+        let roomID = this.playersMap[playerSocketID].roomID;
 
-        if (this.gameRooms[roomID].isPlayerAlive(playerID)) {
-            this.gameRooms[roomID].killPlayer(playerID);
+        // Remove player from his room
+        if (this.rooms[roomID].isPlayerAlive(playerID)) {
+            this.rooms[roomID].killPlayer(playerID);
         }
+
+        // Remove player entry from map
+        // delete this.playersMap[playerSocketID];
+
+        // Remove room if this was the last player
+        // if (this.rooms[roomID].playersCount === 0) {
+        //     delete this.rooms[roomID];
+        // }
     };
 
     /**
@@ -159,9 +171,9 @@ class GameServer {
      */
     sendRoomsGameStatus() {
         // Loop over all game rooms and send game status
-        for (let i in this.gameRooms) {
-            let room = this.gameRooms[i];
-            this.io.in(room.id).emit('game_status', room.getGameStatus(false));
+        for (let i in this.rooms) {
+            let room = this.rooms[i];
+            this.io.in(room.id).emit('game_status', room.getChangedRoomStatus());
         }
     };
 
@@ -171,8 +183,8 @@ class GameServer {
      */
     regenerateGems() {
         // Loop over all game rooms and regenerate gems
-        for (let i in this.gameRooms) {
-            this.gameRooms[i].addGems();
+        for (let i in this.rooms) {
+            this.rooms[i].addGems();
         }
     };
 }
