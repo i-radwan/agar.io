@@ -122,23 +122,24 @@ class Room {
     };
 
     checkIfPlayerAtePlayer(player) {
-        for (let playerID in this.players) {
-            let foe = this.players[playerID];
-
-            if (!this.players.hasOwnProperty(playerID) || playerID === player.id || !foe.alive) {
+        for (let id in this.players) {
+            if (id === player.id) {
                 continue;
             }
 
-            if (player.atePlayer(foe)) {
-                player.incrementScore(foe.score);
-                this.killPlayer(foe.id);
+            let foePlayer = this.players[id];
+
+            // I was eaten
+            if (foePlayer.atePlayer(player)) {
+                foePlayer.incrementScore(player.score);
+                this.killPlayer(player.id);
                 return;
             }
 
-            if (foe.atePlayer(player)) {
-                foe.incrementScore(player.score);
-                this.killPlayer(player.id);
-                return;
+            // I ate another player
+            if (player.atePlayer(foePlayer)) {
+                player.incrementScore(foePlayer.score);
+                this.killPlayer(foePlayer.id);
             }
         }
     };

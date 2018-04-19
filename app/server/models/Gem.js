@@ -18,8 +18,8 @@ class Gem {
         this.x = Utilities.getRandomFloat(-1, 1);
         this.y = Utilities.getRandomFloat(-1, 1);
 
-        // Set radius
-        this.radius = Constants.GEM_RADIUS;
+        // Set random radius
+        this.radius = Utilities.getRandomFloat(Constants.GEM_MIN_RADIUS, Constants.GEM_MAX_RADIUS);
 
         // Pick a random color
         this.color = Constants.COLORS[Utilities.getRandomInt(0, Constants.COLORS.length)];
