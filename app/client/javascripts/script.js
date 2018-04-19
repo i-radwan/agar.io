@@ -20,7 +20,7 @@ let game = {
      * Callback function to be called when the server responds with room status
      */
     startGame: function () {
-        game.gameEngine = GameEngine(game.gameStatus);
+        game.gameEngine = game.gameEngine || GameEngine(game.gameStatus);
         game.gameEngine.init();
 
         // Graphics loop
@@ -52,10 +52,11 @@ let game = {
 
     gameOver: function () {
         // Clear gameStatus
-        game.gameStatus.reset();
+        // game.gameStatus.reset();
+        // game.gameEngine.reset();
 
         if (confirm("Sry, new round?")) {
-            game.gameServer.sendSubscribeRequest();
+            location.reload();
         }
     }
 };

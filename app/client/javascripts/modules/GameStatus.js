@@ -57,7 +57,7 @@ export default function () {
         delete module.gems;
         delete module.players;
 
-        module.status.lerping = false;
+        module.status.env.lerping = false;
 
         module.status.anglesQueue.mouseAngles = [{id: 0, angles: []}];
         module.status.anglesQueue.anglesBufferSize = 0;
@@ -65,6 +65,7 @@ export default function () {
         module.status.anglesQueue.lastReceivedAngleID = -1;
         module.status.anglesQueue.lastAngleTimeStamp = 0;
         module.status.anglesQueue.serverAngleTimeStamp = 0;
+        module.status.anglesQueue.firstIdx = 0;
 
         module.status.gems = [];
         module.status.newGems = [];
@@ -75,17 +76,21 @@ export default function () {
      * Remove old items from angles buffer until size <= MAX_ANGLES_BUFFER_SIZE
      */
     module.reduceAnglesBufferSize = function () {
+        let firstIdx = module.status.anglesQueue.firstIdx;
+
         // Check if the anglesBuffer is getting filled, remove rows until condition is broken
         while (module.status.anglesQueue.anglesBufferSize > constants.general.MAX_ANGLES_BUFFER_SIZE) {
             // Size to be decremented from the total buffer size (of the first row)
-            let size = module.status.anglesQueue.mouseAngles[0].angles.length;
+            let size = module.status.anglesQueue.mouseAngles[firstIdx].angles.length;
 
             // Remove the first row
-            module.status.anglesQueue.mouseAngles.splice(0, 1);
+            delete module.status.anglesQueue.mouseAngles[firstIdx++];
 
             // Decrease the size
             module.status.anglesQueue.anglesBufferSize -= size;
         }
+
+        module.status.anglesQueue.firstIdx = firstIdx;
     };
 
     let syncGems = function (serverGameNewGems, serverGameDeletedGems) {
