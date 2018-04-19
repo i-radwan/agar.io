@@ -51,13 +51,12 @@ let game = {
     },
 
     gameOver: function () {
-        console.log("Over");
         // Clear gameStatus
-        game.gameStatus.reset();
-        game.gameEngine.reset();
+        // game.gameStatus.reset();
+        // game.gameEngine.reset();
 
         if (confirm("Sry, new round?")) {
-            game.gameServer.sendSubscribeRequest();
+            location.reload();
         }
     }
 };
