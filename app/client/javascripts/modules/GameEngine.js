@@ -28,6 +28,15 @@ export default function (gameStatus) {
         uiEngine.init(gameStatus.status.me, gameStatus.status.players, gameStatus.status.gems); // Initial drawing
     };
 
+    module.reset = function () {
+        timers = {
+            now: window.performance.now(),
+            elapsed: window.performance.now(),
+            lagToHandlePhysics: 0,
+            forceServerPositionsTimer: 0
+        };
+    };
+
     module.gameEngineLoop = function () {
         // Increase deltas to prepare for physics and forcing positions steps
         increaseTimers();
