@@ -94,12 +94,9 @@ export default function (gameStatus) {
 
     let forceServerPositions = function () {
         // Move players to server position
-        gameStatus.status.players.forEach(function (player) {
-            physicsEngine.forceServerPosition(player);
-        });
-
-        // Force my position
-        physicsEngine.forceServerPosition(gameStatus.status.me);
+        for (let key in gameStatus.status.players) {
+            physicsEngine.forceServerPosition(gameStatus.status.players[key]);
+        }
 
         timers.lagToHandlePhysics = 0;
     };
