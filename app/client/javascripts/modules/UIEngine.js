@@ -17,8 +17,7 @@ export default function (p5Lib) {
         playerNameTextFont = p5Lib.loadFont(constants.graphics.PLAYER_NAME_TEXT_FONT_PATH);
 
         // Assign gems and players to the game status arrays
-        players = playersObjects;
-        gems = gemsObjects;
+        module.bindGameStatusObjects(me, playersObjects, gemsObjects);
 
         // Create canvas
         makeCanvas();
@@ -31,8 +30,16 @@ export default function (p5Lib) {
 
         // Setup initial canvas sizing
         updateGameSize();
+    };
 
-        addMainPlayer(me);
+    /**
+     * Bind UI game objects with the game status objects
+     */
+    module.bindGameStatusObjects = function (me, playersObjects, gemsObjects) {
+        // Assign gems and players to the game status arrays
+        players = playersObjects;
+        gems = gemsObjects;
+        mainPlayer = me;
     };
 
     /**
@@ -120,10 +127,6 @@ export default function (p5Lib) {
         players.sort(function (a, b) {
             return (a.radius - b.radius);
         });
-    };
-
-    let addMainPlayer = function (myselfObject) {
-        mainPlayer = myselfObject;
     };
 
     /**

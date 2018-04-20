@@ -4,40 +4,45 @@ export default function () {
     let module = {};
     let constants = Constants();
 
-    module.status = {
-        env: {
-            lerping: false,
-            ping: 0
-        },
-        anglesQueue: {
-            mouseAngles: [{id: 0, angles: []}],
-            firstIdx: 0,
-            anglesBufferSize: 0,
-            lastAngleID: 0,
-            lastReceivedAngleID: -1,
-            lastAngleTimeStamp: 0,
-            serverAngleTimeStamp: 0
-        },
-        me: { // Fields to be filled later
-            id: -1,
-            name: "",
-            color: "",
-            score: 0,
-            x: 0,
-            y: 0,
-            radius: 0,
-            angle: 0,
-            velocity: 0,
-            canvasX: 0,
-            canvasY: 0,
-            lastAngleTimeStamp: 0,
-            lastReceivedAngleID: -1,
-            alive: true,
-            forcePosition: false
-        },
-        gems: {},
-        newGems: [],
-        players: []
+    /**
+     * Fill game status with initial dummy values
+     */
+    module.fillInitialValues = function () {
+        module.status = {
+            env: {
+                lerping: false,
+                ping: 0
+            },
+            anglesQueue: {
+                mouseAngles: [{id: 0, angles: []}],
+                firstIdx: 0,
+                anglesBufferSize: 0,
+                lastAngleID: 0,
+                lastReceivedAngleID: -1,
+                lastAngleTimeStamp: 0,
+                serverAngleTimeStamp: 0
+            },
+            me: { // Fields to be filled later
+                id: -1,
+                name: "",
+                color: "",
+                score: 0,
+                x: 0,
+                y: 0,
+                radius: 0,
+                angle: 0,
+                velocity: 0,
+                canvasX: 0,
+                canvasY: 0,
+                lastAngleTimeStamp: 0,
+                lastReceivedAngleID: -1,
+                alive: true,
+                forcePosition: false
+            },
+            gems: {},
+            newGems: [],
+            players: []
+        };
     };
 
     /**
@@ -52,41 +57,9 @@ export default function () {
      * Resets the game status to the initial state, to prepare the user for new round
      */
     module.reset = function () {
-        delete module.status.gems;
-        delete module.status.players;
+        delete module.status;
 
-        module.status.env.lerping = false;
-        module.status.me = {
-            id: -1,
-            name: "",
-            color: "",
-            score: 0,
-            x: 0,
-            y: 0,
-            radius: 0,
-            angle: 0,
-            velocity: 0,
-            canvasX: 0,
-            canvasY: 0,
-            lastAngleTimeStamp: 0,
-            lastReceivedAngleID: -1,
-            alive: true,
-            forcePosition: false
-        };
-
-        module.status.anglesQueue = {
-            mouseAngles: [{id: 0, angles: []}],
-            firstIdx: 0,
-            anglesBufferSize: 0,
-            lastAngleID: 0,
-            lastReceivedAngleID: -1,
-            lastAngleTimeStamp: 0,
-            serverAngleTimeStamp: 0
-        };
-
-        module.status.gems = {};
-        module.status.newGems = [];
-        module.status.players = [];
+        module.fillInitialValues();
     };
 
     /**

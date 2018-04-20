@@ -10,6 +10,7 @@ let game = {
         game.constants = Constants();
 
         game.gameStatus = GameStatus();
+        game.gameStatus.fillInitialValues();
 
         // Establish server communication
         game.gameServer = GameServer(game.gameStatus);
@@ -20,8 +21,12 @@ let game = {
      * Callback function to be called when the server responds with room status
      */
     startGame: function () {
-        game.gameEngine = game.gameEngine || GameEngine(game.gameStatus);
-        game.gameEngine.init();
+        if (!game.gameEngine) {
+            game.gameEngine = GameEngine(game.gameStatus);
+            game.gameEngine.init();
+        } else{
+            game.gameEngine.reset();
+        }
 
         // Graphics loop
         requestAnimationFrame(game.gameMainLoop);
@@ -54,7 +59,7 @@ let game = {
         if (confirm("Sry, new round?")) {
             // Clear gameStatus
             game.gameStatus.reset();
-            game.gameEngine.reset();
+
             game.gameServer.reconnect();
         }
     }

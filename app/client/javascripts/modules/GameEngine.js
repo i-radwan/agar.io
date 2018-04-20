@@ -25,7 +25,7 @@ export default function (gameStatus) {
         physicsEngine = PhysicsEngine(module.p5Lib);
 
         uiEngine = UIEngine(module.p5Lib);
-        uiEngine.init(gameStatus.status.me, gameStatus.status.players, gameStatus.status.gems); // Initial drawing
+        uiEngine.init(gameStatus.status.me, gameStatus.status.players, gameStatus.status.gems);
     };
 
     module.reset = function () {
@@ -35,6 +35,8 @@ export default function (gameStatus) {
             lagToHandlePhysics: 0,
             forceServerPositionsTimer: 0
         };
+
+        uiEngine.bindGameStatusObjects(gameStatus.status.me, gameStatus.status.players, gameStatus.status.gems);
     };
 
     module.gameEngineLoop = function () {

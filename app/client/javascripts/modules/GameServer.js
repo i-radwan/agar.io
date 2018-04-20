@@ -19,7 +19,7 @@ export default function (gameStatus) {
      * Reconnects the client socket to server socket when the player replays the game
      */
     module.reconnect = function () {
-        // Don't send angles stuck in the buffer
+        // Ignore socket old buffers
         socket.sendBuffer = [];
         socket.receiveBuffer = [];
 
