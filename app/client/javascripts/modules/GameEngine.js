@@ -60,7 +60,7 @@ export default function (gameStatus) {
         for (let key in gameStatus.status.players) {
             let player = gameStatus.status.players[key];
 
-            if (player.id === gameStatus.status.me.id) return;
+            if (player.id === gameStatus.status.me.id) continue;
 
             physicsEngine.movePlayerToPosition(player, {x: player.x, y: player.y});
         }
