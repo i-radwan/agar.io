@@ -73,7 +73,6 @@ class Room {
         let player = this.players[playerID];
 
         // Check if forcePosition is received by the user before overriding it here
-        // This was a huge breach
         if (player.forcePosition && player.lastForcePositionTime > this.lastSendRoomStatusTime)
             return;
 
