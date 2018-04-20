@@ -3,7 +3,7 @@ import PhysicsEngine from "./PhysicsEngine.js";
 import UIEngine from "./UIEngine.js";
 import Constants from "./Constants.js";
 
-export default function (gameStatus, gameOver) {
+export default function (gameStatus, gameOverCallback) {
     let module = {};
     let constants = Constants();
 
@@ -66,7 +66,7 @@ export default function (gameStatus, gameOver) {
 
         // Stop when dead
         if (!gameStatus.status.env.running) {
-            gameOver();
+            gameOverCallback();
             return;
         }
 
@@ -95,9 +95,11 @@ export default function (gameStatus, gameOver) {
     };
 
     let increaseTimers = function () {
+        let now = window.performance.now();
+
         // Calculate total time spent outside
-        timers.elapsed = window.performance.now() - timers.now;
-        timers.now = window.performance.now();
+        timers.elapsed = now - timers.now;
+        timers.now = now;
         timers.lagToHandlePhysics += timers.elapsed;
         timers.forceServerPositionsTimer += timers.elapsed;
     };
@@ -146,7 +148,7 @@ export default function (gameStatus, gameOver) {
         for (let key in gameStatus.status.players) {
             let player = gameStatus.status.players[key];
 
-            if (!player.hasOwnProperty("canvasObjectType")) { // New player generated -> Draw it
+            if (!player.hasOwnProperty("canvasX")) { // New player generated -> Draw it
                 uiEngine.addPlayerCanvasParams(player);
             }
         }

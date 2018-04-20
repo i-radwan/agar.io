@@ -92,7 +92,7 @@ export default function () {
     };
 
     let syncPlayers = function (serverGamePlayers) {
-        // Check if I'm killed
+        // Check if I was eaten
         let mainPlayerServerVersion = serverGamePlayers[module.status.me.id];
 
         if (!mainPlayerServerVersion) {

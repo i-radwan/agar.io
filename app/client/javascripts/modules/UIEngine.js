@@ -105,14 +105,12 @@ export default function (p5Lib) {
         // Set graphics attributes
         gem.canvasX = gem.x;
         gem.canvasY = gem.y;
-        gem.canvasObjectType = constants.graphics.CANVAS_OBJECT_GEM;
     };
 
     module.addPlayerCanvasParams = function (player) {
         // Set graphics attributes
         player.canvasX = player.x;
         player.canvasY = player.y;
-        player.canvasObjectType = constants.graphics.CANVAS_OBJECT_PLAYER;
         player.yOffset = 0; // Used for noisy bubble
         player.strokeColor = constants.graphics.BLOB_STROKE_COLOR;
     };
@@ -299,11 +297,11 @@ export default function (p5Lib) {
     };
 
     let drawFPS = function (elapsed) {
-        let FPS = parseInt(1000 / elapsed);
+        let FPS = 1000 / elapsed;
 
         hudCanvasContext.textBaseline = "top";
         hudCanvasContext.textAlign = "left";
-        hudCanvasContext.fillText("FPS: " + FPS, 0, 0);
+        hudCanvasContext.fillText("FPS: " + FPS.toFixed(0), 0, 0);
     };
 
     let drawScore = function () {

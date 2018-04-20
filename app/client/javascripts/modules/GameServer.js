@@ -5,10 +5,10 @@ export default function (gameStatus) {
     /**
      * Initializes communication with the server and register event listeners.
      *
-     * @param startGame a callback function to be called when receiving initial room game states
+     * @param startGameCallback a callback function to be called when receiving initial room game states
      */
-    module.init = function (startGame) {
-        setupReceivers(startGame);
+    module.init = function (startGameCallback) {
+        setupReceivers(startGameCallback);
     };
 
     /**
@@ -62,9 +62,9 @@ export default function (gameStatus) {
     /**
      * Registers event listeners from the server.
      *
-     * @param startGame a callback function to be called when receiving initial room game states
+     * @param startGameCallback a callback function to be called when receiving initial room game states
      */
-    let setupReceivers = function (startGame) {
+    let setupReceivers = function (startGameCallback) {
         // Send subscription request once got connected
         socket.on('connect', function () {
             sendSubscribeRequest();
@@ -76,13 +76,13 @@ export default function (gameStatus) {
             gameStatus.status.players[gameStatus.status.me.id] = gameStatus.status.me;
 
             gameStatus.status.anglesQueue.lastAngleTimeStamp = Date.now();
-            gameStatus.status.anglesQueue.serverAngleTimeStamp = gameStatus.status.me.lastAngleTimeStamp;
+            gameStatus.status.anglesQueue.serverAngleTimeStamp = playerInfo.lastAngleTimeStamp;
         });
 
         // Receive initial game status
         socket.on('initial_game_status', function (receivedGameStatus) {
             gameStatus.set(JSON.parse(receivedGameStatus));
-            startGame();
+            startGameCallback();
         });
 
         // Receive game status

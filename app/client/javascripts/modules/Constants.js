@@ -30,7 +30,6 @@ export default function () {
             PLAYER_NAME_TEXT_STROKE_COLOR: 0,
             PLAYER_NAME_TEXT_COLOR: 255,
 
-
             STARS_COUNT: 1000,
             STAR_RADIUS: 0.00063,
             STAR_COLOR: "white",
@@ -41,10 +40,7 @@ export default function () {
             WABBLE_SPEED: 0.00009,
 
             TEXT_STYLE: '20px serif',
-            TEXT_COLOR: 'orange',
-
-            CANVAS_OBJECT_PLAYER: "player",
-            CANVAS_OBJECT_GEM: "gem"
+            TEXT_COLOR: 'orange'
         }
     };
 };
