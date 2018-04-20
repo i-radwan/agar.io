@@ -10,6 +10,7 @@ export default function () {
     module.fillInitialValues = function () {
         module.status = {
             env: {
+                running: true,
                 lerping: false,
                 ping: 0
             },
@@ -29,7 +30,6 @@ export default function () {
                 name: "",
                 score: 0,
                 color: "",
-                alive: true,
                 radius: 0,
 
                 // Movement variables
@@ -102,11 +102,11 @@ export default function () {
     let syncPlayers = function (serverGamePlayers) {
         // Check if I'm killed
         if (!serverGamePlayers.hasOwnProperty(module.status.me.id)) {
-            module.status.me.alive = false;
+            module.status.env.running = false;
             return;
         }
 
-        let mainPlayerServerVersion = serverGamePlayers[module.status.me.id];
+        syncAnglesBuffer(serverGamePlayers[module.status.me.id]);
 
         // Sync local players (including me)
         for (let i in module.status.players) {
@@ -114,10 +114,11 @@ export default function () {
 
             // Player is dead
             if (!serverGamePlayers.hasOwnProperty(player.id)) {
-                player.alive = false;
+                delete module.status.players[i];
                 continue;
             }
 
+            // Update player
             Object.assign(player, serverGamePlayers[player.id]);
 
             // Remove from the server array (after loop we will have the new players only)
@@ -128,8 +129,6 @@ export default function () {
         for (let playerID in serverGamePlayers) {
             module.status.players.push(serverGamePlayers[playerID]);
         }
-
-        syncAnglesBuffer(mainPlayerServerVersion);
     };
 
     let syncAnglesBuffer = function (meOnServer) {

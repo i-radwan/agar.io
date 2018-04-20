@@ -65,7 +65,7 @@ export default function (gameStatus, gameOver) {
         drawGame();
 
         // Stop when dead
-        if (!gameStatus.status.me.alive) {
+        if (!gameStatus.status.env.running) {
             gameOver();
             return;
         }
@@ -148,10 +148,7 @@ export default function (gameStatus, gameOver) {
         for (let key in gameStatus.status.players) {
             let player = gameStatus.status.players[key];
 
-            if (!player.alive) { // Player is dead
-                delete gameStatus.status.players[key];
-            }
-            else if (!player.hasOwnProperty("canvasObjectType")) { // New player generated -> Draw it
+            if (!player.hasOwnProperty("canvasObjectType")) { // New player generated -> Draw it
                 uiEngine.addPlayerCanvasParams(player);
             }
         }

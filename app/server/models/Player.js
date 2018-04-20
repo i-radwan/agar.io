@@ -16,7 +16,6 @@ class Player {
         this.id = id;
         this.name = name;
         this.score = 10;
-        this.alive = true;
 
         // Pick a random color
         this.color = Constants.COLORS[Utilities.getRandomInt(0, Constants.COLORS.length)];

@@ -92,7 +92,7 @@ export default function (gameStatus) {
         });
 
         socket.on('disconnect', function () {
-            gameStatus.status.me.alive = false;
+            gameStatus.status.env.running = false;
         });
 
         // Receive pong from the server to get latency
