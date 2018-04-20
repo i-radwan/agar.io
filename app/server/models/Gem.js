@@ -14,15 +14,15 @@ class Gem {
         // Set id (unique within room)
         this.id = id;
 
-        // Generate random normalized position
-        this.x = Utilities.getRandomFloat(-1, 1);
-        this.y = Utilities.getRandomFloat(-1, 1);
+        // Pick a random color
+        this.color = Constants.COLORS[Utilities.getRandomInt(0, Constants.COLORS.length)];
 
         // Set radius
         this.radius = Constants.GEM_RADIUS;
 
-        // Pick a random color
-        this.color = Constants.COLORS[Utilities.getRandomInt(0, Constants.COLORS.length)];
+        // Generate random normalized position
+        this.x = Utilities.getRandomFloat(-1, 1);
+        this.y = Utilities.getRandomFloat(-1, 1);
     }
 }
 

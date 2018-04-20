@@ -20,14 +20,13 @@ function Constants() {
 
         // Gems
         ROOM_MAX_GEMS: 1000,
-        GEM_RADIUS: 10 * SCALE_FACTOR,
+        GEM_RADIUS: 9 * SCALE_FACTOR,
 
         // Players
         ROOM_MAX_PLAYERS: 5,
         PLAYER_INITIAL_RADIUS: 30 * SCALE_FACTOR,
         PLAYER_INITIAL_SPEED: 5 * SCALE_FACTOR,
         PLAYER_MIN_SPEED: 0.2 * SCALE_FACTOR,
-        EPSILON: 0.000001,
 
         // General
         COLORS: ["red", "green", "blue", "yellow", "orange", "purple", "pink"],

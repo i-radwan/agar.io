@@ -24,19 +24,25 @@ export default function () {
             },
             me: { // Fields to be filled later
                 id: -1,
+
+                // Visualizing variables
                 name: "",
-                color: "",
                 score: 0,
+                color: "",
+                alive: true,
+                radius: 0,
+
+                // Movement variables
                 x: 0,
                 y: 0,
-                radius: 0,
-                angle: 0,
-                velocity: 0,
                 canvasX: 0,
                 canvasY: 0,
+                velocity: 0,
+                angle: 0,
+
+                // Sync variables
                 lastAngleTimeStamp: 0,
                 lastReceivedAngleID: -1,
-                alive: true,
                 forcePosition: false
             },
             gems: {},

@@ -18,19 +18,19 @@ class Player {
         this.score = 10;
         this.alive = true;
 
-        // Generate random normalized position
-        this.x = 0;//Utilities.getRandomFloat(-1, 1);
-        this.y = 0;//Utilities.getRandomFloat(-1, 1);
-
-        // Set initial movement angle
-        this.angle = 0;
-        this.velocity = Constants.PLAYER_INITIAL_SPEED;
+        // Pick a random color
+        this.color = Constants.COLORS[Utilities.getRandomInt(0, Constants.COLORS.length)];
 
         // Set radius
         this.radius = Constants.PLAYER_INITIAL_RADIUS;
 
-        // Pick a random color
-        this.color = Constants.COLORS[Utilities.getRandomInt(0, Constants.COLORS.length)];
+        // Generate random normalized position
+        this.x = 0;//Utilities.getRandomFloat(-1, 1);
+        this.y = 0;//Utilities.getRandomFloat(-1, 1);
+
+        // Set initial movement velocity and angle
+        this.velocity = Constants.PLAYER_INITIAL_SPEED;
+        this.angle = 0;
 
         // Set synchronization properties
         this.lastAngleTimeStamp = Date.now();

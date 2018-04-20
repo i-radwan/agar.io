@@ -5,14 +5,10 @@ export default function (gameStatus) {
     /**
      * Initializes communication with the server and register event listeners.
      *
-     * @param setupGameEngine   a callback function to be called when receiving initial room game states
+     * @param startGame a callback function to be called when receiving initial room game states
      */
-    module.init = function (setupGameEngine) {
-        setupReceivers(setupGameEngine);
-
-        socket.on('connect', function () {
-            module.sendSubscribeRequest();
-        });
+    module.init = function (startGame) {
+        setupReceivers(startGame);
     };
 
     /**
@@ -24,7 +20,7 @@ export default function (gameStatus) {
         socket.receiveBuffer = [];
 
         if (socket.connected) { // Player didn't loose connection, just got eaten
-            module.sendSubscribeRequest();
+            sendSubscribeRequest();
             return;
         }
 
@@ -33,14 +29,8 @@ export default function (gameStatus) {
     };
 
     /**
-     * Sends a subscribe request to join a game room and start playing.
-     */
-    module.sendSubscribeRequest = function () {
-        socket.emit('subscribe', {});
-    };
-
-    /**
      * Sends my angle to the server.
+     * To be called every specific interval of time.
      */
     module.sendAngle = function () {
         // Get last angles row
@@ -55,7 +45,7 @@ export default function (gameStatus) {
         // Transmit a sequence of angles
         socket.emit('angle', angles);
 
-        // Push new row for new angles
+        // Push new empty row for new angles
         gameStatus.status.anglesQueue.mouseAngles.push({id: ++gameStatus.status.anglesQueue.lastAngleID, angles: []});
 
         // Enforce the max size
@@ -63,11 +53,23 @@ export default function (gameStatus) {
     };
 
     /**
+     * Sends a subscribe request to join a game room and start playing.
+     */
+    let sendSubscribeRequest = function () {
+        socket.emit('subscribe', {});
+    };
+
+    /**
      * Registers event listeners from the server.
      *
-     * @param startGame     a callback function to be called when receiving initial room game states
+     * @param startGame a callback function to be called when receiving initial room game states
      */
     let setupReceivers = function (startGame) {
+        // Send subscription request once got connected
+        socket.on('connect', function () {
+            sendSubscribeRequest();
+        });
+
         // Receive main player info
         socket.on('player_info', function (playerInfo) {
             gameStatus.status.me = Object.assign({}, playerInfo);
@@ -89,7 +91,6 @@ export default function (gameStatus) {
             gameStatus.set(JSON.parse(receivedGameStatus));
         });
 
-        // TODO: does this get actually called?
         socket.on('disconnect', function () {
             gameStatus.status.me.alive = false;
         });

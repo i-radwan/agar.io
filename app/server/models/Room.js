@@ -62,15 +62,19 @@ class Room {
             player.movePlayer();
 
             // Check gem eaten & update score of the player
-            this.checkIfPlayerAteGem(player);
+            this.eatOverlappingGems(player);
 
             // Check player eaten & update score of the player
-            this.checkIfPlayerAtePlayer(player);
+            this.eatOverlappingPlayers(player);
         }
     };
 
-
-    checkIfPlayerAteGem(player) {
+    /**
+     * Feeds any of the overlapping room gems to the given player.
+     *
+     * @param player    the player to feed
+     */
+    eatOverlappingGems(player) {
         for (let gemID in this.gems) {
             let gem = this.gems[gemID];
 
@@ -81,7 +85,12 @@ class Room {
         }
     };
 
-    checkIfPlayerAtePlayer(player) {
+    /**
+     * Feeds any of the overlapping room players to the given player.
+     *
+     * @param player    the player to feed
+     */
+    eatOverlappingPlayers(player) {
         for (let id in this.players) {
             if (id === player.id) {
                 continue;

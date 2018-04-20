@@ -3,7 +3,7 @@ import PhysicsEngine from "./PhysicsEngine.js";
 import UIEngine from "./UIEngine.js";
 import Constants from "./Constants.js";
 
-export default function (gameStatus) {
+export default function (gameStatus, gameOver) {
     let module = {};
     let constants = Constants();
 
@@ -18,16 +18,24 @@ export default function (gameStatus) {
         forceServerPositionsTimer: 0
     };
 
+    /**
+     * Initializes the game engine by creating and initializing UI and physics engines.
+     */
     module.init = function () {
         // Initialize p5 library
         module.p5Lib = new p5();
 
+        // Initialize physics engine
         physicsEngine = PhysicsEngine(module.p5Lib);
 
+        // Initialize UI engine
         uiEngine = UIEngine(module.p5Lib);
         uiEngine.init(gameStatus.status.me, gameStatus.status.players, gameStatus.status.gems);
     };
 
+    /**
+     * Resets game engine variables.
+     */
     module.reset = function () {
         timers = {
             now: window.performance.now(),
@@ -39,6 +47,10 @@ export default function (gameStatus) {
         uiEngine.bindGameStatusObjects(gameStatus.status.me, gameStatus.status.players, gameStatus.status.gems);
     };
 
+    /**
+     * Main game loop function.
+     * Keeps running until our main player got eaten or disconnected.
+     */
     module.gameEngineLoop = function () {
         // Increase deltas to prepare for physics and forcing positions steps
         increaseTimers();
@@ -51,7 +63,18 @@ export default function (gameStatus) {
 
         // Draw the game
         drawGame();
+
+        // Stop when dead
+        if (!gameStatus.status.me.alive) {
+            gameOver();
+            return;
+        }
+
+        // Repeat game loop
+        requestAnimationFrame(module.gameEngineLoop);
     };
+
+
 
     let drawGame = function () {
         uiEngine.draw(timers.lagToHandlePhysics, timers.elapsed, gameStatus.status.env.ping);
