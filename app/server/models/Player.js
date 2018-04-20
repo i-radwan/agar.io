@@ -11,11 +11,11 @@ class Player {
      * @param id
      * @param name: string
      */
-    constructor(id, name = "") {
+    constructor(id, name = "Test") {
         // Set id (unique within room) and name
         this.id = id;
         this.name = name;
-        this.score = 1.0;
+        this.score = 10;
         this.alive = true;
 
         // Generate random normalized position
@@ -24,10 +24,10 @@ class Player {
 
         // Set initial movement angle
         this.angle = 0;
-        this.velocity = Constants.INITIAL_PLAYER_SPEED;
+        this.velocity = Constants.PLAYER_INITIAL_SPEED;
 
         // Set radius
-        this.radius = Constants.INITIAL_PLAYER_RADIUS;
+        this.radius = Constants.PLAYER_INITIAL_RADIUS;
 
         // Pick a random color
         this.color = Constants.COLORS[Utilities.getRandomInt(0, Constants.COLORS.length)];
@@ -40,21 +40,12 @@ class Player {
     }
 
     /**
-     * Returns the current player's blob area.
-     *
-     * @returns {number}    the player's area.
-     */
-    getArea() {
-        return Math.PI * this.radius * this.radius;
-    }
-
-    /**
      * Updates player sync parameters and
      * checks whether the received angles buffer is valid regarding timestamps.
      *
      * @param anglesBuffer              the received angle buffer
      * @param lastSendRoomStatusTime    last time the server emitted the player's room status
-     * @returns {boolean}   true if the received angles buffer is valid, false otherwise
+     * @returns {boolean}               true if the received angles buffer is valid, false otherwise
      */
     validateSyncParams(anglesBuffer, lastSendRoomStatusTime) {
         // Update sync properties
@@ -98,51 +89,39 @@ class Player {
     }
 
     /**
-     * Increments player's score by the given value and update
-     * radius and velocity in accordance.
-     */
-    incrementScore(value) {
-        this.score += value;
-        this.radius += value * Constants.SCALE_FACTOR;
-        this.velocity = Math.max(
-            Constants.LOWEST_PLAYER_SPEED,
-            Constants.INITIAL_PLAYER_SPEED - 0.00291 * this.radius
-        );
-    }
-
-    /**
-     * Checks whether the given player has been eaten by the current player.
+     * Checks whether this player can eat the given game object or not.
      *
-     * @param player        a player object
-     * @returns {boolean}   true if the current player located on the given player, false otherwise
+     * @param obj           a game object (player, gem)
+     * @returns {boolean}   true if this player can eat the given object, false otherwise
      */
-    atePlayer(player) {
-        if (this.getArea() - 1.1 * player.getArea() <= Constants.EPSILON) {
+    canEat(obj) {
+        if (this.radius - obj.radius < 5 * Constants.SCALE_FACTOR) {
             return false;
         }
 
-        let dx = this.x - player.x;
-        let dy = this.y - player.y;
+        let dx = this.x - obj.x;
+        let dy = this.y - obj.y;
         let distanceSquared = dx * dx + dy * dy;
 
-        let radiiSum = this.radius + player.radius;
-        let radiiSumSquared = radiiSum * radiiSum;
-
-        return radiiSumSquared - distanceSquared > Constants.EPSILON;
+        return this.radius * this.radius > distanceSquared + obj.radius * obj.radius * 0.25;
     }
 
     /**
-     * Checks whether the given gem has been eaten by the current player.
+     * Eats the given object and update the player's
+     * radius, velocity, and score in accordance.
      *
-     * @param gem           a gem object
-     * @returns {boolean}   true if the current player located on the gem, false otherwise
+     * @param obj   the object to eat (gem, or other player)
      */
-    ateGem(gem) {
-        let dx = this.x - gem.x;
-        let dy = this.y - gem.y;
-        let radiiSum = this.radius + gem.radius;
+    eat(obj) {
+        this.score += (obj.score || 1);
 
-        return dx * dx + dy * dy <= radiiSum * radiiSum;
+        // Area(new) = Area(old) + Area(obj)
+        this.radius = Math.sqrt(this.radius * this.radius + obj.radius * obj.radius);
+
+        this.velocity = Math.max(
+            Constants.PLAYER_MIN_SPEED,
+            Constants.PLAYER_INITIAL_SPEED - 0.00291 * this.radius
+        );
     }
 }
 

@@ -69,12 +69,13 @@ class Room {
         }
     };
 
+
     checkIfPlayerAteGem(player) {
         for (let gemID in this.gems) {
             let gem = this.gems[gemID];
 
-            if (player.ateGem(gem)) {
-                player.incrementScore(1);
+            if (player.canEat(gem)) {
+                player.eat(gem);
                 this.removeGem(gemID);
             }
         }
@@ -89,15 +90,15 @@ class Room {
             let foePlayer = this.players[id];
 
             // I was eaten
-            if (foePlayer.atePlayer(player)) {
-                foePlayer.incrementScore(player.score);
+            if (foePlayer.canEat(player)) {
+                foePlayer.eat(player);
                 this.removePlayer(player.id);
                 return;
             }
 
             // I ate another player
-            if (player.atePlayer(foePlayer)) {
-                player.incrementScore(foePlayer.score);
+            if (player.canEat(foePlayer)) {
+                player.eat(foePlayer);
                 this.removePlayer(foePlayer.id);
             }
         }

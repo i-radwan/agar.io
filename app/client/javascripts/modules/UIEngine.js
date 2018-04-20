@@ -247,7 +247,7 @@ export default function (p5Lib) {
         p5Lib.textFont(playerNameTextFont);
         p5Lib.fill(constants.graphics.PLAYER_NAME_TEXT_COLOR);
 
-        p5Lib.text(playerObject.name + "Test", playerObject.canvasX, playerObject.canvasY);
+        p5Lib.text(playerObject.name, playerObject.canvasX, playerObject.canvasY);
 
         p5Lib.strokeWeight(0);
     };
