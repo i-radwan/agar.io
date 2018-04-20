@@ -14,7 +14,7 @@ let game = {
         game.constants = Constants();
 
         game.gameStatus = GameStatus();
-        game.gameStatus.fillInitialValues();
+        game.gameStatus.init();
 
         // Establish server communication
         game.gameServer = GameServer(game.gameStatus);
@@ -51,7 +51,7 @@ let game = {
         // Ask the user to restart the game
         if (confirm("Sry, new round?")) {
             // Clear gameStatus
-            game.gameStatus.reset();
+            game.gameStatus.init();
             game.gameServer.reconnect();
         }
     }

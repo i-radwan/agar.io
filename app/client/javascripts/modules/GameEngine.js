@@ -135,9 +135,7 @@ export default function (gameStatus, gameOver) {
         // Add new gems canvas params
         for (let key in gameStatus.status.newGems) {
             let gem = gameStatus.status.newGems[key];
-
             gameStatus.status.gems[gem.id] = gem;
-
             uiEngine.addGemCanvasParams(gameStatus.status.gems[gem.id]);
         }
 
@@ -152,6 +150,16 @@ export default function (gameStatus, gameOver) {
                 uiEngine.addPlayerCanvasParams(player);
             }
         }
+
+        // Add new players canvas params
+        // for (let key in gameStatus.status.newPlayers) {
+        //     let player = gameStatus.status.newPlayers[key];
+        //     gameStatus.status.players[player.id] = player;
+        //     uiEngine.addPlayerCanvasParams(player);
+        // }
+
+        // Flush new players array
+        // gameStatus.status.newPlayers = {};
 
         // Fix z index of objects
         uiEngine.sortPlayersBySize();

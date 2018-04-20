@@ -91,6 +91,7 @@ export default function (gameStatus) {
             gameStatus.set(JSON.parse(receivedGameStatus));
         });
 
+        // Listen to disconnection event
         socket.on('disconnect', function () {
             gameStatus.status.env.running = false;
         });

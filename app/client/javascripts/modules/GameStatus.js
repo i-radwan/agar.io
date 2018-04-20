@@ -7,7 +7,7 @@ export default function () {
     /**
      * Fill game status with initial dummy values
      */
-    module.fillInitialValues = function () {
+    module.init = function () {
         module.status = {
             env: {
                 running: true,
@@ -47,7 +47,8 @@ export default function () {
             },
             gems: {},
             newGems: [],
-            players: []
+            players: [],
+            newPlayers: []
         };
     };
 
@@ -57,15 +58,6 @@ export default function () {
     module.set = function (serverGameStatus) {
         syncGems(serverGameStatus.newGems, serverGameStatus.deletedGemsIDs);
         syncPlayers(serverGameStatus.players);
-    };
-
-    /**
-     * Resets the game status to the initial state, to prepare the user for new round
-     */
-    module.reset = function () {
-        delete module.status;
-
-        module.fillInitialValues();
     };
 
     /**
@@ -101,34 +93,38 @@ export default function () {
 
     let syncPlayers = function (serverGamePlayers) {
         // Check if I'm killed
-        if (!serverGamePlayers.hasOwnProperty(module.status.me.id)) {
+        let mainPlayerServerVersion = serverGamePlayers[module.status.me.id];
+
+        if (!mainPlayerServerVersion) {
             module.status.env.running = false;
             return;
         }
 
-        syncAnglesBuffer(serverGamePlayers[module.status.me.id]);
-
-        // Sync local players (including me)
+        // Sync local players with the server (including me)
         for (let i in module.status.players) {
             let player = module.status.players[i];
 
-            // Player is dead
-            if (!serverGamePlayers.hasOwnProperty(player.id)) {
-                delete module.status.players[i];
-                continue;
+            if (serverGamePlayers.hasOwnProperty(player.id)) {
+                // Update player
+                Object.assign(player, serverGamePlayers[player.id]);
+
+                // Remove from the server array (after loop we will have the new players only)
+                delete serverGamePlayers[player.id];
             }
-
-            // Update player
-            Object.assign(player, serverGamePlayers[player.id]);
-
-            // Remove from the server array (after loop we will have the new players only)
-            delete serverGamePlayers[player.id];
+            else {
+                // Remove player if dead
+                delete module.status.players[i];
+            }
         }
 
-        // Add new players
+        // Append new players
+        // module.status.newPlayers = Object.assign(module.status.newPlayers, serverGamePlayers);
         for (let playerID in serverGamePlayers) {
             module.status.players.push(serverGamePlayers[playerID]);
         }
+
+        // Sync angles buffer of the main player
+        syncAnglesBuffer(mainPlayerServerVersion);
     };
 
     let syncAnglesBuffer = function (meOnServer) {
