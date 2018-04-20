@@ -21,6 +21,7 @@ export default function (gameStatus) {
     module.reconnect = function () {
         // Don't send angles stuck in the buffer
         socket.sendBuffer = [];
+        socket.receiveBuffer = [];
 
         if (socket.connected) { // Player didn't loose connection, just got eaten
             module.sendSubscribeRequest();

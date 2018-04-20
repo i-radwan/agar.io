@@ -19,7 +19,7 @@ export default function () {
             serverAngleTimeStamp: 0
         },
         me: { // Fields to be filled later
-            id: 0,
+            id: -1,
             name: "",
             color: "",
             score: 0,
@@ -57,7 +57,7 @@ export default function () {
 
         module.status.env.lerping = false;
         module.status.me = {
-            id: 0,
+            id: -1,
             name: "",
             color: "",
             score: 0,
@@ -164,7 +164,7 @@ export default function () {
         let firstIdx = module.status.anglesQueue.firstIdx;
 
         // Flush all angles corresponding to overridden packets
-        while (module.status.anglesQueue.lastAngleID - firstIdx > 0 && meOnServer.lastReceivedAngleID >= module.status.anglesQueue.mouseAngles[firstIdx].id) {
+        while (meOnServer.lastReceivedAngleID >= module.status.anglesQueue.mouseAngles[firstIdx].id) {
             // Reduce total buffer size
             module.status.anglesQueue.anglesBufferSize -= module.status.anglesQueue.mouseAngles[firstIdx].angles.length;
 
@@ -184,7 +184,6 @@ export default function () {
         if ((!serverKeepingUp || meOnServer.forcePosition) && !module.status.env.lerping) {
             // Reset buffer left/right pointer
             firstIdx = 0;
-            module.status.anglesQueue.lastAngleID = 0;
 
             // Flush the buffer
             module.status.anglesQueue.mouseAngles = [module.status.anglesQueue.mouseAngles.pop()];
