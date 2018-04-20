@@ -1,7 +1,3 @@
-// Imports
-const Constants = require("../utils/Constants")();
-
-
 class Utilities {
 
     /**
