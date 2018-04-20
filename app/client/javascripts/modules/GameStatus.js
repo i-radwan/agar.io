@@ -46,28 +46,45 @@ export default function () {
     module.set = function (serverGameStatus) {
         syncGems(serverGameStatus.newGems, serverGameStatus.deletedGemsIDs);
         syncPlayers(serverGameStatus.players);
-
-        module.status.env.serverResponseReceived = false;
     };
 
     /**
      * Resets the game status to the initial state, to prepare the user for new round
      */
     module.reset = function () {
-        delete module.gems;
-        delete module.players;
+        delete module.status.gems;
+        delete module.status.players;
 
         module.status.env.lerping = false;
+        module.status.me = {
+            id: 0,
+            name: "",
+            color: "",
+            score: 0,
+            x: 0,
+            y: 0,
+            radius: 0,
+            angle: 0,
+            velocity: 0,
+            canvasX: 0,
+            canvasY: 0,
+            lastAngleTimeStamp: 0,
+            lastReceivedAngleID: -1,
+            alive: true,
+            forcePosition: false
+        };
 
-        module.status.anglesQueue.mouseAngles = [{id: 0, angles: []}];
-        module.status.anglesQueue.anglesBufferSize = 0;
-        module.status.anglesQueue.lastAngleID = 0;
-        module.status.anglesQueue.lastReceivedAngleID = -1;
-        module.status.anglesQueue.lastAngleTimeStamp = 0;
-        module.status.anglesQueue.serverAngleTimeStamp = 0;
-        module.status.anglesQueue.firstIdx = 0;
+        module.status.anglesQueue = {
+            mouseAngles: [{id: 0, angles: []}],
+            firstIdx: 0,
+            anglesBufferSize: 0,
+            lastAngleID: 0,
+            lastReceivedAngleID: -1,
+            lastAngleTimeStamp: 0,
+            serverAngleTimeStamp: 0
+        };
 
-        module.status.gems = [];
+        module.status.gems = {};
         module.status.newGems = [];
         module.status.players = [];
     };
@@ -147,7 +164,7 @@ export default function () {
         let firstIdx = module.status.anglesQueue.firstIdx;
 
         // Flush all angles corresponding to overridden packets
-        while (meOnServer.lastReceivedAngleID >= module.status.anglesQueue.mouseAngles[firstIdx].id) {
+        while (module.status.anglesQueue.lastAngleID - firstIdx > 0 && meOnServer.lastReceivedAngleID >= module.status.anglesQueue.mouseAngles[firstIdx].id) {
             // Reduce total buffer size
             module.status.anglesQueue.anglesBufferSize -= module.status.anglesQueue.mouseAngles[firstIdx].angles.length;
 
@@ -165,8 +182,9 @@ export default function () {
 
         // Server is failing behind with huge margin -> ignore local -> lerp to server
         if ((!serverKeepingUp || meOnServer.forcePosition) && !module.status.env.lerping) {
-            // Reset buffer left pointer
+            // Reset buffer left/right pointer
             firstIdx = 0;
+            module.status.anglesQueue.lastAngleID = 0;
 
             // Flush the buffer
             module.status.anglesQueue.mouseAngles = [module.status.anglesQueue.mouseAngles.pop()];

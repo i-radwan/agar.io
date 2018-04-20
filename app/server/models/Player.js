@@ -37,6 +37,7 @@ class Player {
         this.lastAngleTimeStamp = Date.now();
         this.lastReceivedAngleID = -1;
         this.forcePosition = false;
+        this.lastForcePositionTime = 0;
     }
 
     /**

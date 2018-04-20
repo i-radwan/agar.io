@@ -72,11 +72,19 @@ class Room {
     simulatePlayer(playerID, anglesBuffer) {
         let player = this.players[playerID];
 
+        // Check if forcePosition is received by the user before overriding it here
+        // This was a huge breach
+        if (player.forcePosition && player.lastForcePositionTime > this.lastSendRoomStatusTime)
+            return;
+
+        // Update user parameters
         let lastAngleTimeStamp = player.lastAngleTimeStamp;
         player.lastReceivedAngleID = anglesBuffer.id;
         player.lastAngleTimeStamp = anglesBuffer.timestamp;
 
+        // Check for hacking
         if (player.forcePosition = !this.checkAngles(anglesBuffer, lastAngleTimeStamp)) {
+            player.lastForcePositionTime = Date.now();
             return;
         }
 
@@ -169,6 +177,8 @@ class Room {
      * @returns {{_id: *, Players: *, newGems: ( []|*), deletedGemsIDs: Array}}
      */
     getGameStatus(firstTime) {
+        this.lastSendRoomStatusTime = Date.now();
+
         let gameStatus = {
             _id: this.id,
             players: this.players,

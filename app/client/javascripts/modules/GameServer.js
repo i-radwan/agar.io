@@ -16,6 +16,22 @@ export default function (gameStatus) {
     };
 
     /**
+     * Reconnects the client socket to server socket when the player replays the game
+     */
+    module.reconnect = function () {
+        // Don't send angles stuck in the buffer
+        socket.sendBuffer = [];
+
+        if (socket.connected) { // Player didn't loose connection, just got eaten
+            module.sendSubscribeRequest();
+            return;
+        }
+
+        // Reconnect to server
+        socket.connect();
+    };
+
+    /**
      * Sends a subscribe request to join a game room and start playing.
      */
     module.sendSubscribeRequest = function () {
@@ -31,9 +47,9 @@ export default function (gameStatus) {
 
         // Stamp the angles packet
         let currentTime = Date.now();
-        gameStatus.status.env.serverAngleTimeStamp += currentTime - gameStatus.status.env.lastAngleTimeStamp;
-        gameStatus.status.env.lastAngleTimeStamp = currentTime;
-        angles.timestamp = gameStatus.status.env.serverAngleTimeStamp;
+        gameStatus.status.anglesQueue.serverAngleTimeStamp += currentTime - gameStatus.status.anglesQueue.lastAngleTimeStamp;
+        gameStatus.status.anglesQueue.lastAngleTimeStamp = currentTime;
+        angles.timestamp = gameStatus.status.anglesQueue.serverAngleTimeStamp;
 
         // Transmit a sequence of angles
         socket.emit('angle', angles);
@@ -56,8 +72,8 @@ export default function (gameStatus) {
             gameStatus.status.me = Object.assign({}, playerInfo);
             gameStatus.status.players[gameStatus.status.me.id] = gameStatus.status.me;
 
-            gameStatus.status.env.lastAngleTimeStamp = Date.now();
-            gameStatus.status.env.serverAngleTimeStamp = gameStatus.status.me.lastAngleTimeStamp;
+            gameStatus.status.anglesQueue.lastAngleTimeStamp = Date.now();
+            gameStatus.status.anglesQueue.serverAngleTimeStamp = gameStatus.status.me.lastAngleTimeStamp;
         });
 
         // Receive initial game status

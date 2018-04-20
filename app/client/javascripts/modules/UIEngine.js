@@ -123,7 +123,6 @@ export default function (p5Lib) {
     };
 
     let addMainPlayer = function (myselfObject) {
-        module.addPlayerCanvasParams(myselfObject);
         mainPlayer = myselfObject;
     };
 

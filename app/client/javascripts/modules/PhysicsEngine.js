@@ -5,28 +5,6 @@ export default function (p5Lib) {
     let constants = Constants();
 
     /**
-     * Push mouse angle into mouse angles buffer
-     *
-     * @param player the player to be moved
-     * @param target object contains the targeted x, y coordinates
-     * @param anglesQueue the queue that contains mouse angles (to be filled)
-     */
-    let updateAnglesBuffer = function (player, target, anglesQueue) {
-        // To be changed when splitting happens (using get equivalent center)
-        let angleAndDistance = module.getAngleAndDistance({
-            x: window.innerWidth / 2,
-            y: window.innerHeight / 2
-        }, target);
-
-        // Update my player angle
-        player.angle = angleAndDistance.angle;
-
-        // Push this angle to be sent to server
-        anglesQueue.mouseAngles[anglesQueue.mouseAngles.length - 1].angles.push(angleAndDistance.angle);
-        anglesQueue.anglesBufferSize++;
-    };
-
-    /**
      * Move main player normal movement (player's velocity and angle)
      *
      * @param me main player object.
@@ -72,6 +50,28 @@ export default function (p5Lib) {
     };
 
     /**
+     * Push mouse angle into mouse angles buffer
+     *
+     * @param player the player to be moved
+     * @param target object contains the targeted x, y coordinates
+     * @param anglesQueue the queue that contains mouse angles (to be filled)
+     */
+    let updateAnglesBuffer = function (player, target, anglesQueue) {
+        // To be changed when splitting happens (using get equivalent center)
+        let angleAndDistance = getAngleAndDistance({
+            x: window.innerWidth / 2,
+            y: window.innerHeight / 2
+        }, target);
+
+        // Update my player angle
+        player.angle = angleAndDistance.angle;
+
+        // Push this angle to be sent to server
+        anglesQueue.mouseAngles[anglesQueue.lastAngleID].angles.push(angleAndDistance.angle);
+        anglesQueue.anglesBufferSize++;
+    };
+
+    /**
      * Move some player normal movement (velocity and angle)
      *
      * @param player the player to be moved.
@@ -89,7 +89,7 @@ export default function (p5Lib) {
     };
 
     // TODO: remove distance if not needed
-    module.getAngleAndDistance = function (point1, point2) {
+    let getAngleAndDistance = function (point1, point2) {
         // Calculate distance
         let distance = Math.sqrt(Math.pow(point2.x - point1.x, 2) +
             Math.pow(point2.y - point1.y, 2));
