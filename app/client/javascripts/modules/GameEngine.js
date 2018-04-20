@@ -57,11 +57,13 @@ export default function (gameStatus) {
 
     let updateGamePhysics = function () {
         // Move players
-        gameStatus.status.players.forEach(function (player) {
+        for (let key in gameStatus.status.players) {
+            let player = gameStatus.status.players[key];
+
             if (player.id === gameStatus.status.me.id) return;
 
             physicsEngine.movePlayerToPosition(player, {x: player.x, y: player.y});
-        });
+        }
 
         // Move main player
         physicsEngine.moveMainPlayer(gameStatus.status.me, gameStatus.status.anglesQueue, gameStatus.status.env.lerping);
