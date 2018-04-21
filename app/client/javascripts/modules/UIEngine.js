@@ -111,6 +111,7 @@ export default function (p5Lib) {
         // Set graphics attributes
         player.canvasX = player.x;
         player.canvasY = player.y;
+        player.canvasRadius = player.radius;
         player.yOffset = 0; // Used for noisy bubble
         player.strokeColor = constants.graphics.BLOB_STROKE_COLOR;
     };
@@ -171,24 +172,28 @@ export default function (p5Lib) {
      * @param blob
      */
     let drawBlob = function (blob) {
+        // Lerp player radius
+        // TODO: move to a better place (may be PhysicsEngine.js)
+        blob.canvasRadius = p5Lib.lerp(blob.canvasRadius, blob.radius, constants.physics.GROW_INTERPOLATION_FACTOR);
+
         // Draw the large noisy circle
-        drawNoisyCircle(blob, blob.radius, blob.strokeColor);
+        drawNoisyCircle(blob, blob.canvasRadius, blob.strokeColor);
 
         // Draw the small noisy circle
-        drawNoisyCircle(blob, blob.radius * (1 - constants.graphics.MAX_BLOB_WABBLE_RADIUS_OFFSET), blob.color);
+        drawNoisyCircle(blob, blob.canvasRadius * (1 - constants.graphics.MAX_BLOB_WABBLE_RADIUS_OFFSET), blob.color);
 
         // Draw My center and Server Center (Debugging)
         let serverCenterCircle = {
             color: "white",
             canvasX: blob.x,
             canvasY: blob.y,
-            radius: 0.1 * blob.radius
+            radius: 0.1 * blob.canvasRadius
         };
         let centerCircle = {
             color: "black",
             canvasX: blob.canvasX,
             canvasY: blob.canvasY,
-            radius: 0.1 * blob.radius
+            radius: 0.1 * blob.canvasRadius
         };
 
         drawCircle(centerCircle);
@@ -298,7 +303,6 @@ export default function (p5Lib) {
 
     let drawFPS = function (elapsed) {
         let FPS = 1000 / elapsed;
-
         hudCanvasContext.textBaseline = "top";
         hudCanvasContext.textAlign = "left";
         hudCanvasContext.fillText("FPS: " + FPS.toFixed(0), 0, 0);

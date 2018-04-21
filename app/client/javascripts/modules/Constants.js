@@ -7,7 +7,8 @@ export default function () {
             FORCE_SERVER_POSITIONS_TIME: 3000
         },
         physics: {
-            MOVEMENT_INTERPOLATION_FACTOR: 0.1
+            MOVEMENT_INTERPOLATION_FACTOR: 0.1,
+            GROW_INTERPOLATION_FACTOR: 0.05
         },
         graphics: {
             GAME_BORDER_LEFT: -1,
@@ -36,7 +37,7 @@ export default function () {
 
             START_BLOB_RADIUS: 0.02 * 6000,     // MAX_RADIUS_ZOOM_THRESHOLD * INITIAL_ZOOM
             BLOB_STROKE_COLOR: 255,
-            MAX_BLOB_WABBLE_RADIUS_OFFSET: 1 / 5,
+            MAX_BLOB_WABBLE_RADIUS_OFFSET: 1 / 7,
             WABBLE_SPEED: 0.00009,
 
             TEXT_STYLE: '20px serif',
