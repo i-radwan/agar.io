@@ -3,77 +3,55 @@ import Constants from "./Constants.js";
 export default function (p5Lib) {
     let module = {};
 
-    let players;
-    let gems;
     let stars = [];
-    let mainPlayer;
-    let zoom = 1, targetZoom = 1, zoomFactor = 1;
+
+    let zoom = 1, targetZoom = 1, zoomFactor = 1, cameraX, cameraY;
+
     let hudCanvas, hudCanvasContext;
     let playerNameTextFont;
 
     let constants = Constants();
 
-    module.init = function (me, playersObjects, gemsObjects) {
+    module.init = function () {
         playerNameTextFont = p5Lib.loadFont(constants.graphics.PLAYER_NAME_TEXT_FONT_PATH);
-
-        // Assign gems and players to the game status arrays
-        module.bindGameStatusObjects(me, playersObjects, gemsObjects);
 
         // Create canvas
         makeCanvas();
+
+        // Setup initial canvas sizing
+        updateGameSize();
 
         // Fill stars
         fillStars();
 
         // Remove strokes
         strokeWeight(0);
-
-        // Setup initial canvas sizing
-        updateGameSize();
-    };
-
-    /**
-     * Bind UI game objects with the game status objects
-     *
-     * ToDo: Remove
-     */
-    module.bindGameStatusObjects = function (me, playersObjects, gemsObjects) {
-        // Assign gems and players to the game status arrays
-        players = playersObjects;
-        gems = gemsObjects;
-        mainPlayer = me;
     };
 
     /**
      * Refresh the drawing due to game status update
      *
-     * @param lag the time between this function call and the last physics update
+     * @param players
+     * @param gems
+     * @param mainPlayer
      * @param elapsed the time taken by previous game loop
-     * @param ping connection ping value
      */
-    module.draw = function (lag, elapsed, ping) {
-        // Interpolate some physics to handle lag
-        for (let key in players) {
-            simulatePhysics(players[key], lag, 1);
-        }
-
+    module.draw = function (mainPlayer, players, gems, elapsed) {
         p5Lib.push();
 
         // Camera setup and translating to user location
-        setupCamera();
-
-        // Clear everything
-        p5Lib.background(constants.graphics.GAME_BACKGROUND);
+        setupCamera(mainPlayer);
 
         // Draw stars
-        drawStars();
+        drawBackground();
 
         // Draw all gems
         for (let key in gems) {
             let gem = gems[key];
 
-            if (isObjectInsideMyViewWindow(gem))
+            if (isObjectInsideMyViewWindow(gem)) {
                 drawCircle(gem);
+            }
         }
 
         // Draw all players
@@ -82,25 +60,28 @@ export default function (p5Lib) {
 
             // Draw player object and name
             if (isObjectInsideMyViewWindow(player)) {
-                drawBlob(player);
-                // drawPlayerName(player);
+                drawBlob(player, elapsed);
+                drawPlayerName(player);
             }
-
-            player.yOffset += elapsed * constants.graphics.WABBLE_SPEED / Math.sqrt(player.radius);
         }
 
         p5Lib.pop();
+    };
 
-        //Clear Hud Canvas
+    /**
+     * Clears the head and calls all functions that draw head up
+     *
+     * @param score
+     * @param elapsed
+     * @param ping
+     */
+    module.drawHUD = function (score, elapsed, ping) {
+        // Clear the head up display canvas
         clearHUDCanvas();
 
-        // Draw HUDs
-        drawHUD(elapsed, ping);
-
-        // Revert the applied physics
-        for (let key in players) {
-            simulatePhysics(players[key], lag, -1);
-        }
+        drawHUDText("bottom", "left", "Score: " + score, 0, window.innerHeight);
+        drawHUDText("top", "left", "FPS: " + (1000 / elapsed).toFixed(0), 0, 0);
+        drawHUDText("top", "right", "Ping: " + parseInt(ping), window.innerWidth, 0);
     };
 
     module.addGemCanvasParams = function (gem) {
@@ -119,33 +100,22 @@ export default function (p5Lib) {
     };
 
     /**
-     * Sort the canvas playersObjects array (the order in which the objects are drawn),
-     * such that smaller items are drawn first (to be beneath the larger items)
-     * (i.e. fix Z-Index)
-     */
-    module.sortPlayersBySize = function () {
-        // Sort the array
-        players.sort(function (a, b) {
-            return (a.radius - b.radius);
-        });
-    };
-
-    /**
      * Setup canvas camera:
      * Translate to screen center
      * Scale with the required scale
      * Translate back to make the player @ screen center
      */
-    let setupCamera = function () {
+    let setupCamera = function (mainPlayer) {
+        cameraX = mainPlayer.canvasX;
+        cameraY = mainPlayer.canvasY;
+
         // Translate camera to screen center
         p5Lib.translate(window.innerWidth / 2, window.innerHeight / 2);
 
         // Scaling (interpolated)
         if (mainPlayer.radius >= constants.graphics.MAX_RADIUS_ZOOM_THRESHOLD) {
-            if (mainPlayer.radius <= constants.graphics.MAX_RADIUS_ZOOM_LEVEL)
-                targetZoom = constants.graphics.START_BLOB_RADIUS / mainPlayer.radius;
-            else
-                targetZoom = constants.graphics.START_BLOB_RADIUS / constants.graphics.MAX_RADIUS_ZOOM_LEVEL;
+            targetZoom = constants.graphics.START_BLOB_RADIUS /
+                Math.min(mainPlayer.radius, constants.graphics.MAX_RADIUS_ZOOM_LEVEL);
         }
         else {
             targetZoom = constants.graphics.INITIAL_ZOOM;
@@ -155,7 +125,7 @@ export default function (p5Lib) {
         p5Lib.scale(zoom);
 
         // Translate camera to player center
-        p5Lib.translate(-mainPlayer.canvasX, -mainPlayer.canvasY);
+        p5Lib.translate(-cameraX, -cameraY);
     };
 
     /**
@@ -172,17 +142,18 @@ export default function (p5Lib) {
      * Draw 2 circles and give the nice noisy effect
      *
      * @param blob
+     * @param elapsed
      */
-    let drawBlob = function (blob) {
+    let drawBlob = function (blob, elapsed) {
         // Lerp player radius
-        // TODO: move to a better place (may be PhysicsEngine.js)
         blob.canvasRadius = p5Lib.lerp(blob.canvasRadius, blob.radius, constants.physics.GROW_INTERPOLATION_FACTOR);
+        blob.yOffset += elapsed * constants.graphics.WABBLE_SPEED / Math.sqrt(blob.radius);
 
         // Draw the large noisy circle
         drawNoisyCircle(blob, blob.canvasRadius, blob.strokeColor);
 
         // Draw the small noisy circle
-        drawNoisyCircle(blob, blob.canvasRadius * (1 - constants.graphics.MAX_BLOB_WABBLE_RADIUS_OFFSET), "blue");
+        drawNoisyCircle(blob, blob.canvasRadius * (1 - constants.graphics.MAX_BLOB_WABBLE_RADIUS_OFFSET), blob.color);
 
         // Draw My center and Server Center (Debugging)
         let serverCenterCircle = {
@@ -211,7 +182,6 @@ export default function (p5Lib) {
      */
     let drawNoisyCircle = function (blob, radius, color) {
         p5Lib.push();
-
         p5Lib.beginShape();
 
         // Fill the drawing with the required color
@@ -276,44 +246,23 @@ export default function (p5Lib) {
     /**
      * Add stars to background
      */
-    let drawStars = function () {
+    let drawBackground = function () {
+        // Clear everything
+        p5Lib.background(constants.graphics.GAME_BACKGROUND);
+
         let n = constants.graphics.STARS_COUNT;
 
         while (n--) {
-            if (isObjectInsideMyViewWindow(stars[n]))
+            if (isObjectInsideMyViewWindow(stars[n])) {
                 drawCircle(stars[n]);
+            }
         }
     };
 
-    /**
-     * Call all functions that draw head up
-     *
-     * @param elapsed
-     * @param ping
-     */
-    let drawHUD = function (elapsed, ping) {
-        drawFPS(elapsed);
-        drawPing(ping);
-        drawScore();
-    };
-
-    let drawPing = function (ping) {
-        hudCanvasContext.textBaseline = "top";
-        hudCanvasContext.textAlign = "right";
-        hudCanvasContext.fillText("Ping: " + parseInt(ping), window.innerWidth, 0);
-    };
-
-    let drawFPS = function (elapsed) {
-        let FPS = 1000 / elapsed;
-        hudCanvasContext.textBaseline = "top";
-        hudCanvasContext.textAlign = "left";
-        hudCanvasContext.fillText("FPS: " + FPS.toFixed(0), 0, 0);
-    };
-
-    let drawScore = function () {
-        hudCanvasContext.textBaseline = "bottom";
-        hudCanvasContext.textAlign = "left";
-        hudCanvasContext.fillText("Score: " + mainPlayer.score, 0, window.innerHeight);
+    let drawHUDText = function (textBaseline, textAlign, text, x, y) {
+        hudCanvasContext.textBaseline = textBaseline;
+        hudCanvasContext.textAlign = textAlign;
+        hudCanvasContext.fillText(text, x, y);
     };
 
     /**
@@ -339,12 +288,6 @@ export default function (p5Lib) {
         //
         hudCanvas = document.getElementById("hudCanvasId");
         hudCanvasContext = hudCanvas.getContext("2d");
-
-        hudCanvas.width = Number(window.innerWidth);
-        hudCanvas.height = Number(window.innerHeight);
-
-        hudCanvasContext.font = constants.graphics.TEXT_STYLE;
-        hudCanvasContext.fillStyle = constants.graphics.TEXT_COLOR;
 
         //
         // Events
@@ -391,28 +334,8 @@ export default function (p5Lib) {
         let maxDistX = window.innerWidth / (zoom << 1);
         let maxDistY = window.innerHeight / (zoom << 1);
 
-        return Math.abs(object.canvasX - mainPlayer.canvasX) < maxDistX + object.radius &&
-            Math.abs(object.canvasY - mainPlayer.canvasY) < maxDistY + object.radius;
-    };
-
-    /**
-     * Simulates player physics that could have happened in the given lag,
-     * the physics take effect in the given direction
-     *
-     * @param player
-     * @param lag
-     * @param direction
-     */
-    let simulatePhysics = function (player, lag, direction) {
-        let newCanvasX = player.canvasX + Math.cos(player.angle) * player.velocity;
-        let newCanvasY = player.canvasY + Math.sin(player.angle) * player.velocity;
-
-        if (newCanvasX >= constants.graphics.GAME_BORDER_LEFT && newCanvasX <= constants.graphics.GAME_BORDER_RIGHT) {
-            player.canvasX += (newCanvasX - player.canvasX) * (lag / constants.general.UPDATE_PHYSICS_THRESHOLD) * direction;
-        }
-        if (newCanvasY >= constants.graphics.GAME_BORDER_DOWN && newCanvasY <= constants.graphics.GAME_BORDER_UP) {
-            player.canvasY += (newCanvasY - player.canvasY) * (lag / constants.general.UPDATE_PHYSICS_THRESHOLD) * direction;
-        }
+        return Math.abs(object.canvasX - cameraX) < maxDistX + object.radius &&
+            Math.abs(object.canvasY - cameraY) < maxDistY + object.radius;
     };
 
     return module;

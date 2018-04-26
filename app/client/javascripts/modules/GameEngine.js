@@ -21,7 +21,7 @@ export default function (gameStatus, gameOverCallback) {
 
         // Initialize UI engine
         uiEngine = UIEngine(module.p5Lib);
-        uiEngine.init(gameStatus.status.me, gameStatus.status.players, gameStatus.status.gems);
+        uiEngine.init(gameStatus.status.me);
     };
 
     /**
@@ -30,8 +30,6 @@ export default function (gameStatus, gameOverCallback) {
      */
     module.reset = function () {
         physicsEngine.init();
-
-        uiEngine.bindGameStatusObjects(gameStatus.status.me, gameStatus.status.players, gameStatus.status.gems);
     };
 
     /**
@@ -110,14 +108,16 @@ export default function (gameStatus, gameOverCallback) {
 
         // Flush new players array
         // gameStatus.status.newPlayers = {};
-
-        // Fix z index of objects
-        uiEngine.sortPlayersBySize();
     };
 
     let update = function () {
         // Add canvas parameters to new game objects
         updateCanvasObjects();
+
+        // Sort players by size, to render bigger players @ top of smaller ones
+        gameStatus.status.players.sort(function (a, b) {
+            return (a.radius - b.radius);
+        });
 
         // Get number of missed physics iterations and reduce the physics lag time
         let count = physicsEngine.narrowPhysicsDelay(gameStatus.status.me);
@@ -139,8 +139,21 @@ export default function (gameStatus, gameOverCallback) {
     };
 
     let drawGame = function () {
-        // ToDo: Iterate over objects, call UIEngine draw function
-        uiEngine.draw(physicsEngine.timers.lagToHandlePhysics, physicsEngine.timers.elapsed, gameStatus.status.env.ping);
+        // Interpolate some physics to handle lag
+        for (let key in gameStatus.status.players) {
+            physicsEngine.simulatePhysics(gameStatus.status.players[key], physicsEngine.timers.lagToHandlePhysics, 1);
+        }
+
+        // Call UI Draw function
+        uiEngine.draw(gameStatus.status.me, gameStatus.status.players, gameStatus.status.gems, physicsEngine.timers.elapsed);
+
+        // Clear then draw the head up display
+        uiEngine.drawHUD(gameStatus.status.me.score, physicsEngine.timers.elapsed, gameStatus.status.env.ping);
+
+        // Revert the applied physics
+        for (let key in gameStatus.status.players) {
+            physicsEngine.simulatePhysics(gameStatus.status.players[key], physicsEngine.timers.lagToHandlePhysics, -1);
+        }
     };
 
     return module;

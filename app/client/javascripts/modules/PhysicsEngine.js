@@ -69,6 +69,26 @@ export default function (p5Lib) {
     };
 
     /**
+     * Simulates player physics that could have happened in the given lag,
+     * the physics take effect in the given direction
+     *
+     * @param player
+     * @param lag
+     * @param direction
+     */
+    module.simulatePhysics = function (player, lag, direction) {
+        let newCanvasX = player.canvasX + Math.cos(player.angle) * player.velocity;
+        let newCanvasY = player.canvasY + Math.sin(player.angle) * player.velocity;
+
+        if (newCanvasX >= constants.graphics.GAME_BORDER_LEFT && newCanvasX <= constants.graphics.GAME_BORDER_RIGHT) {
+            player.canvasX += (newCanvasX - player.canvasX) * (lag / constants.general.UPDATE_PHYSICS_THRESHOLD) * direction;
+        }
+        if (newCanvasY >= constants.graphics.GAME_BORDER_DOWN && newCanvasY <= constants.graphics.GAME_BORDER_UP) {
+            player.canvasY += (newCanvasY - player.canvasY) * (lag / constants.general.UPDATE_PHYSICS_THRESHOLD) * direction;
+        }
+    };
+
+    /**
      * Move some player to target
      *
      * @param player the player to be moved.
