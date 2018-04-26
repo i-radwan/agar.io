@@ -146,8 +146,9 @@ export default function () {
             delete module.status.anglesQueue.mouseAngles[firstIdx++];
 
             if (module.status.env.lerping) {
-                module.status.me.canvasX = meOnServer.x;
-                module.status.me.canvasY = meOnServer.y;
+                module.status.me.forcePosition = true;
+                // module.status.me.canvasX = meOnServer.x;
+                // module.status.me.canvasY = meOnServer.y;
             }
 
             serverKeepingUp = true;
