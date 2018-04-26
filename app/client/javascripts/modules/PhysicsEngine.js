@@ -29,60 +29,40 @@ export default function (p5Lib) {
         module.timers.forceServerPositionsTimer += module.timers.elapsed;
     };
 
-    module.applyPhysics = function (me, players, lerping) {
-        // Lag is to much, happens with tab out, let's roll back to server now!
+    module.getPhysicsStepsCount = function (me) {
         if (module.timers.lagToHandlePhysics > constants.general.FORCE_SERVER_POSITIONS_TIME || me.forcePosition) {
-            console.log("Force");
-            forceServerPositions(players);
-            return;
+            module.timers.lagToHandlePhysics = 0;
+            return -1;
         }
 
-        // Perform physics in a loop by the number of the threshold spent before getting here again
+        let count = 0;
         while (module.timers.lagToHandlePhysics >= constants.general.UPDATE_PHYSICS_THRESHOLD) {
-            // Update the game status (My location, players, gems, score, ... etc) and physics
-            updateGamePhysics(me, players, lerping);
-
+            count++;
             module.timers.lagToHandlePhysics -= constants.general.UPDATE_PHYSICS_THRESHOLD;
         }
+
+        return count;
     };
 
-    let updateGamePhysics = function (me, players, lerping) {
+    module.moveObjects = function (me, players, lerping) {
         // Move players
         for (let key in players) {
             let player = players[key];
 
-            if (player.id === me.id) continue;
+            if (player.id === me.id && !lerping) {
+                updatePlayerPosition(me);
+                continue;
+            }
 
             movePlayerToPosition(player, {x: player.x, y: player.y});
         }
-
-        // Move main player
-        moveMainPlayer(me, lerping);
     };
 
-    let forceServerPositions = function (players) {
+    module.forceServerPositions = function (players) {
         // Move players to server position
         for (let key in players) {
             forceServerPosition(players[key]);
         }
-
-        module.timers.lagToHandlePhysics = 0;
-    };
-
-    /**
-     * Move main player normal movement (player's velocity and angle)
-     *
-     * @param me main player object.
-     * @param lerping to check if game is lerping
-     */
-    let moveMainPlayer = function (me, lerping) {
-        if (lerping) {
-            movePlayerToPosition(me, {x: me.x, y: me.y});
-            return;
-        }
-
-        // Move player by his angle and velocity
-        updatePlayerPosition(me);
     };
 
     /**

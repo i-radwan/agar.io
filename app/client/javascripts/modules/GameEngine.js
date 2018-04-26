@@ -51,7 +51,8 @@ export default function (gameStatus, gameOverCallback) {
         updateCanvasObjects();
 
         // Move players
-        physicsEngine.applyPhysics(gameStatus.status.me, gameStatus.status.players, gameStatus.status.env.lerping);
+        update(gameStatus.status.me, gameStatus.status.players,
+            gameStatus.status.env.lerping, gameStatus.status.anglesQueue);
 
         // Draw the game
         drawGame();
@@ -70,7 +71,7 @@ export default function (gameStatus, gameOverCallback) {
      * Processes user inputs.
      */
     let processUserInputs = function () {
-        if (gameStatus.status.env.lerping) return;
+        if (gameStatus.status.env.lerping || gameStatus.status.me.forcePosition) return;
 
         // Capture new angle
         let x1 = window.innerWidth / 2;
@@ -78,21 +79,8 @@ export default function (gameStatus, gameOverCallback) {
         let x2 = module.p5Lib.mouseX;
         let y2 = module.p5Lib.mouseY;
 
-        let angle = Math.atan2(y2 - y1, x2 - x1);
-
         // Update my player angle
-        gameStatus.status.me.angle = angle;
-
-        // Push this angle to be sent to server
-        let anglesQueue = gameStatus.status.anglesQueue;
-
-        anglesQueue.mouseAngles[anglesQueue.mouseAngles.length - 1].angles.push(angle);
-        anglesQueue.anglesBufferSize++;
-    };
-
-    let drawGame = function () {
-        // ToDo: Iterate over objects, call UIEngine draw function
-        uiEngine.draw(physicsEngine.timers.lagToHandlePhysics, physicsEngine.timers.elapsed, gameStatus.status.env.ping);
+        gameStatus.status.me.angle = Math.atan2(y2 - y1, x2 - x1);
     };
 
     /**
@@ -131,6 +119,32 @@ export default function (gameStatus, gameOverCallback) {
 
         // Fix z index of objects
         uiEngine.sortPlayersBySize();
+    };
+
+    let update = function (me, players, lerping) {
+        let count = physicsEngine.getPhysicsStepsCount(gameStatus.status.me);
+
+        // Lag is to much, happens with tab out, let's roll back to server now!
+        if (count === -1) {
+            physicsEngine.forceServerPositions(players);
+            return;
+        }
+
+        // Perform physics in a loop by the number of the threshold spent before getting here again
+        while (count--) {
+            // Update the game status (My location, players, gems, score, ... etc) and physics
+            physicsEngine.moveObjects(me, players, lerping);
+
+            // Push this angle to be sent to server
+            let anglesQueue = gameStatus.status.anglesQueue;
+            anglesQueue.mouseAngles[anglesQueue.mouseAngles.length - 1].angles.push(me.angle);
+            anglesQueue.anglesBufferSize++;
+        }
+    };
+
+    let drawGame = function () {
+        // ToDo: Iterate over objects, call UIEngine draw function
+        uiEngine.draw(physicsEngine.timers.lagToHandlePhysics, physicsEngine.timers.elapsed, gameStatus.status.env.ping);
     };
 
     return module;

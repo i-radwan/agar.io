@@ -83,7 +83,7 @@ export default function (p5Lib) {
             // Draw player object and name
             if (isObjectInsideMyViewWindow(player)) {
                 drawBlob(player);
-                drawPlayerName(player);
+                // drawPlayerName(player);
             }
 
             player.yOffset += elapsed * constants.graphics.WABBLE_SPEED / Math.sqrt(player.radius);
@@ -182,7 +182,7 @@ export default function (p5Lib) {
         drawNoisyCircle(blob, blob.canvasRadius, blob.strokeColor);
 
         // Draw the small noisy circle
-        drawNoisyCircle(blob, blob.canvasRadius * (1 - constants.graphics.MAX_BLOB_WABBLE_RADIUS_OFFSET), blob.color);
+        drawNoisyCircle(blob, blob.canvasRadius * (1 - constants.graphics.MAX_BLOB_WABBLE_RADIUS_OFFSET), "blue");
 
         // Draw My center and Server Center (Debugging)
         let serverCenterCircle = {
