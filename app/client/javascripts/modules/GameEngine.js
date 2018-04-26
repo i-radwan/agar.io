@@ -1,11 +1,9 @@
 // Imports
 import PhysicsEngine from "./PhysicsEngine.js";
 import UIEngine from "./UIEngine.js";
-import Constants from "./Constants.js";
 
 export default function (gameStatus, gameOverCallback) {
     let module = {};
-    let constants = Constants();
 
     let physicsEngine;
     let uiEngine;
@@ -47,12 +45,8 @@ export default function (gameStatus, gameOverCallback) {
         // Get mouse angle
         processUserInputs();
 
-        // Update canvas objects
-        updateCanvasObjects();
-
-        // Move players
-        update(gameStatus.status.me, gameStatus.status.players,
-            gameStatus.status.env.lerping, gameStatus.status.anglesQueue);
+        // Update game status
+        update();
 
         // Draw the game
         drawGame();
@@ -71,7 +65,7 @@ export default function (gameStatus, gameOverCallback) {
      * Processes user inputs.
      */
     let processUserInputs = function () {
-        if (gameStatus.status.env.lerping || gameStatus.status.me.forcePosition) return;
+        if (gameStatus.status.env.rollback || gameStatus.status.me.forcePosition) return;
 
         // Capture new angle
         let x1 = window.innerWidth / 2;
@@ -121,24 +115,26 @@ export default function (gameStatus, gameOverCallback) {
         uiEngine.sortPlayersBySize();
     };
 
-    let update = function (me, players, lerping) {
-        let count = physicsEngine.getPhysicsStepsCount(gameStatus.status.me);
+    let update = function () {
+        // Add canvas parameters to new game objects
+        updateCanvasObjects();
+
+        // Get number of missed physics iterations and reduce the physics lag time
+        let count = physicsEngine.narrowPhysicsDelay(gameStatus.status.me);
 
         // Lag is to much, happens with tab out, let's roll back to server now!
         if (count === -1) {
-            physicsEngine.forceServerPositions(players);
+            physicsEngine.forceServerPositions(gameStatus.status.players);
             return;
         }
 
         // Perform physics in a loop by the number of the threshold spent before getting here again
         while (count--) {
             // Update the game status (My location, players, gems, score, ... etc) and physics
-            physicsEngine.moveObjects(me, players, lerping);
+            physicsEngine.moveObjects(gameStatus.status.me, gameStatus.status.players, gameStatus.status.env.rollback);
 
             // Push this angle to be sent to server
-            let anglesQueue = gameStatus.status.anglesQueue;
-            anglesQueue.mouseAngles[anglesQueue.mouseAngles.length - 1].angles.push(me.angle);
-            anglesQueue.anglesBufferSize++;
+            gameStatus.pushAngleToBuffer(gameStatus.status.me.angle);
         }
     };
 

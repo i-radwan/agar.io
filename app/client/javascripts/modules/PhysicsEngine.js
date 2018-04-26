@@ -16,20 +16,7 @@ export default function (p5Lib) {
         };
     };
 
-    /**
-     * Updates game physics timers.
-     */
-    module.increaseTimers = function () {
-        let now = window.performance.now();
-
-        // Calculate total time spent outside
-        module.timers.elapsed = now - module.timers.now;
-        module.timers.now = now;
-        module.timers.lagToHandlePhysics += module.timers.elapsed;
-        module.timers.forceServerPositionsTimer += module.timers.elapsed;
-    };
-
-    module.getPhysicsStepsCount = function (me) {
+    module.narrowPhysicsDelay = function (me) {
         if (module.timers.lagToHandlePhysics > constants.general.FORCE_SERVER_POSITIONS_TIME || me.forcePosition) {
             module.timers.lagToHandlePhysics = 0;
             return -1;
@@ -44,24 +31,40 @@ export default function (p5Lib) {
         return count;
     };
 
-    module.moveObjects = function (me, players, lerping) {
-        // Move players
-        for (let key in players) {
-            let player = players[key];
+    /**
+     * Updates game physics timers.
+     */
+    module.increaseTimers = function () {
+        let now = window.performance.now();
 
-            if (player.id === me.id && !lerping) {
-                updatePlayerPosition(me);
-                continue;
-            }
-
-            movePlayerToPosition(player, {x: player.x, y: player.y});
-        }
+        // Calculate total time spent outside
+        module.timers.elapsed = now - module.timers.now;
+        module.timers.now = now;
+        module.timers.lagToHandlePhysics += module.timers.elapsed;
+        module.timers.forceServerPositionsTimer += module.timers.elapsed;
     };
 
     module.forceServerPositions = function (players) {
         // Move players to server position
         for (let key in players) {
-            forceServerPosition(players[key]);
+            let player = players[key];
+
+            player.canvasX = player.x;
+            player.canvasY = player.y;
+        }
+    };
+
+    module.moveObjects = function (me, players, rollback) {
+        // Move players
+        for (let key in players) {
+            let player = players[key];
+
+            if (player.id === me.id && !rollback) {
+                updatePlayerPosition(me);
+                continue;
+            }
+
+            movePlayerToPosition(player, {x: player.x, y: player.y});
         }
     };
 
@@ -75,16 +78,6 @@ export default function (p5Lib) {
         // Interpolate user location until we reach target
         player.canvasX = p5Lib.lerp(player.canvasX, position.x, constants.physics.MOVEMENT_INTERPOLATION_FACTOR);
         player.canvasY = p5Lib.lerp(player.canvasY, position.y, constants.physics.MOVEMENT_INTERPOLATION_FACTOR);
-    };
-
-    /**
-     * Every interval reset the player position to server's
-     *
-     * @param player the player to fix its position.
-     */
-    let forceServerPosition = function (player) {
-        player.canvasX = player.x;
-        player.canvasY = player.y;
     };
 
     /**

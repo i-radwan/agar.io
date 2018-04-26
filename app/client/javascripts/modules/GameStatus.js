@@ -11,7 +11,7 @@ export default function () {
         module.status = {
             env: {
                 running: true,
-                lerping: false,
+                rollback: false,
                 ping: 0
             },
             anglesQueue: {
@@ -58,6 +58,12 @@ export default function () {
     module.set = function (serverGameStatus) {
         syncGems(serverGameStatus.newGems, serverGameStatus.deletedGemsIDs);
         syncPlayers(serverGameStatus.players);
+    };
+
+    module.pushAngleToBuffer = function (angle) {
+        let anglesQueue = module.status.anglesQueue;
+        anglesQueue.mouseAngles[anglesQueue.mouseAngles.length - 1].angles.push(angle);
+        anglesQueue.anglesBufferSize++;
     };
 
     /**
@@ -145,18 +151,18 @@ export default function () {
             // Remove the top value
             delete module.status.anglesQueue.mouseAngles[firstIdx++];
 
-            if (module.status.env.lerping) {
+            if (module.status.env.rollback) {
                 module.status.me.forcePosition = true;
                 // module.status.me.canvasX = meOnServer.x;
                 // module.status.me.canvasY = meOnServer.y;
             }
 
             serverKeepingUp = true;
-            module.status.env.lerping = false;
+            module.status.env.rollback = false;
         }
 
         // Server is failing behind with huge margin -> ignore local -> lerp to server
-        if ((!serverKeepingUp || meOnServer.forcePosition) && !module.status.env.lerping) {
+        if ((!serverKeepingUp || meOnServer.forcePosition) && !module.status.env.rollback) {
             // Reset buffer left/right pointer
             firstIdx = 0;
 
@@ -167,8 +173,8 @@ export default function () {
             module.status.anglesQueue.anglesBufferSize = 0;
             module.status.anglesQueue.mouseAngles[firstIdx].angles = [];
 
-            // Start lerping to server position
-            module.status.env.lerping = true;
+            // Start rolling back to server position
+            module.status.env.rollback = true;
         }
 
         module.status.anglesQueue.firstIdx = firstIdx;
