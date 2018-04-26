@@ -74,8 +74,6 @@ export default function (gameStatus, gameOverCallback) {
         requestAnimationFrame(module.gameEngineLoop);
     };
 
-
-
     let drawGame = function () {
         uiEngine.draw(timers.lagToHandlePhysics, timers.elapsed, gameStatus.status.env.ping);
     };

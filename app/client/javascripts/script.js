@@ -50,8 +50,6 @@ let game = {
 
         // Ask the user to restart the game
         if (confirm("Sry, new round?")) {
-            // Clear gameStatus
-            game.gameStatus.init();
             game.gameServer.reconnect();
         }
     }

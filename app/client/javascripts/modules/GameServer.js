@@ -33,6 +33,10 @@ export default function (gameStatus) {
      * To be called every specific interval of time.
      */
     module.sendAngle = function () {
+        if (!gameStatus.status.env.running) {
+            return;
+        }
+
         // Get last angles row
         let angles = gameStatus.status.anglesQueue.mouseAngles.slice(-1)[0];
 
@@ -72,6 +76,8 @@ export default function (gameStatus) {
 
         // Receive main player info
         socket.on('player_info', function (playerInfo) {
+            gameStatus.init();
+
             gameStatus.status.me = Object.assign({}, playerInfo);
             gameStatus.status.players[gameStatus.status.me.id] = gameStatus.status.me;
 
