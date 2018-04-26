@@ -60,7 +60,7 @@ export default function (p5Lib) {
             let player = players[key];
 
             if (player.id === me.id && !rollback) {
-                updatePlayerPosition(me);
+                module.updatePlayerPosition(me);
                 continue;
             }
 
@@ -69,22 +69,20 @@ export default function (p5Lib) {
     };
 
     /**
-     * Simulates player physics that could have happened in the given lag,
-     * the physics take effect in the given direction
+     * Move some player normal movement (velocity and angle)
      *
-     * @param player
-     * @param lag
-     * @param direction
+     * @param player the player to be moved.
+     * @param factor
      */
-    module.simulatePhysics = function (player, lag, direction) {
+    module.updatePlayerPosition = function (player, factor = 1) {
         let newCanvasX = player.canvasX + Math.cos(player.angle) * player.velocity;
         let newCanvasY = player.canvasY + Math.sin(player.angle) * player.velocity;
 
         if (newCanvasX >= constants.graphics.GAME_BORDER_LEFT && newCanvasX <= constants.graphics.GAME_BORDER_RIGHT) {
-            player.canvasX += (newCanvasX - player.canvasX) * (lag / constants.general.UPDATE_PHYSICS_THRESHOLD) * direction;
+            player.canvasX += (newCanvasX - player.canvasX) * factor;
         }
         if (newCanvasY >= constants.graphics.GAME_BORDER_DOWN && newCanvasY <= constants.graphics.GAME_BORDER_UP) {
-            player.canvasY += (newCanvasY - player.canvasY) * (lag / constants.general.UPDATE_PHYSICS_THRESHOLD) * direction;
+            player.canvasY += (newCanvasY - player.canvasY) * factor;
         }
     };
 
@@ -98,23 +96,6 @@ export default function (p5Lib) {
         // Interpolate user location until we reach target
         player.canvasX = p5Lib.lerp(player.canvasX, position.x, constants.physics.MOVEMENT_INTERPOLATION_FACTOR);
         player.canvasY = p5Lib.lerp(player.canvasY, position.y, constants.physics.MOVEMENT_INTERPOLATION_FACTOR);
-    };
-
-    /**
-     * Move some player normal movement (velocity and angle)
-     *
-     * @param player the player to be moved.
-     */
-    let updatePlayerPosition = function (player) {
-        let newCanvasX = player.canvasX + Math.cos(player.angle) * player.velocity;
-        let newCanvasY = player.canvasY + Math.sin(player.angle) * player.velocity;
-
-        if (newCanvasX >= constants.graphics.GAME_BORDER_LEFT && newCanvasX <= constants.graphics.GAME_BORDER_RIGHT) {
-            player.canvasX = newCanvasX;
-        }
-        if (newCanvasY >= constants.graphics.GAME_BORDER_DOWN && newCanvasY <= constants.graphics.GAME_BORDER_UP) {
-            player.canvasY = newCanvasY;
-        }
     };
 
     return module;

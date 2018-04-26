@@ -1,9 +1,12 @@
 // Imports
 import PhysicsEngine from "./PhysicsEngine.js";
 import UIEngine from "./UIEngine.js";
+import Constants from "./Constants.js";
 
 export default function (gameStatus, gameOverCallback) {
     let module = {};
+
+    let constants = Constants();
 
     let physicsEngine;
     let uiEngine;
@@ -139,9 +142,11 @@ export default function (gameStatus, gameOverCallback) {
     };
 
     let drawGame = function () {
+        let factor = (physicsEngine.timers.lagToHandlePhysics / constants.general.UPDATE_PHYSICS_THRESHOLD);
+
         // Interpolate some physics to handle lag
         for (let key in gameStatus.status.players) {
-            physicsEngine.simulatePhysics(gameStatus.status.players[key], physicsEngine.timers.lagToHandlePhysics, 1);
+            physicsEngine.updatePlayerPosition(gameStatus.status.players[key], factor);
         }
 
         // Call UI Draw function
@@ -152,7 +157,7 @@ export default function (gameStatus, gameOverCallback) {
 
         // Revert the applied physics
         for (let key in gameStatus.status.players) {
-            physicsEngine.simulatePhysics(gameStatus.status.players[key], physicsEngine.timers.lagToHandlePhysics, -1);
+            physicsEngine.updatePlayerPosition(gameStatus.status.players[key], -factor);
         }
     };
 
