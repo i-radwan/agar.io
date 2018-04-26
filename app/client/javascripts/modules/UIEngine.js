@@ -34,6 +34,8 @@ export default function (p5Lib) {
 
     /**
      * Bind UI game objects with the game status objects
+     *
+     * ToDo: Remove
      */
     module.bindGameStatusObjects = function (me, playersObjects, gemsObjects) {
         // Assign gems and players to the game status arrays

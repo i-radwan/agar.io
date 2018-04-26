@@ -5,23 +5,81 @@ export default function (p5Lib) {
     let constants = Constants();
 
     /**
-     * Move main player normal movement (player's velocity and angle)
-     *
-     * @param me main player object.
-     * @param anglesQueue mouse angles queue
-     * @param lerping to check if game is lerping
+     * Resets the timing variables.
      */
-    module.moveMainPlayer = function (me, anglesQueue, lerping) {
-        if (lerping) {
-            module.movePlayerToPosition(me, {x: me.x, y: me.y});
+    module.init = function () {
+        module.timers = {
+            now: window.performance.now(),
+            elapsed: window.performance.now(),
+            lagToHandlePhysics: 0,
+            forceServerPositionsTimer: 0
+        };
+    };
+
+    /**
+     * Updates game physics timers.
+     */
+    module.increaseTimers = function () {
+        let now = window.performance.now();
+
+        // Calculate total time spent outside
+        module.timers.elapsed = now - module.timers.now;
+        module.timers.now = now;
+        module.timers.lagToHandlePhysics += module.timers.elapsed;
+        module.timers.forceServerPositionsTimer += module.timers.elapsed;
+    };
+
+    module.applyPhysics = function (me, players, lerping) {
+        // Lag is to much, happens with tab out, let's roll back to server now!
+        if (module.timers.lagToHandlePhysics > constants.general.FORCE_SERVER_POSITIONS_TIME || me.forcePosition) {
+            console.log("Force");
+            forceServerPositions(players);
             return;
         }
 
-        // Get mouse angle
-        updateAnglesBuffer(me, {
-            x: p5Lib.mouseX,
-            y: p5Lib.mouseY
-        }, anglesQueue);
+        // Perform physics in a loop by the number of the threshold spent before getting here again
+        while (module.timers.lagToHandlePhysics >= constants.general.UPDATE_PHYSICS_THRESHOLD) {
+            // Update the game status (My location, players, gems, score, ... etc) and physics
+            updateGamePhysics(me, players, lerping);
+
+            module.timers.lagToHandlePhysics -= constants.general.UPDATE_PHYSICS_THRESHOLD;
+        }
+    };
+
+    let updateGamePhysics = function (me, players, lerping) {
+        // Move players
+        for (let key in players) {
+            let player = players[key];
+
+            if (player.id === me.id) continue;
+
+            movePlayerToPosition(player, {x: player.x, y: player.y});
+        }
+
+        // Move main player
+        moveMainPlayer(me, lerping);
+    };
+
+    let forceServerPositions = function (players) {
+        // Move players to server position
+        for (let key in players) {
+            forceServerPosition(players[key]);
+        }
+
+        module.timers.lagToHandlePhysics = 0;
+    };
+
+    /**
+     * Move main player normal movement (player's velocity and angle)
+     *
+     * @param me main player object.
+     * @param lerping to check if game is lerping
+     */
+    let moveMainPlayer = function (me, lerping) {
+        if (lerping) {
+            movePlayerToPosition(me, {x: me.x, y: me.y});
+            return;
+        }
 
         // Move player by his angle and velocity
         updatePlayerPosition(me);
@@ -33,7 +91,7 @@ export default function (p5Lib) {
      * @param player the player to be moved.
      * @param position the point to be moved to.
      */
-    module.movePlayerToPosition = function (player, position) {
+    let movePlayerToPosition = function (player, position) {
         // Interpolate user location until we reach target
         player.canvasX = p5Lib.lerp(player.canvasX, position.x, constants.physics.MOVEMENT_INTERPOLATION_FACTOR);
         player.canvasY = p5Lib.lerp(player.canvasY, position.y, constants.physics.MOVEMENT_INTERPOLATION_FACTOR);
@@ -44,31 +102,9 @@ export default function (p5Lib) {
      *
      * @param player the player to fix its position.
      */
-    module.forceServerPosition = function (player) {
+    let forceServerPosition = function (player) {
         player.canvasX = player.x;
         player.canvasY = player.y;
-    };
-
-    /**
-     * Push mouse angle into mouse angles buffer
-     *
-     * @param player the player to be moved
-     * @param target object contains the targeted x, y coordinates
-     * @param anglesQueue the queue that contains mouse angles (to be filled)
-     */
-    let updateAnglesBuffer = function (player, target, anglesQueue) {
-        // To be changed when splitting happens (using get equivalent center)
-        let angleAndDistance = getAngleAndDistance({
-            x: window.innerWidth / 2,
-            y: window.innerHeight / 2
-        }, target);
-
-        // Update my player angle
-        player.angle = angleAndDistance.angle;
-
-        // Push this angle to be sent to server
-        anglesQueue.mouseAngles[anglesQueue.mouseAngles.length - 1].angles.push(angleAndDistance.angle);
-        anglesQueue.anglesBufferSize++;
     };
 
     /**
@@ -86,19 +122,6 @@ export default function (p5Lib) {
         if (newCanvasY >= constants.graphics.GAME_BORDER_DOWN && newCanvasY <= constants.graphics.GAME_BORDER_UP) {
             player.canvasY = newCanvasY;
         }
-    };
-
-    // TODO: remove distance if not needed
-    let getAngleAndDistance = function (point1, point2) {
-        // Calculate distance
-        let distance = Math.sqrt(Math.pow(point2.x - point1.x, 2) +
-            Math.pow(point2.y - point1.y, 2));
-
-        // Return the angle and the distance
-        return {
-            distance: distance,
-            angle: Math.atan2((point2.y - point1.y), (point2.x - point1.x))
-        };
     };
 
     return module;

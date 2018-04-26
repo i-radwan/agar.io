@@ -10,14 +10,6 @@ export default function (gameStatus, gameOverCallback) {
     let physicsEngine;
     let uiEngine;
 
-    // Timing variables
-    let timers = {
-        now: window.performance.now(),
-        elapsed: window.performance.now(),
-        lagToHandlePhysics: 0,
-        forceServerPositionsTimer: 0
-    };
-
     /**
      * Initializes the game engine by creating and initializing UI and physics engines.
      */
@@ -27,6 +19,7 @@ export default function (gameStatus, gameOverCallback) {
 
         // Initialize physics engine
         physicsEngine = PhysicsEngine(module.p5Lib);
+        physicsEngine.init();
 
         // Initialize UI engine
         uiEngine = UIEngine(module.p5Lib);
@@ -35,14 +28,10 @@ export default function (gameStatus, gameOverCallback) {
 
     /**
      * Resets game engine variables.
+     *
      */
     module.reset = function () {
-        timers = {
-            now: window.performance.now(),
-            elapsed: window.performance.now(),
-            lagToHandlePhysics: 0,
-            forceServerPositionsTimer: 0
-        };
+        physicsEngine.init();
 
         uiEngine.bindGameStatusObjects(gameStatus.status.me, gameStatus.status.players, gameStatus.status.gems);
     };
@@ -53,13 +42,16 @@ export default function (gameStatus, gameOverCallback) {
      */
     module.gameEngineLoop = function () {
         // Increase deltas to prepare for physics and forcing positions steps
-        increaseTimers();
+        physicsEngine.increaseTimers();
+
+        // Get mouse angle
+        processUserInputs();
 
         // Update canvas objects
         updateCanvasObjects();
 
         // Move players
-        applyPhysics();
+        physicsEngine.applyPhysics(gameStatus.status.me, gameStatus.status.players, gameStatus.status.env.lerping);
 
         // Draw the game
         drawGame();
@@ -74,58 +66,33 @@ export default function (gameStatus, gameOverCallback) {
         requestAnimationFrame(module.gameEngineLoop);
     };
 
+    /**
+     * Processes user inputs.
+     */
+    let processUserInputs = function () {
+        if (gameStatus.status.env.lerping) return;
+
+        // Capture new angle
+        let x1 = window.innerWidth / 2;
+        let y1 = window.innerHeight / 2;
+        let x2 = module.p5Lib.mouseX;
+        let y2 = module.p5Lib.mouseY;
+
+        let angle = Math.atan2(y2 - y1, x2 - x1);
+
+        // Update my player angle
+        gameStatus.status.me.angle = angle;
+
+        // Push this angle to be sent to server
+        let anglesQueue = gameStatus.status.anglesQueue;
+
+        anglesQueue.mouseAngles[anglesQueue.mouseAngles.length - 1].angles.push(angle);
+        anglesQueue.anglesBufferSize++;
+    };
+
     let drawGame = function () {
-        uiEngine.draw(timers.lagToHandlePhysics, timers.elapsed, gameStatus.status.env.ping);
-    };
-
-    let updateGamePhysics = function () {
-        // Move players
-        for (let key in gameStatus.status.players) {
-            let player = gameStatus.status.players[key];
-
-            if (player.id === gameStatus.status.me.id) continue;
-
-            physicsEngine.movePlayerToPosition(player, {x: player.x, y: player.y});
-        }
-
-        // Move main player
-        physicsEngine.moveMainPlayer(gameStatus.status.me, gameStatus.status.anglesQueue, gameStatus.status.env.lerping);
-    };
-
-    let increaseTimers = function () {
-        let now = window.performance.now();
-
-        // Calculate total time spent outside
-        timers.elapsed = now - timers.now;
-        timers.now = now;
-        timers.lagToHandlePhysics += timers.elapsed;
-        timers.forceServerPositionsTimer += timers.elapsed;
-    };
-
-    let applyPhysics = function () {
-        // Lag is to much, happens with tab out, let's roll back to server now!
-        if (timers.lagToHandlePhysics > constants.general.FORCE_SERVER_POSITIONS_TIME || gameStatus.status.me.forcePosition) {
-            console.log("Force");
-            forceServerPositions();
-            return;
-        }
-
-        // Perform physics in a loop by the number of the threshold spent before getting here again
-        while (timers.lagToHandlePhysics >= constants.general.UPDATE_PHYSICS_THRESHOLD) {
-            // Update the game status (My location, players, gems, score, ... etc) and physics
-            updateGamePhysics();
-
-            timers.lagToHandlePhysics -= constants.general.UPDATE_PHYSICS_THRESHOLD;
-        }
-    };
-
-    let forceServerPositions = function () {
-        // Move players to server position
-        for (let key in gameStatus.status.players) {
-            physicsEngine.forceServerPosition(gameStatus.status.players[key]);
-        }
-
-        timers.lagToHandlePhysics = 0;
+        // ToDo: Iterate over objects, call UIEngine draw function
+        uiEngine.draw(physicsEngine.timers.lagToHandlePhysics, physicsEngine.timers.elapsed, gameStatus.status.env.ping);
     };
 
     /**
@@ -136,6 +103,7 @@ export default function (gameStatus, gameOverCallback) {
         for (let key in gameStatus.status.newGems) {
             let gem = gameStatus.status.newGems[key];
             gameStatus.status.gems[gem.id] = gem;
+
             uiEngine.addGemCanvasParams(gameStatus.status.gems[gem.id]);
         }
 
