@@ -61,6 +61,8 @@ export default function () {
     };
 
     module.pushAngleToBuffer = function (angle) {
+        if (module.status.env.rollback) return;
+
         let anglesQueue = module.status.anglesQueue;
         anglesQueue.mouseAngles[anglesQueue.mouseAngles.length - 1].angles.push(angle);
         anglesQueue.anglesBufferSize++;
