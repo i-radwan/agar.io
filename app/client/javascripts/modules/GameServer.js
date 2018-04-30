@@ -87,14 +87,14 @@ export default function (gameStatus) {
 
         // Receive initial game status
         socket.on('initial_game_status', function (receivedGameStatus) {
-            gameStatus.set(JSON.parse(receivedGameStatus));
+            gameStatus.set(receivedGameStatus);
             startGameCallback();
         });
 
         // Receive game status
         socket.on('game_status', function (receivedGameStatus) {
             // Update local gameStatus by receivedGameStatus
-            gameStatus.set(JSON.parse(receivedGameStatus));
+            gameStatus.set(receivedGameStatus);
         });
 
         // Listen to disconnection event

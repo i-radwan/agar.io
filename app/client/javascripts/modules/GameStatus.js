@@ -131,7 +131,7 @@ export default function () {
         }
 
         // Append new players
-        // module.status.newPlayers = Object.assign(module.status.newPlayers, serverGamePlayers);
+        // module.status.newPlayersStaticInfo = Object.assign(module.status.newPlayersStaticInfo, serverGamePlayers);
         for (let playerID in serverGamePlayers) {
             module.status.players.push(serverGamePlayers[playerID]);
         }
@@ -158,6 +158,7 @@ export default function () {
             // Remove the top value
             delete module.status.anglesQueue.mouseAngles[firstIdx++];
 
+            // TODO:
             if (module.status.env.rollback) {
                 module.status.me.forcePosition = true;
                 // module.status.me.canvasX = meOnServer.x;

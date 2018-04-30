@@ -38,6 +38,47 @@ class Player {
     }
 
     /**
+     * Returns the player's static information (i.e. name, color, ..etc).
+     *
+     * @returns Object
+     */
+    getStaticInfo() {
+        return {
+            name: this.name,
+            color: this.color
+        };
+    }
+
+    /**
+     * Returns the player's graphics information needed for rendering.
+     *
+     * @returns Object
+     */
+    getGraphicsInfo() {
+        return {
+            id: this.id,    // TODO: to be removed
+            score: this.score,
+            radius: this.radius,
+            x: this.x,
+            y: this.y,
+            velocity: this.velocity,
+            angle: this.angle
+        };
+    }
+
+    /**
+     * Returns the player's sync information needed for server-client synchronization.
+     *
+     * @returns Object
+     */
+    getSyncInfo() {
+        return {
+            lastReceivedAngleID: this.lastReceivedAngleID,
+            forcePosition: this.forcePosition
+        };
+    }
+
+    /**
      * Updates player sync parameters and
      * checks whether the received angles buffer is valid regarding timestamps.
      *
@@ -56,7 +97,6 @@ class Player {
             return false;
 
         // Check if the sent timestamp is in the future
-        // TODO: what about different timezones?
         if (anglesBuffer.timestamp > Date.now()) {
             return false;
         }

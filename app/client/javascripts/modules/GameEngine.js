@@ -103,14 +103,14 @@ export default function (gameStatus, gameOverCallback) {
         }
 
         // Add new players canvas params
-        // for (let key in gameStatus.status.newPlayers) {
-        //     let player = gameStatus.status.newPlayers[key];
+        // for (let key in gameStatus.status.newPlayersStaticInfo) {
+        //     let player = gameStatus.status.newPlayersStaticInfo[key];
         //     gameStatus.status.players[player.id] = player;
         //     uiEngine.addPlayerCanvasParams(player);
         // }
 
         // Flush new players array
-        // gameStatus.status.newPlayers = {};
+        // gameStatus.status.newPlayersStaticInfo = {};
     };
 
     /**

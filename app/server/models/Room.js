@@ -20,17 +20,17 @@ class Room {
 
         // Room Players
         this.players = {};
+        this.playersStaticInfo = {};
+        this.newPlayersStaticInfo = {};
         this.playersCount = 0;
         this.nextPlayerID = 0;
 
         // Room gems
         this.gems = {};
-        this.gemsCount = 0;
-        this.nextGemID = 0;
-
-        // The newly added and deleted gems
         this.newGems = {};
         this.deletedGemsIDs = [];
+        this.gemsCount = 0;
+        this.nextGemID = 0;
 
         // Create a quad tree to carry gems
         let quadTree = new QuadTree(0, new Rectangle(0, 0, Constants.GAME_SIZE, Constants.GAME_SIZE));
@@ -131,6 +131,8 @@ class Room {
         let player = new Player(this.nextPlayerID);
 
         this.players[this.nextPlayerID++] = player;
+        this.playersStaticInfo[player.id] = this.newPlayersStaticInfo[player.id] = player.getStaticInfo();
+
         this.playersCount++;
 
         return player;
@@ -143,7 +145,10 @@ class Room {
      */
     removePlayer(playerID) {
         this.playersCount--;
+
         delete this.players[playerID];
+        delete this.playersStaticInfo[playerID];
+        delete this.newPlayersStaticInfo[playerID];
     };
 
     /**
@@ -160,7 +165,7 @@ class Room {
     /**
      * Removes the given gem from the room.
      *
-     * @param gemID         the gem id to be removed
+     * @param gemID the gem id to be removed
      */
     removeGem(gemID) {
         this.deletedGemsIDs.push(gemID);
@@ -171,39 +176,41 @@ class Room {
     /**
      * Returns a JSON string holding all room game status.
      *
-     * @returns {string}    game status
+     * @returns Object  game status
      */
     getInitialRoomStatus() {
         this.lastSendRoomStatusTime = Date.now();
 
         let gameStatus = {
-            roomId: this.id,
             players: this.players,
+            newPlayers: this.playersStaticInfo,
             newGems: this.gems,
-            deletedGemsIDs: this.deletedGemsIDs,
+            deletedGemsIDs: []
         };
 
-        return JSON.stringify(gameStatus);
+        return gameStatus;
     }
 
     /**
      * Returns a JSON string holding the game changes in the room since last send.
      *
-     * @returns {string}    game status
+     * @returns Object  game status
      */
     getChangedRoomStatus() {
         this.lastSendRoomStatusTime = Date.now();
 
         let gameStatus = {
             players: this.players,
+            newPlayers: this.newPlayersStaticInfo,
             newGems: this.newGems,
-            deletedGemsIDs: this.deletedGemsIDs,
+            deletedGemsIDs: this.deletedGemsIDs
         };
 
+        this.newPlayersStaticInfo = {};
         this.newGems = {};
         this.deletedGemsIDs = [];
 
-        return JSON.stringify(gameStatus);
+        return gameStatus;
     }
 }
 

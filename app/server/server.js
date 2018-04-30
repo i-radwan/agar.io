@@ -14,6 +14,7 @@ class GameServer {
 
         // Map from player socket id to a pair of room id and player id in his assigned room
         this.playersMap = {};
+        this.playersScoketId = {};
 
         // Game rooms
         this.rooms = {};
@@ -65,11 +66,14 @@ class GameServer {
     addNewPlayer(playerSocketID) {
         let roomID = this.getAvailableRoom();
 
-        let player = this.rooms[roomID].addPlayer();
+        let room = this.rooms[roomID];
+        let player = room.addPlayer();
         let playerID = player.id;
-        this.playersMap[playerSocketID] = {roomID, playerID};
 
-        this.sendInitialGameStatus(playerSocketID, playerID, roomID, player.lastAngleTimeStamp);
+        this.playersMap[playerSocketID] = {roomID, playerID};
+        this.playersScoketId[player.id] = playerSocketID;
+
+        this.sendInitialGameStatus(playerSocketID, player, room);
 
         return roomID;
     };
@@ -103,19 +107,17 @@ class GameServer {
      * along with the game status of his assigned room.
      *
      * @param playerSocketID    the player socket id
-     * @param playerID          the player id in his assigned room
-     * @param roomID            the player assigned room id
+     * @param player            the player to send the game status to
+     * @param room              the room assigned to the player
      * @param timestamp         a reference timestamp needed for synchronization
      */
-    sendInitialGameStatus(playerSocketID, playerID, roomID, timestamp) {
-        let playerInfo = {
-            id: playerID,
-            lastReceivedAngleID: -1,
-            lastAngleTimeStamp: timestamp
-        };
+    sendInitialGameStatus(playerSocketID, player, room, timestamp) {
+        let status = room.getInitialRoomStatus();
 
-        this.io.to(playerSocketID).emit('player_info', playerInfo);
-        this.io.to(playerSocketID).emit('initial_game_status', this.rooms[roomID].getInitialRoomStatus());
+        status.meId = player.id;
+        status.sync = player.getSyncInfo();
+
+        this.io.to(playerSocketID).emit('initial_game_status', status);
     };
 
     /**
@@ -172,7 +174,17 @@ class GameServer {
         // Loop over all game rooms and send game status
         for (let i in this.rooms) {
             let room = this.rooms[i];
-            this.io.in(room.id).emit('game_status', room.getChangedRoomStatus());
+            let players = room.players;
+            let status = room.getChangedRoomStatus();
+
+            for (let j in players) {
+                let player = players[j];
+                let socketId = this.playersScoketId[player.id];
+
+                status.sync = player.getSyncInfo();
+
+                this.io.to(socketId).emit('game_status', status);
+            }
         }
     };
 
