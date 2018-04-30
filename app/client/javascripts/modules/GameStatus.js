@@ -9,9 +9,15 @@ export default function () {
      */
     module.init = function () {
         module.status = {
+            meId: -1,
+            gems: {},
+            newGems: [],
+            players: [],
+            newPlayers: {},
             env: {
                 running: true,
                 rollback: false,
+                forcePosition: false,
                 ping: 0
             },
             anglesQueue: {
@@ -22,33 +28,7 @@ export default function () {
                 lastReceivedAngleID: -1,
                 lastAngleTimeStamp: 0,
                 serverAngleTimeStamp: 0
-            },
-            me: { // Fields to be filled later
-                id: -1,
-
-                // Visualizing variables
-                name: "",
-                score: 0,
-                color: "",
-                radius: 0,
-
-                // Movement variables
-                x: 0,
-                y: 0,
-                canvasX: 0,
-                canvasY: 0,
-                velocity: 0,
-                angle: 0,
-
-                // Sync variables
-                lastAngleTimeStamp: 0,
-                lastReceivedAngleID: -1,
-                forcePosition: false
-            },
-            gems: {},
-            newGems: [],
-            players: [],
-            newPlayers: []
+            }
         };
     };
 
@@ -57,7 +37,8 @@ export default function () {
      */
     module.set = function (serverGameStatus) {
         syncGems(serverGameStatus.newGems, serverGameStatus.deletedGemsIDs);
-        syncPlayers(serverGameStatus.players);
+        syncPlayers(serverGameStatus.players, serverGameStatus.newPlayers);
+        syncAnglesBuffer(serverGameStatus.sync);
     };
 
     /**
@@ -104,63 +85,57 @@ export default function () {
         module.status.newGems = Object.assign(module.status.newGems, serverGameNewGems);
     };
 
-    let syncPlayers = function (serverGamePlayers) {
+    let syncPlayers = function (serverGamePlayers, serverGameNewPlayers) {
         // Check if I was eaten
-        let mainPlayerServerVersion = serverGamePlayers[module.status.me.id];
-
-        if (!mainPlayerServerVersion) {
+        if (!serverGamePlayers[module.status.meId]) {
             module.status.env.running = false;
             return;
         }
 
-        // Sync local players with the server (including me)
-        for (let i in module.status.players) {
-            let player = module.status.players[i];
+        for (let key in serverGamePlayers) {
+            let player = module.status.players[key] || {};
 
-            if (serverGamePlayers.hasOwnProperty(player.id)) {
-                // Update player
-                Object.assign(player, serverGamePlayers[player.id]);
+            Object.assign(player, serverGamePlayers[key]);
 
-                // Remove from the server array (after loop we will have the new players only)
-                delete serverGamePlayers[player.id];
-            }
-            else {
-                // Remove player if dead
-                delete module.status.players[i];
-            }
+            serverGamePlayers[key] = player;
         }
 
-        // Append new players
-        // module.status.newPlayersStaticInfo = Object.assign(module.status.newPlayersStaticInfo, serverGamePlayers);
-        for (let playerID in serverGamePlayers) {
-            module.status.players.push(serverGamePlayers[playerID]);
-        }
+        module.status.players = serverGamePlayers;
+        module.status.newPlayers = serverGameNewPlayers;
 
-        // Sync angles buffer of the main player
-        syncAnglesBuffer(mainPlayerServerVersion);
+        module.status.me = module.status.players[module.status.meId];
     };
 
-    let syncAnglesBuffer = function (meOnServer) {
+    let syncAnglesBuffer = function (serverEnv) {
+        if (!serverEnv) return;
+
+        // Aliasing
+        let anglesQueue = module.status.anglesQueue;
+        let serverLastReceivedAngleID = serverEnv.lastReceivedAngleID;
+        let serverForcePosition = serverEnv.forcePosition;
+
+        module.status.env.forcePosition = serverForcePosition;
+
         // If the server sends same angle acceptance again
-        if (module.status.anglesQueue.lastReceivedAngleID === meOnServer.lastReceivedAngleID) return;
+        if (anglesQueue.lastReceivedAngleID === serverLastReceivedAngleID) return;
 
         // Update the last accepted angles ID
-        module.status.anglesQueue.lastReceivedAngleID = meOnServer.lastReceivedAngleID;
+        anglesQueue.lastReceivedAngleID = serverLastReceivedAngleID;
 
         let serverKeepingUp = false;
-        let firstIdx = module.status.anglesQueue.firstIdx;
+        let firstIdx = anglesQueue.firstIdx;
 
         // Flush all angles corresponding to overridden packets
-        while (meOnServer.lastReceivedAngleID >= module.status.anglesQueue.mouseAngles[firstIdx].id) {
+        while (serverLastReceivedAngleID >= anglesQueue.mouseAngles[firstIdx].id) {
             // Reduce total buffer size
-            module.status.anglesQueue.anglesBufferSize -= module.status.anglesQueue.mouseAngles[firstIdx].angles.length;
+            anglesQueue.anglesBufferSize -= anglesQueue.mouseAngles[firstIdx].angles.length;
 
             // Remove the top value
-            delete module.status.anglesQueue.mouseAngles[firstIdx++];
+            delete anglesQueue.mouseAngles[firstIdx++];
 
             // TODO:
             if (module.status.env.rollback) {
-                module.status.me.forcePosition = true;
+                module.status.env.forcePosition = true;
                 // module.status.me.canvasX = meOnServer.x;
                 // module.status.me.canvasY = meOnServer.y;
             }
@@ -170,22 +145,22 @@ export default function () {
         }
 
         // Server is failing behind with huge margin -> ignore local -> lerp to server
-        if ((!serverKeepingUp || meOnServer.forcePosition) && !module.status.env.rollback) {
+        if ((!serverKeepingUp || serverForcePosition) && !module.status.env.rollback) {
             // Reset buffer left/right pointer
             firstIdx = 0;
 
             // Flush the buffer
-            module.status.anglesQueue.mouseAngles = [module.status.anglesQueue.mouseAngles.pop()];
+            anglesQueue.mouseAngles = [anglesQueue.mouseAngles.pop()];
 
             // Remove the taken angles so far, we don't want to send to server anything new until we reach its position
-            module.status.anglesQueue.anglesBufferSize = 0;
-            module.status.anglesQueue.mouseAngles[firstIdx].angles = [];
+            anglesQueue.anglesBufferSize = 0;
+            anglesQueue.mouseAngles[firstIdx].angles = [];
 
             // Start rolling back to server position
             module.status.env.rollback = true;
         }
 
-        module.status.anglesQueue.firstIdx = firstIdx;
+        anglesQueue.firstIdx = firstIdx;
     };
 
     return module;

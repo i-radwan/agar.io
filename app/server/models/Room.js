@@ -19,9 +19,9 @@ class Room {
         this.id = id;
 
         // Room Players
-        this.players = {};
-        this.playersStaticInfo = {};
-        this.newPlayersStaticInfo = {};
+        this.players = [];
+        this.playersStaticInfo = [];
+        this.newPlayersStaticInfo = [];
         this.playersCount = 0;
         this.nextPlayerID = 0;
 
@@ -174,7 +174,22 @@ class Room {
     };
 
     /**
-     * Returns a JSON string holding all room game status.
+     * Returns players' graphics information.
+     *
+     * @returns {Array} array of players' graphics info
+     */
+    getPlayersGraphicsInfo() {
+        let ret = [];
+
+        for (let key in this.players) {
+            ret[key] = this.players[key].getGraphicsInfo();
+        }
+
+        return ret;
+    }
+
+    /**
+     * Returns a object holding all room game status.
      *
      * @returns Object  game status
      */
@@ -182,7 +197,7 @@ class Room {
         this.lastSendRoomStatusTime = Date.now();
 
         let gameStatus = {
-            players: this.players,
+            players: this.getPlayersGraphicsInfo(),
             newPlayers: this.playersStaticInfo,
             newGems: this.gems,
             deletedGemsIDs: []
@@ -192,7 +207,7 @@ class Room {
     }
 
     /**
-     * Returns a JSON string holding the game changes in the room since last send.
+     * Returns a object holding the game changes in the room since last send.
      *
      * @returns Object  game status
      */
@@ -200,7 +215,7 @@ class Room {
         this.lastSendRoomStatusTime = Date.now();
 
         let gameStatus = {
-            players: this.players,
+            players: this.getPlayersGraphicsInfo(),
             newPlayers: this.newPlayersStaticInfo,
             newGems: this.newGems,
             deletedGemsIDs: this.deletedGemsIDs

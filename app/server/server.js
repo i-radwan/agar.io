@@ -103,24 +103,6 @@ class GameServer {
     }
 
     /**
-     * Sends the information of the newly connected player
-     * along with the game status of his assigned room.
-     *
-     * @param playerSocketID    the player socket id
-     * @param player            the player to send the game status to
-     * @param room              the room assigned to the player
-     * @param timestamp         a reference timestamp needed for synchronization
-     */
-    sendInitialGameStatus(playerSocketID, player, room, timestamp) {
-        let status = room.getInitialRoomStatus();
-
-        status.meId = player.id;
-        status.sync = player.getSyncInfo();
-
-        this.io.to(playerSocketID).emit('initial_game_status', status);
-    };
-
-    /**
      * Updates the given player's position by simulating his movement
      * by the given sequence of angles.
      *
@@ -167,6 +149,24 @@ class GameServer {
     };
 
     /**
+     * Sends the information of the newly connected player
+     * along with the game status of his assigned room.
+     *
+     * @param playerSocketID    the player socket id
+     * @param player            the player to send the game status to
+     * @param room              the room assigned to the player
+     * @param timestamp         a reference timestamp needed for synchronization
+     */
+    sendInitialGameStatus(playerSocketID, player, room, timestamp) {
+        let status = room.getInitialRoomStatus();
+
+        status.meId = player.id;
+        status.serverTimestamp = player.lastAngleTimeStamp;
+
+        this.io.to(playerSocketID).emit('initial_game_status', status);
+    };
+
+    /**
      * Sends the game status of all game rooms
      * every specific interval of time.
      */
@@ -176,6 +176,7 @@ class GameServer {
             let room = this.rooms[i];
             let players = room.players;
             let status = room.getChangedRoomStatus();
+            console.log(players);
 
             for (let j in players) {
                 let player = players[j];

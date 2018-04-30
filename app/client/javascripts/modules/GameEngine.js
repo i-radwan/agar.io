@@ -8,6 +8,9 @@ export default function (gameStatus, gameOverCallback) {
 
     let constants = Constants();
 
+    let status = gameStatus.status;
+    let me = status.players[status.meId];
+
     let physicsEngine;
     let uiEngine;
 
@@ -24,7 +27,7 @@ export default function (gameStatus, gameOverCallback) {
 
         // Initialize UI engine
         uiEngine = UIEngine(module.p5Lib);
-        uiEngine.init(gameStatus.status.me);
+        uiEngine.init(me);
     };
 
     /**
@@ -33,6 +36,9 @@ export default function (gameStatus, gameOverCallback) {
      */
     module.reset = function () {
         physicsEngine.init();
+
+        status = gameStatus.status;
+        me = status.players[status.meId];
     };
 
     /**
@@ -53,7 +59,7 @@ export default function (gameStatus, gameOverCallback) {
         draw();
 
         // Stop when dead
-        if (!gameStatus.status.env.running) {
+        if (!status.env.running) {
             gameOverCallback();
             return;
         }
@@ -66,7 +72,7 @@ export default function (gameStatus, gameOverCallback) {
      * Processes user inputs.
      */
     let processUserInputs = function () {
-        if (gameStatus.status.env.rollback || gameStatus.status.me.forcePosition) return;
+        if (status.env.rollback || status.env.forcePosition) return;
 
         // Capture new angle
         let x1 = window.innerWidth / 2;
@@ -75,7 +81,7 @@ export default function (gameStatus, gameOverCallback) {
         let y2 = module.p5Lib.mouseY;
 
         // Update my player angle
-        gameStatus.status.me.angle = Math.atan2(y2 - y1, x2 - x1);
+        me.angle = Math.atan2(y2 - y1, x2 - x1);
     };
 
     /**
@@ -83,34 +89,28 @@ export default function (gameStatus, gameOverCallback) {
      */
     let updateCanvasObjects = function () {
         // Add new gems canvas params
-        for (let key in gameStatus.status.newGems) {
-            let gem = gameStatus.status.newGems[key];
-            gameStatus.status.gems[gem.id] = gem;
+        for (let key in status.newGems) {
+            let gem = status.newGems[key];
+            status.gems[gem.id] = gem;
 
-            uiEngine.addGemCanvasParams(gameStatus.status.gems[gem.id]);
+            uiEngine.addGemCanvasParams(status.gems[gem.id]);
         }
 
         // Flush new gems array
-        gameStatus.status.newGems = {};
-
-        // Update players
-        for (let key in gameStatus.status.players) {
-            let player = gameStatus.status.players[key];
-
-            if (!player.hasOwnProperty("canvasX")) { // New player generated -> Draw it
-                uiEngine.addPlayerCanvasParams(player);
-            }
-        }
+        status.newGems = {};
 
         // Add new players canvas params
-        // for (let key in gameStatus.status.newPlayersStaticInfo) {
-        //     let player = gameStatus.status.newPlayersStaticInfo[key];
-        //     gameStatus.status.players[player.id] = player;
-        //     uiEngine.addPlayerCanvasParams(player);
-        // }
+        for (let key in status.newPlayers) {
+            let player = status.players[key];
+            let playerInfo = status.newPlayers[key];
+
+            Object.assign(player, playerInfo);
+
+            uiEngine.addPlayerCanvasParams(player);
+        }
 
         // Flush new players array
-        // gameStatus.status.newPlayersStaticInfo = {};
+        status.newPlayers = {};
     };
 
     /**
@@ -120,27 +120,27 @@ export default function (gameStatus, gameOverCallback) {
         // Add canvas parameters to new game objects
         updateCanvasObjects();
 
-        // Sort players by size, to render bigger players @ top of smaller ones
-        gameStatus.status.players.sort(function (a, b) {
+        // Sort players by size, to render bigger players at top of smaller ones
+        status.players.sort(function (a, b) {
             return (a.radius - b.radius);
         });
 
         // Get number of missed physics iterations and reduce the physics lag time
-        let count = physicsEngine.narrowPhysicsDelay(gameStatus.status.me.forcePosition);
+        let count = physicsEngine.narrowPhysicsDelay(status.env.forcePosition);
 
         // Lag is to much, happens with tab out, let's roll back to server now!
         if (count === -1) {
-            physicsEngine.forceServerPositions(gameStatus.status.players);
+            physicsEngine.forceServerPositions(status.players);
             return;
         }
 
         // Perform physics in a loop by the number of the threshold spent before getting here again
         while (count--) {
             // Update the game status (My location, players, gems, score, ... etc) and physics
-            physicsEngine.movePlayers(gameStatus.status.me, gameStatus.status.players, gameStatus.status.env.rollback);
+            physicsEngine.movePlayers(me, status.players, status.env.rollback);
 
             // Push this angle to be sent to server
-            gameStatus.pushAngleToBuffer(gameStatus.status.me.angle);
+            gameStatus.pushAngleToBuffer(me.angle);
         }
     };
 
@@ -151,19 +151,19 @@ export default function (gameStatus, gameOverCallback) {
         let factor = (physicsEngine.timers.lagToHandlePhysics / constants.general.UPDATE_PHYSICS_THRESHOLD);
 
         // Interpolate some physics to handle lag
-        for (let key in gameStatus.status.players) {
-            physicsEngine.updatePlayerPosition(gameStatus.status.players[key], factor);
+        for (let key in status.players) {
+            physicsEngine.updatePlayerPosition(status.players[key], factor);
         }
 
         // Call UI Draw function
-        uiEngine.draw(gameStatus.status.me, gameStatus.status.players, gameStatus.status.gems, physicsEngine.timers.elapsed);
+        uiEngine.draw(me, status.players, status.gems, physicsEngine.timers.elapsed);
 
         // Clear then draw the head up display
-        uiEngine.drawHUD(gameStatus.status.me.score, physicsEngine.timers.elapsed, gameStatus.status.env.ping);
+        uiEngine.drawHUD(me.score, physicsEngine.timers.elapsed, status.env.ping);
 
         // Revert the applied physics
-        for (let key in gameStatus.status.players) {
-            physicsEngine.updatePlayerPosition(gameStatus.status.players[key], -factor);
+        for (let key in status.players) {
+            physicsEngine.updatePlayerPosition(status.players[key], -factor);
         }
     };
 
