@@ -61,6 +61,9 @@ export default function (p5Lib) {
         for (let key in players) {
             let player = players[key];
 
+            // Smoothly increase player's radius
+            player.canvasRadius = p5Lib.lerp(player.canvasRadius, player.radius, constants.physics.GROW_INTERPOLATION_FACTOR);
+
             // Draw player object and name
             if (isObjectInsideMyViewWindow(player)) {
                 drawBlob(player, elapsed);
@@ -109,7 +112,6 @@ export default function (p5Lib) {
         player.canvasY = player.y;
         player.canvasRadius = player.radius;
         player.yOffset = 0; // Used for noisy bubble
-        player.strokeColor = constants.graphics.BLOB_STROKE_COLOR;
     };
 
     /**
@@ -150,11 +152,10 @@ export default function (p5Lib) {
      */
     let drawBlob = function (blob, elapsed) {
         // Lerp player radius
-        blob.canvasRadius = p5Lib.lerp(blob.canvasRadius, blob.radius, constants.physics.GROW_INTERPOLATION_FACTOR);
         blob.yOffset += elapsed * constants.graphics.WABBLE_SPEED / Math.sqrt(blob.radius);
 
         // Draw the large noisy circle
-        drawNoisyCircle(blob, blob.canvasRadius, blob.strokeColor);
+        drawNoisyCircle(blob, blob.canvasRadius, constants.graphics.BLOB_STROKE_COLOR);
 
         // Draw the small noisy circle
         drawNoisyCircle(blob, blob.canvasRadius * (1 - constants.graphics.MAX_BLOB_WABBLE_RADIUS_OFFSET), blob.color);
@@ -231,9 +232,9 @@ export default function (p5Lib) {
     let drawPlayerName = function (playerObject) {
         p5Lib.textAlign(p5Lib.CENTER, p5Lib.CENTER);
         p5Lib.textSize(playerObject.radius * constants.graphics.PLAYER_NAME_TEXT_FONT_SCALE);
+        p5Lib.textFont(playerNameTextFont);
         p5Lib.strokeWeight(playerObject.radius * constants.graphics.PLAYER_NAME_TEXT_FONT_STROKE_SCALE);
         p5Lib.stroke(constants.graphics.PLAYER_NAME_TEXT_STROKE_COLOR);
-        p5Lib.textFont(playerNameTextFont);
         p5Lib.fill(constants.graphics.PLAYER_NAME_TEXT_COLOR);
 
         p5Lib.text(playerObject.name, playerObject.canvasX, playerObject.canvasY);
@@ -346,8 +347,8 @@ export default function (p5Lib) {
      * @param object the object to check against
      */
     let isObjectInsideMyViewWindow = function (object) {
-        let maxDistX = window.innerWidth / (zoom << 1);
-        let maxDistY = window.innerHeight / (zoom << 1);
+        let maxDistX = window.innerWidth / (zoom * 2);
+        let maxDistY = window.innerHeight / (zoom * 2);
 
         return Math.abs(object.canvasX - cameraX) < maxDistX + object.radius &&
             Math.abs(object.canvasY - cameraY) < maxDistY + object.radius;

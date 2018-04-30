@@ -12,9 +12,8 @@ class GameServer {
     constructor(io) {
         this.io = io;
 
-        // Map from player socket id to a pair of room id and player id in his assigned room
-        this.playersMap = {};
-        this.playersScoketId = {};
+        // Map from player id to his room id
+        this.playerRoomId = {};
 
         // Game rooms
         this.rooms = {};
@@ -60,20 +59,18 @@ class GameServer {
      * Assigns the newly connected player to a room and
      * send him back its game status
      *
-     * @param playerSocketID    the player socket id
-     * @returns {number}        the room id that the player was assigned to
+     * @param playerID      the player socket id
+     * @returns {number}    the room id that the player was assigned to
      */
-    addNewPlayer(playerSocketID) {
+    addNewPlayer(playerID) {
         let roomID = this.getAvailableRoom();
 
         let room = this.rooms[roomID];
-        let player = room.addPlayer();
-        let playerID = player.id;
+        let player = room.addPlayer(playerID);
 
-        this.playersMap[playerSocketID] = {roomID, playerID};
-        this.playersScoketId[player.id] = playerSocketID;
+        this.playerRoomId[playerID] = roomID;
 
-        this.sendInitialGameStatus(playerSocketID, player, room);
+        this.sendInitialGameStatus(player, room);
 
         return roomID;
     };
@@ -106,15 +103,14 @@ class GameServer {
      * Updates the given player's position by simulating his movement
      * by the given sequence of angles.
      *
-     * @param playerSocketID    the player socket id
-     * @param anglesBuffer      a sequence of angles to move the player with
+     * @param playerID      the player socket id
+     * @param anglesBuffer  a sequence of angles to move the player with
      */
-    updatePlayerPosition(playerSocketID, anglesBuffer) {
-        if (!this.playersMap.hasOwnProperty(playerSocketID)) return;
+    updatePlayerPosition(playerID, anglesBuffer) {
+        if (!this.playerRoomId.hasOwnProperty(playerID)) return;
 
         // Get ids
-        let playerID = this.playersMap[playerSocketID].playerID;
-        let roomID = this.playersMap[playerSocketID].roomID;
+        let roomID = this.playerRoomId[playerID];
 
         // Simulate player movements based on the received angles sequence
         if (this.rooms[roomID].isPlayerAlive(playerID)) {
@@ -125,14 +121,13 @@ class GameServer {
     /**
      * Removes the given player from his room when he disconnecting.
      *
-     * @param playerSocketID    the player socket id
+     * @param playerID  the player socket id
      */
-    removePlayer(playerSocketID) {
-        if (!this.playersMap.hasOwnProperty(playerSocketID)) return;
+    removePlayer(playerID) {
+        if (!this.playerRoomId.hasOwnProperty(playerID)) return;
 
-        // Get ids
-        let playerID = this.playersMap[playerSocketID].playerID;
-        let roomID = this.playersMap[playerSocketID].roomID;
+        // Get room id
+        let roomID = this.playerRoomId[playerID];
 
         // Remove player from his room
         if (this.rooms[roomID].isPlayerAlive(playerID)) {
@@ -152,18 +147,16 @@ class GameServer {
      * Sends the information of the newly connected player
      * along with the game status of his assigned room.
      *
-     * @param playerSocketID    the player socket id
-     * @param player            the player to send the game status to
-     * @param room              the room assigned to the player
-     * @param timestamp         a reference timestamp needed for synchronization
+     * @param player    the player to send the game status to
+     * @param room      the room assigned to the player
      */
-    sendInitialGameStatus(playerSocketID, player, room, timestamp) {
+    sendInitialGameStatus(player, room) {
         let status = room.getInitialRoomStatus();
 
         status.meId = player.id;
         status.serverTimestamp = player.lastAngleTimeStamp;
 
-        this.io.to(playerSocketID).emit('initial_game_status', status);
+        this.io.to(player.id).emit('initial_game_status', status);
     };
 
     /**
@@ -176,15 +169,13 @@ class GameServer {
             let room = this.rooms[i];
             let players = room.players;
             let status = room.getChangedRoomStatus();
-            console.log(players);
 
             for (let j in players) {
                 let player = players[j];
-                let socketId = this.playersScoketId[player.id];
 
                 status.sync = player.getSyncInfo();
 
-                this.io.to(socketId).emit('game_status', status);
+                this.io.to(player.id).emit('game_status', status);
             }
         }
     };

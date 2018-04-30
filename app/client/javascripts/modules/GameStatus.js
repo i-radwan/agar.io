@@ -10,10 +10,10 @@ export default function () {
     module.init = function () {
         module.status = {
             meId: -1,
-            gems: {},
-            newGems: [],
-            players: [],
+            players: {},
             newPlayers: {},
+            gems: {},
+            newGems: {},
             env: {
                 running: true,
                 rollback: false,
@@ -94,16 +94,13 @@ export default function () {
 
         for (let key in serverGamePlayers) {
             let player = module.status.players[key] || {};
-
             Object.assign(player, serverGamePlayers[key]);
 
             serverGamePlayers[key] = player;
         }
 
         module.status.players = serverGamePlayers;
-        module.status.newPlayers = serverGameNewPlayers;
-
-        module.status.me = module.status.players[module.status.meId];
+        module.status.newPlayers = Object.assign(module.status.newPlayers, serverGameNewPlayers);
     };
 
     let syncAnglesBuffer = function (serverEnv) {

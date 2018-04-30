@@ -44,6 +44,7 @@ class Player {
      */
     getStaticInfo() {
         return {
+            id: this.id,
             name: this.name,
             color: this.color
         };
@@ -56,7 +57,6 @@ class Player {
      */
     getGraphicsInfo() {
         return {
-            id: this.id,    // TODO: to be removed
             score: this.score,
             radius: this.radius,
             x: this.x,

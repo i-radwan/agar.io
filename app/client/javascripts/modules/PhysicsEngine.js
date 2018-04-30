@@ -71,17 +71,17 @@ export default function (p5Lib) {
     /**
      * Moves the given players in their directions.
      *
-     * @param me        the game main player
-     * @param players   the list of players to move
-     * @param rollback  a rolling back flag
+     * @param players       the list of players to move
+     * @param mainPlayerId  the game main player
+     * @param rollback      a rolling back flag
      */
-    module.movePlayers = function (me, players, rollback) {
+    module.movePlayers = function (players, mainPlayerId, rollback) {
         // Move players
         for (let key in players) {
             let player = players[key];
 
-            if (player.id === me.id && !rollback) {
-                module.updatePlayerPosition(me);
+            if (key === mainPlayerId && !rollback) {
+                module.updatePlayerPosition(player);
                 continue;
             }
 

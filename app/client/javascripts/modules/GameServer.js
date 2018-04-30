@@ -16,6 +16,8 @@ export default function (gameStatus) {
 
         // Receive initial game status
         socket.on('initial_game_status', function (receivedGameStatus) {
+            gameStatus.init();
+
             gameStatus.status.anglesQueue.lastAngleTimeStamp = Date.now();
             gameStatus.status.anglesQueue.serverAngleTimeStamp = receivedGameStatus.serverTimestamp;
 

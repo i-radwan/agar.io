@@ -19,11 +19,10 @@ class Room {
         this.id = id;
 
         // Room Players
-        this.players = [];
-        this.playersStaticInfo = [];
-        this.newPlayersStaticInfo = [];
+        this.players = {};
+        this.playersStaticInfo = {};
+        this.newPlayersStaticInfo = {};
         this.playersCount = 0;
-        this.nextPlayerID = 0;
 
         // Room gems
         this.gems = {};
@@ -33,7 +32,7 @@ class Room {
         this.nextGemID = 0;
 
         // Create a quad tree to carry gems
-        let quadTree = new QuadTree(0, new Rectangle(0, 0, Constants.GAME_SIZE, Constants.GAME_SIZE));
+        // let quadTree = new QuadTree(0, new Rectangle(0, 0, Constants.GAME_SIZE, Constants.GAME_SIZE));
 
         // Add default gems
         this.generateGems();
@@ -125,13 +124,14 @@ class Room {
     /**
      * Adds a new player to the room.
      *
+     * @param playerID      the player id to add
      * @returns {Player}    the newly added player
      */
-    addPlayer() {
-        let player = new Player(this.nextPlayerID);
+    addPlayer(playerID) {
+        let player = new Player(playerID);
 
-        this.players[this.nextPlayerID++] = player;
-        this.playersStaticInfo[player.id] = this.newPlayersStaticInfo[player.id] = player.getStaticInfo();
+        this.players[playerID] = player;
+        this.playersStaticInfo[playerID] = this.newPlayersStaticInfo[playerID] = player.getStaticInfo();
 
         this.playersCount++;
 
@@ -179,7 +179,7 @@ class Room {
      * @returns {Array} array of players' graphics info
      */
     getPlayersGraphicsInfo() {
-        let ret = [];
+        let ret = {};
 
         for (let key in this.players) {
             ret[key] = this.players[key].getGraphicsInfo();
@@ -196,14 +196,12 @@ class Room {
     getInitialRoomStatus() {
         this.lastSendRoomStatusTime = Date.now();
 
-        let gameStatus = {
+        return {
             players: this.getPlayersGraphicsInfo(),
             newPlayers: this.playersStaticInfo,
             newGems: this.gems,
             deletedGemsIDs: []
         };
-
-        return gameStatus;
     }
 
     /**
@@ -222,6 +220,7 @@ class Room {
         };
 
         this.newPlayersStaticInfo = {};
+
         this.newGems = {};
         this.deletedGemsIDs = [];
 

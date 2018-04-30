@@ -121,9 +121,9 @@ export default function (gameStatus, gameOverCallback) {
         updateCanvasObjects();
 
         // Sort players by size, to render bigger players at top of smaller ones
-        status.players.sort(function (a, b) {
-            return (a.radius - b.radius);
-        });
+        // status.players.sort(function (a, b) {
+        //     return (a.radius - b.radius);
+        // });
 
         // Get number of missed physics iterations and reduce the physics lag time
         let count = physicsEngine.narrowPhysicsDelay(status.env.forcePosition);
@@ -136,8 +136,8 @@ export default function (gameStatus, gameOverCallback) {
 
         // Perform physics in a loop by the number of the threshold spent before getting here again
         while (count--) {
-            // Update the game status (My location, players, gems, score, ... etc) and physics
-            physicsEngine.movePlayers(me, status.players, status.env.rollback);
+            // Move all players
+            physicsEngine.movePlayers(status.players, status.meId, status.env.rollback);
 
             // Push this angle to be sent to server
             gameStatus.pushAngleToBuffer(me.angle);
