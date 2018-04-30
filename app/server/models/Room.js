@@ -5,7 +5,6 @@ const Player = require("./Player");
 const QuadTree = require("../utils/QuadTree");
 const Rectangle = require("../utils/Rectangle");
 
-
 class Room {
 
     // TODO @Samir55 select using quad trees
@@ -178,7 +177,7 @@ class Room {
         this.lastSendRoomStatusTime = Date.now();
 
         let gameStatus = {
-            room_id: this.id,
+            roomId: this.id,
             players: this.players,
             newGems: this.gems,
             deletedGemsIDs: this.deletedGemsIDs,

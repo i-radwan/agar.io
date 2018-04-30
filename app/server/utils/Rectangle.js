@@ -1,7 +1,6 @@
 // Imports
 const Constants = require("./Constants")();
 
-
 class Rectangle {
 
     /**

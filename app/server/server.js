@@ -2,7 +2,6 @@
 const Constants = require("./utils/Constants")();
 const Room = require("./models/Room");
 
-
 class GameServer {
 
     /**

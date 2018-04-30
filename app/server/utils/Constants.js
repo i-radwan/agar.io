@@ -10,7 +10,7 @@ function Constants() {
         PING_TIMEOUT: 5000,
         UPDATE_PHYSICS_THRESHOLD: 15,
         SEND_GAME_STATUS_RATE: 40,
-        REGENERATE_GEMS_RATE: 5000,
+        REGENERATE_GEMS_RATE: 10000,
 
         //
         // Game related constants
@@ -19,7 +19,7 @@ function Constants() {
         SCALE_FACTOR: SCALE_FACTOR,
 
         // Gems
-        ROOM_MAX_GEMS: 1000,
+        ROOM_MAX_GEMS: 600,
         GEM_RADIUS: 9 * SCALE_FACTOR,
 
         // Players

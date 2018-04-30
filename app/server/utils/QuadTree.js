@@ -2,7 +2,6 @@
 const Constants = require("./Constants")();
 const Rectangle = require("./Rectangle");
 
-
 class QuadTree {
 
     /** Quad tree constructor.

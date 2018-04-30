@@ -34,9 +34,8 @@ export default function (gameStatus) {
      * To be called every specific interval of time.
      */
     module.sendAngle = function () {
-        if (!gameStatus.status.env.running) {
-            return;
-        }
+        // Do not send the angle if the game is not running
+        if (!gameStatus.status.env.running) return;
 
         // Get last angles row
         let angles = gameStatus.status.anglesQueue.mouseAngles.slice(-1)[0];

@@ -60,6 +60,11 @@ export default function () {
         syncPlayers(serverGameStatus.players);
     };
 
+    /**
+     * Adds a new angle to the end of the angles buffer.
+     *
+     * @param angle the angle to be added
+     */
     module.pushAngleToBuffer = function (angle) {
         if (module.status.env.rollback) return;
 
@@ -69,7 +74,7 @@ export default function () {
     };
 
     /**
-     * Remove old items from angles buffer until size <= MAX_ANGLES_BUFFER_SIZE
+     * Removes old items from angles buffer until size <= {@link MAX_ANGLES_BUFFER_SIZE}.
      */
     module.reduceAnglesBufferSize = function () {
         let firstIdx = module.status.anglesQueue.firstIdx;
