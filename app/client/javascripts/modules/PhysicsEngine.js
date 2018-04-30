@@ -2,6 +2,7 @@ import Constants from "./Constants.js";
 
 export default function (p5Lib) {
     let module = {};
+
     let constants = Constants();
 
     /**
@@ -16,13 +17,21 @@ export default function (p5Lib) {
         };
     };
 
-    module.narrowPhysicsDelay = function (me) {
-        if (module.timers.lagToHandlePhysics > constants.general.FORCE_SERVER_POSITIONS_TIME || me.forcePosition) {
+    /**
+     * Returns the number of missed physics iterations
+     * and reduces the internal lag timer by this amount.
+     *
+     * @param forcePosition     force players positions flag
+     * @returns {number}        the number of missed iterations
+     */
+    module.narrowPhysicsDelay = function (forcePosition) {
+        if (module.timers.lagToHandlePhysics > constants.general.FORCE_SERVER_POSITIONS_TIME || forcePosition) {
             module.timers.lagToHandlePhysics = 0;
             return -1;
         }
 
         let count = 0;
+
         while (module.timers.lagToHandlePhysics >= constants.general.UPDATE_PHYSICS_THRESHOLD) {
             count++;
             module.timers.lagToHandlePhysics -= constants.general.UPDATE_PHYSICS_THRESHOLD;
@@ -44,6 +53,11 @@ export default function (p5Lib) {
         module.timers.forceServerPositionsTimer += module.timers.elapsed;
     };
 
+    /**
+     * Forces all the given player to their server position immediately.
+     *
+     * @param players   the list of players to force their positions
+     */
     module.forceServerPositions = function (players) {
         // Move players to server position
         for (let key in players) {
@@ -54,7 +68,14 @@ export default function (p5Lib) {
         }
     };
 
-    module.moveObjects = function (me, players, rollback) {
+    /**
+     * Moves the given players in their directions.
+     *
+     * @param me        the game main player
+     * @param players   the list of players to move
+     * @param rollback  a rolling back flag
+     */
+    module.movePlayers = function (me, players, rollback) {
         // Move players
         for (let key in players) {
             let player = players[key];
@@ -64,15 +85,15 @@ export default function (p5Lib) {
                 continue;
             }
 
-            movePlayerToPosition(player, {x: player.x, y: player.y});
+            movePlayerToPosition(player);
         }
     };
 
     /**
-     * Move some player normal movement (velocity and angle)
+     * Updates the given player position by his velocity and angle.
      *
-     * @param player the player to be moved.
-     * @param factor
+     * @param player    the player to be moved.
+     * @param factor    factor to be multiplied by the velocity
      */
     module.updatePlayerPosition = function (player, factor = 1) {
         let newCanvasX = player.canvasX + Math.cos(player.angle) * player.velocity;
@@ -87,15 +108,14 @@ export default function (p5Lib) {
     };
 
     /**
-     * Move some player to target
+     * Moves (LERPs) the the given player towards his server positions.
      *
-     * @param player the player to be moved.
-     * @param position the point to be moved to.
+     * @param player    the player to be moved.
      */
-    let movePlayerToPosition = function (player, position) {
+    let movePlayerToPosition = function (player) {
         // Interpolate user location until we reach target
-        player.canvasX = p5Lib.lerp(player.canvasX, position.x, constants.physics.MOVEMENT_INTERPOLATION_FACTOR);
-        player.canvasY = p5Lib.lerp(player.canvasY, position.y, constants.physics.MOVEMENT_INTERPOLATION_FACTOR);
+        player.canvasX = p5Lib.lerp(player.canvasX, player.x, constants.physics.MOVEMENT_INTERPOLATION_FACTOR);
+        player.canvasY = p5Lib.lerp(player.canvasY, player.y, constants.physics.MOVEMENT_INTERPOLATION_FACTOR);
     };
 
     return module;

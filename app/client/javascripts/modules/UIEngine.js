@@ -3,15 +3,18 @@ import Constants from "./Constants.js";
 export default function (p5Lib) {
     let module = {};
 
+    let constants = Constants();
+
     let stars = [];
 
     let zoom = 1, targetZoom = 1, zoomFactor = 1, cameraX, cameraY;
-
     let hudCanvas, hudCanvasContext;
+
     let playerNameTextFont;
 
-    let constants = Constants();
-
+    /**
+     * Initializes the UI engine canvas, fonts, and other drawing parameters.
+     */
     module.init = function () {
         playerNameTextFont = p5Lib.loadFont(constants.graphics.PLAYER_NAME_TEXT_FONT_PATH);
 
@@ -84,12 +87,22 @@ export default function (p5Lib) {
         drawHUDText("top", "right", "Ping: " + parseInt(ping), window.innerWidth, 0);
     };
 
+    /**
+     * Adds the given gem to the canvas to start drawing.
+     *
+     * @param gem the gem to add
+     */
     module.addGemCanvasParams = function (gem) {
         // Set graphics attributes
         gem.canvasX = gem.x;
         gem.canvasY = gem.y;
     };
 
+    /**
+     * Adds the given player to the canvas to start drawing.
+     *
+     * @param player the player to add
+     */
     module.addPlayerCanvasParams = function (player) {
         // Set graphics attributes
         player.canvasX = player.x;
@@ -129,17 +142,8 @@ export default function (p5Lib) {
     };
 
     /**
-     * Draw normal circle
-     *
-     * @param circle
-     */
-    let drawCircle = function (circle) {
-        p5Lib.fill(circle.color);
-        p5Lib.ellipse(circle.canvasX, circle.canvasY, circle.radius * 2, circle.radius * 2);
-    };
-
-    /**
-     * Draw 2 circles and give the nice noisy effect
+     * Draws the given player as two circles:
+     * inner normal circle, and outer noisy circle to give a wabble effect.
      *
      * @param blob
      * @param elapsed
@@ -171,6 +175,16 @@ export default function (p5Lib) {
 
         drawCircle(centerCircle);
         drawCircle(serverCenterCircle);
+    };
+
+    /**
+     * Draws a normal circle.
+     *
+     * @param circle the circle to draw
+     */
+    let drawCircle = function (circle) {
+        p5Lib.fill(circle.color);
+        p5Lib.ellipse(circle.canvasX, circle.canvasY, circle.radius * 2, circle.radius * 2);
     };
 
     /**
@@ -279,7 +293,8 @@ export default function (p5Lib) {
         canvas.style('z-index', -1);
         p5Lib.pixelDensity(1);
 
-        // For frame-rate optimization ? https://forum.processing.org/two/discussion/11462/help-in-p5-js-performance-improvement-on-mobile-devices
+        // For frame-rate optimization ?
+        // https://forum.processing.org/two/discussion/11462/help-in-p5-js-performance-improvement-on-mobile-devices
         canvas.elt.style.width = '100%';
         canvas.elt.style.height = '100%';
 
@@ -326,9 +341,9 @@ export default function (p5Lib) {
     };
 
     /**
-     * Check if the given object is inside my viewing window
+     * Checks if the given object is inside the view window of the main player.
      *
-     * @param object
+     * @param object the object to check against
      */
     let isObjectInsideMyViewWindow = function (object) {
         let maxDistX = window.innerWidth / (zoom << 1);

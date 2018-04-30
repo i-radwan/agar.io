@@ -1,5 +1,6 @@
 export default function (gameStatus) {
     let module = {};
+
     let socket = io({reconnection: false});
 
     /**

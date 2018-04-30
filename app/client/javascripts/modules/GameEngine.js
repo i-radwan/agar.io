@@ -43,14 +43,14 @@ export default function (gameStatus, gameOverCallback) {
         // Increase deltas to prepare for physics and forcing positions steps
         physicsEngine.increaseTimers();
 
-        // Get mouse angle
+        // Get main player mouse angle
         processUserInputs();
 
-        // Update game status
+        // Update game object
         update();
 
         // Draw the game
-        drawGame();
+        draw();
 
         // Stop when dead
         if (!gameStatus.status.env.running) {
@@ -79,7 +79,7 @@ export default function (gameStatus, gameOverCallback) {
     };
 
     /**
-     * Update the objects on the canvas (after getting update from server)
+     * Adds new object to the game after receiving them from the server.
      */
     let updateCanvasObjects = function () {
         // Add new gems canvas params
@@ -113,6 +113,9 @@ export default function (gameStatus, gameOverCallback) {
         // gameStatus.status.newPlayers = {};
     };
 
+    /**
+     * Updates game objects.
+     */
     let update = function () {
         // Add canvas parameters to new game objects
         updateCanvasObjects();
@@ -123,7 +126,7 @@ export default function (gameStatus, gameOverCallback) {
         });
 
         // Get number of missed physics iterations and reduce the physics lag time
-        let count = physicsEngine.narrowPhysicsDelay(gameStatus.status.me);
+        let count = physicsEngine.narrowPhysicsDelay(gameStatus.status.me.forcePosition);
 
         // Lag is to much, happens with tab out, let's roll back to server now!
         if (count === -1) {
@@ -134,14 +137,17 @@ export default function (gameStatus, gameOverCallback) {
         // Perform physics in a loop by the number of the threshold spent before getting here again
         while (count--) {
             // Update the game status (My location, players, gems, score, ... etc) and physics
-            physicsEngine.moveObjects(gameStatus.status.me, gameStatus.status.players, gameStatus.status.env.rollback);
+            physicsEngine.movePlayers(gameStatus.status.me, gameStatus.status.players, gameStatus.status.env.rollback);
 
             // Push this angle to be sent to server
             gameStatus.pushAngleToBuffer(gameStatus.status.me.angle);
         }
     };
 
-    let drawGame = function () {
+    /**
+     * Draws game objects.
+     */
+    let draw = function () {
         let factor = (physicsEngine.timers.lagToHandlePhysics / constants.general.UPDATE_PHYSICS_THRESHOLD);
 
         // Interpolate some physics to handle lag
