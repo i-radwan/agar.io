@@ -108,7 +108,7 @@ export default function (p5Lib) {
     };
 
     /**
-     * Moves (LERPs) the the given player towards his server positions.
+     * Moves (LERPs) the the given player towards his server position.
      *
      * @param player    the player to be moved.
      */

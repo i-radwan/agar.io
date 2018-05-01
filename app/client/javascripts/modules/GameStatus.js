@@ -18,7 +18,8 @@ export default function () {
                 running: true,
                 rollback: false,
                 forcePosition: false,
-                ping: 0
+                ping: 0,
+                lastGameStatusTimestamp: 0
             },
             anglesQueue: {
                 mouseAngles: [{id: 0, angles: []}],
@@ -36,8 +37,13 @@ export default function () {
      * Update the game status
      */
     module.set = function (serverGameStatus) {
+        let current = Date.now();
+        let delta = current - module.status.env.lastGameStatusTimestamp;
+        console.log("Server latency: ", delta);
+        module.status.env.lastGameStatusTimestamp = current;
+
         syncGems(serverGameStatus.newGems, serverGameStatus.deletedGemsIDs);
-        syncPlayers(serverGameStatus.players, serverGameStatus.newPlayers);
+        syncPlayers(serverGameStatus.players, serverGameStatus.newPlayers, delta);
         syncAnglesBuffer(serverGameStatus.sync);
     };
 
@@ -85,7 +91,7 @@ export default function () {
         module.status.newGems = Object.assign(module.status.newGems, serverGameNewGems);
     };
 
-    let syncPlayers = function (serverGamePlayers, serverGameNewPlayers) {
+    let syncPlayers = function (serverGamePlayers, serverGameNewPlayers, delta) {
         // Check if I was eaten
         if (!serverGamePlayers[module.status.meId]) {
             module.status.env.running = false;
@@ -97,6 +103,12 @@ export default function () {
             Object.assign(player, serverGamePlayers[key]);
 
             serverGamePlayers[key] = player;
+
+            if (player.id === module.status.meId) continue;
+
+            let vf = player.velocity * 2 * delta / constants.general.UPDATE_PHYSICS_THRESHOLD;
+            player.x += Math.cos(player.angle) * vf;
+            player.y += Math.sin(player.angle) * vf;
         }
 
         module.status.players = serverGamePlayers;
