@@ -21,7 +21,7 @@ canvas {
     position: absolute;
     width: 100vw;
     height: 100vh;
-    /*display: none;*/
+    display: none;
     background: rgba(78, 78, 78, 0.42);
     text-align: center;
 }
@@ -31,7 +31,7 @@ canvas {
     max-width: fit-content;
     max-height: fit-content;
     border-radius: 5px;
-    background: whitesmoke;
+    background: floralwhite;
     padding: 25px 30px;
     text-align: center;
 }
