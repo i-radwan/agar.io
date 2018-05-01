@@ -18,12 +18,12 @@ export default function (gameStatus) {
         socket.on('initial_game_status', function (receivedGameStatus) {
             gameStatus.init();
 
-            gameStatus.status.anglesQueue.lastAngleTimeStamp = Date.now();
-            gameStatus.status.anglesQueue.serverAngleTimeStamp = receivedGameStatus.serverTimestamp;
+            gameStatus.status.anglesQueue.lastAngleTimestamp = Date.now();
+            gameStatus.status.anglesQueue.serverAngleTimestamp = receivedGameStatus.serverTimestamp;
 
             gameStatus.status.meId = receivedGameStatus.meId;
 
-            gameStatus.set(receivedGameStatus);
+            gameStatus.sync(receivedGameStatus);
 
             startGameCallback();
         });
@@ -31,7 +31,7 @@ export default function (gameStatus) {
         // Receive game status
         socket.on('game_status', function (receivedGameStatus) {
             // Update local gameStatus by receivedGameStatus
-            gameStatus.set(receivedGameStatus);
+            gameStatus.sync(receivedGameStatus);
         });
 
         // Listen to disconnection event
@@ -76,9 +76,9 @@ export default function (gameStatus) {
 
         // Stamp the angles packet
         let currentTime = Date.now();
-        anglesQueue.serverAngleTimeStamp += currentTime - anglesQueue.lastAngleTimeStamp;
-        anglesQueue.lastAngleTimeStamp = currentTime;
-        angles.timestamp = anglesQueue.serverAngleTimeStamp;
+        anglesQueue.serverAngleTimestamp += currentTime - anglesQueue.lastAngleTimestamp;
+        anglesQueue.lastAngleTimestamp = currentTime;
+        angles.timestamp = anglesQueue.serverAngleTimestamp;
 
         // Transmit a sequence of angles
         socket.emit('angle', angles);

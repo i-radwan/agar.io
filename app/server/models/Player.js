@@ -31,7 +31,7 @@ class Player {
         this.angle = 0;
 
         // Set synchronization properties
-        this.lastAngleTimeStamp = Date.now();
+        this.lastAngleTimestamp = Date.now();
         this.lastReceivedAngleID = -1;
         this.forcePosition = false;
         this.lastForcePositionTime = 0;
@@ -51,7 +51,7 @@ class Player {
     }
 
     /**
-     * Returns the player's graphics information needed for rendering.
+     * Returns the player's graphics information needed for client rendering.
      *
      * @returns Object
      */
@@ -88,13 +88,14 @@ class Player {
      */
     validateSyncParams(anglesBuffer, lastSendRoomStatusTime) {
         // Update sync properties
-        let lastAngleTimeStamp = this.lastAngleTimeStamp;
-        this.lastAngleTimeStamp = anglesBuffer.timestamp;
+        let lastAngleTimestamp = this.lastAngleTimestamp;
+        this.lastAngleTimestamp = anglesBuffer.timestamp;
         this.lastReceivedAngleID = anglesBuffer.id;
 
-        // Check if forcePosition is received by the user before overriding it here
-        if (this.forcePosition && this.lastForcePositionTime > lastSendRoomStatusTime)
+        // Check if force position signal is received by the user before overriding it here
+        if (this.forcePosition && this.lastForcePositionTime > lastSendRoomStatusTime) {
             return false;
+        }
 
         // Check if the sent timestamp is in the future
         if (anglesBuffer.timestamp > Date.now()) {
@@ -104,7 +105,7 @@ class Player {
         // Check for the number of sent angles and if they could occur
         // in this delta time (since last send)
         // keeping room for one extra angle due to time functions differences.
-        let delta = (anglesBuffer.timestamp - lastAngleTimeStamp);
+        let delta = (anglesBuffer.timestamp - lastAngleTimestamp);
         let expectedAnglesCount = Math.ceil(delta / Constants.UPDATE_PHYSICS_THRESHOLD);
 
         // Compare expected and received
