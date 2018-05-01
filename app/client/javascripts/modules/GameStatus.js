@@ -26,8 +26,8 @@ export default function () {
                 anglesBufferSize: 0,
                 lastAngleID: 0,
                 lastReceivedAngleID: -1,
-                lastAngleTimeStamp: 0,
-                serverAngleTimeStamp: 0
+                lastAngleTimestamp: 0,
+                serverAngleTimestamp: 0
             }
         };
     };

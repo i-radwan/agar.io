@@ -151,11 +151,14 @@ class GameServer {
      * @param room      the room assigned to the player
      */
     sendInitialGameStatus(player, room) {
+        // Get initial room status
         let status = room.getInitialRoomStatus();
 
+        // Attach player-specific data
         status.meId = player.id;
-        status.serverTimestamp = player.lastAngleTimeStamp;
+        status.serverTimestamp = player.lastAngleTimestamp;
 
+        // Send status to the player
         this.io.to(player.id).emit('initial_game_status', status);
     };
 
@@ -164,18 +167,14 @@ class GameServer {
      * every specific interval of time.
      */
     sendRoomsGameStatus() {
-        // Loop over all game rooms and send game status
         for (let i in this.rooms) {
             let room = this.rooms[i];
-            let players = room.players;
             let status = room.getChangedRoomStatus();
 
-            for (let j in players) {
-                let player = players[j];
-
-                status.sync = player.getSyncInfo();
-
-                this.io.to(player.id).emit('game_status', status);
+            // Loop on every player in the i-th room
+            for (let id in room.players) {
+                status.sync = room.players[id].getSyncInfo();
+                this.io.to(id).emit('game_status', status);
             }
         }
     };
@@ -185,7 +184,6 @@ class GameServer {
      * every specific interval of time.
      */
     regenerateGems() {
-        // Loop over all game rooms and regenerate gems
         for (let i in this.rooms) {
             this.rooms[i].generateGems();
         }
