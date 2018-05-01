@@ -2,8 +2,7 @@
 const Constants = require("../utils/Constants")();
 const Gem = require("./Gem");
 const Player = require("./Player");
-const QuadTree = require("../utils/QuadTree");
-const Rectangle = require("../utils/Rectangle");
+const PlayersGrid = require("../utils/PlayersGrid");
 
 class Room {
 
@@ -30,9 +29,6 @@ class Room {
         this.deletedGemsIDs = [];
         this.gemsCount = 0;
         this.nextGemID = 0;
-
-        // Create a quad tree to carry gems
-        // let quadTree = new QuadTree(0, new Rectangle(0, 0, Constants.GAME_SIZE, Constants.GAME_SIZE));
 
         // Add default gems
         this.generateGems();
@@ -128,6 +124,9 @@ class Room {
      * @returns {Player}    the newly added player
      */
     addPlayer(playerID) {
+        // Get a random position for a player.
+        let playerPosition = this.getInitialPlayerPosition();
+
         let player = new Player(playerID);
 
         this.players[playerID] = player;
@@ -225,6 +224,17 @@ class Room {
         this.deletedGemsIDs = [];
 
         return gameStatus;
+    }
+
+    getInitialPlayerPosition() {
+        // Create a grid.
+        let gridWidth = Constants.GAME_SIZE / Constants.PLAYER_ABSOLUTE_INITIAL_RADIUS;
+        let gridHeight = Constants.GAME_SIZE / Constants.PLAYER_ABSOLUTE_INITIAL_RADIUS;
+
+        let playersGrid = new PlayersGrid(gridWidth, gridHeight);
+
+        let position = Utilities.getRandomInt();
+        return position;
     }
 }
 

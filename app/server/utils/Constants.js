@@ -1,6 +1,7 @@
 function Constants() {
     let GAME_SIZE = 6000;
     let SCALE_FACTOR = 2 / GAME_SIZE;
+    let PLAYER_ABSOLUTE_INITIAL_RADIUS = 30;
 
     return {
         //
@@ -27,9 +28,12 @@ function Constants() {
         PLAYER_INITIAL_RADIUS: 30 * SCALE_FACTOR,
         PLAYER_INITIAL_SPEED: 5 * SCALE_FACTOR,
         PLAYER_MIN_SPEED: 0.2 * SCALE_FACTOR,
+        PLAYER_ABSOLUTE_INITIAL_RADIUS: PLAYER_ABSOLUTE_INITIAL_RADIUS,
 
         // General
         COLORS: ["red", "green", "blue", "yellow", "orange", "purple", "pink"],
+        EMPTY_CELL: 0,
+        OCCUPIED_CELL: 1,
 
         //
         // Quad tree constants
