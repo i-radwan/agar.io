@@ -128,7 +128,7 @@ export default function () {
         let serverLastReceivedAngleID = serverEnv.lastReceivedAngleID;
         let serverForcePosition = serverEnv.forcePosition;
 
-        module.status.env.forcePosition = serverForcePosition;
+        module.status.env.forcePosition |= serverForcePosition;
 
         // If the server sends same angle acceptance again
         if (anglesQueue.lastReceivedAngleID === serverLastReceivedAngleID) return;
