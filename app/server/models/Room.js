@@ -2,7 +2,7 @@
 const Constants = require("../utils/Constants")();
 const Gem = require("./Gem");
 const Player = require("./Player");
-const PlayersGrid = require("../utils/PlayersGrid");
+const Grid = require("../utils/Grid");
 
 class Room {
 
@@ -126,6 +126,7 @@ class Room {
     addPlayer(playerID) {
         // Get a random position for a player.
         let playerPosition = this.getInitialPlayerPosition();
+        console.log(playerPosition);
 
         let player = new Player(playerID);
 
@@ -225,14 +226,13 @@ class Room {
     }
 
     getInitialPlayerPosition() {
-        // Create a grid.
-        let gridWidth = Constants.GAME_SIZE / Constants.PLAYER_ABSOLUTE_INITIAL_RADIUS;
-        let gridHeight = Constants.GAME_SIZE / Constants.PLAYER_ABSOLUTE_INITIAL_RADIUS;
+        // Create a square grid and mark its occupied cells.
+        let gridLength = Constants.GAME_SIZE / Constants.PLAYER_ABSOLUTE_INITIAL_RADIUS;
+        let playersGrid = new Grid(gridLength, gridLength);
 
-        let playersGrid = new PlayersGrid(gridWidth, gridHeight);
+        playersGrid.fill(this.players);
 
-        let position = Utilities.getRandomInt();
-        return position;
+        return playersGrid.getFreeCell();
     }
 }
 

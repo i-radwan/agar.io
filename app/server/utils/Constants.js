@@ -32,14 +32,13 @@ function Constants() {
 
         // General
         COLORS: ["red", "green", "blue", "yellow", "orange", "purple", "pink"],
-        EMPTY_CELL: 0,
-        OCCUPIED_CELL: 1,
 
         //
-        // Quad tree constants
+        // Grid constants
         //
-        QUAD_TREE_NODE_MAX_OBJECTS: 15,
-        QUAD_TREE_MAX_LEVELS: 5
+        GRID_MAX_ITERATIONS: 50,
+        EMPTY_CELL: 0,
+        OCCUPIED_CELL: 1,
     };
 }
 
