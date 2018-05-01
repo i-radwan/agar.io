@@ -27,7 +27,7 @@ export default function (gameStatus, gameOverCallback) {
 
         // Initialize UI engine
         uiEngine = UIEngine(module.p5Lib);
-        uiEngine.init(me);
+        uiEngine.init();
     };
 
     /**
@@ -131,6 +131,7 @@ export default function (gameStatus, gameOverCallback) {
         // Lag is to much, happens with tab out, let's roll back to server now!
         if (count === -1) {
             physicsEngine.forceServerPositions(status.players);
+            status.env.forcePosition = false;
             return;
         }
 

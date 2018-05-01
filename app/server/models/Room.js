@@ -179,11 +179,9 @@ class Room {
      */
     getPlayersGraphicsInfo() {
         let ret = {};
-
         for (let key in this.players) {
             ret[key] = this.players[key].getGraphicsInfo();
         }
-
         return ret;
     }
 
@@ -218,8 +216,8 @@ class Room {
             deletedGemsIDs: this.deletedGemsIDs
         };
 
+        // Reset new players and new gems
         this.newPlayersStaticInfo = {};
-
         this.newGems = {};
         this.deletedGemsIDs = [];
 

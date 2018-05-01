@@ -5,7 +5,7 @@ export default function () {
     let constants = Constants();
 
     /**
-     * Fill game status with initial dummy values
+     * Fills initial game status.
      */
     module.init = function () {
         module.status = {
@@ -18,7 +18,8 @@ export default function () {
                 running: true,
                 rollback: false,
                 forcePosition: false,
-                ping: 0
+                ping: 0,
+                lastGameStatusTimestamp: 0
             },
             anglesQueue: {
                 mouseAngles: [{id: 0, angles: []}],
@@ -26,18 +27,23 @@ export default function () {
                 anglesBufferSize: 0,
                 lastAngleID: 0,
                 lastReceivedAngleID: -1,
-                lastAngleTimeStamp: 0,
-                serverAngleTimeStamp: 0
+                lastAngleTimestamp: 0,
+                serverAngleTimestamp: 0
             }
         };
     };
 
     /**
-     * Update the game status
+     * Synchronizes the game status with the newly received status from the server.
      */
-    module.set = function (serverGameStatus) {
+    module.sync = function (serverGameStatus) {
+        let current = Date.now();
+        let delta = current - module.status.env.lastGameStatusTimestamp;
+        console.log("Server latency: ", delta);
+        module.status.env.lastGameStatusTimestamp = current;
+
         syncGems(serverGameStatus.newGems, serverGameStatus.deletedGemsIDs);
-        syncPlayers(serverGameStatus.players, serverGameStatus.newPlayers);
+        syncPlayers(serverGameStatus.players, serverGameStatus.newPlayers, delta);
         syncAnglesBuffer(serverGameStatus.sync);
     };
 
@@ -75,8 +81,14 @@ export default function () {
         module.status.anglesQueue.firstIdx = firstIdx;
     };
 
+    /**
+     * Synchronizes the game gems with the server.
+     *
+     * @param serverGameNewGems     the newly generated gems to be added
+     * @param serverGameDeletedGems the newly eaten gems to be removed
+     */
     let syncGems = function (serverGameNewGems, serverGameDeletedGems) {
-        // Sync local gems
+        // Remove eaten gems
         for (let i in serverGameDeletedGems) {
             delete module.status.gems[serverGameDeletedGems[i]];
         }
@@ -85,7 +97,13 @@ export default function () {
         module.status.newGems = Object.assign(module.status.newGems, serverGameNewGems);
     };
 
-    let syncPlayers = function (serverGamePlayers, serverGameNewPlayers) {
+    /**
+     * Synchronizes the game players with the server.
+     *
+     * @param serverGamePlayers     the server players graphics parameters
+     * @param serverGameNewPlayers  the newly registered player static information (i.e. name, color, ..etc)
+     */
+    let syncPlayers = function (serverGamePlayers, serverGameNewPlayers, delta) {
         // Check if I was eaten
         if (!serverGamePlayers[module.status.meId]) {
             module.status.env.running = false;
@@ -97,12 +115,23 @@ export default function () {
             Object.assign(player, serverGamePlayers[key]);
 
             serverGamePlayers[key] = player;
+
+            if (key === module.status.meId) continue;
+
+            let vf = player.velocity * 2 * delta / constants.general.UPDATE_PHYSICS_THRESHOLD;
+            player.x += Math.cos(player.angle) * vf;
+            player.y += Math.sin(player.angle) * vf;
         }
 
         module.status.players = serverGamePlayers;
         module.status.newPlayers = Object.assign(module.status.newPlayers, serverGameNewPlayers);
     };
 
+    /**
+     * Synchronizes main player angles buffer with the server.
+     *
+     * @param serverEnv the server sync environment variables
+     */
     let syncAnglesBuffer = function (serverEnv) {
         if (!serverEnv) return;
 
@@ -111,7 +140,7 @@ export default function () {
         let serverLastReceivedAngleID = serverEnv.lastReceivedAngleID;
         let serverForcePosition = serverEnv.forcePosition;
 
-        module.status.env.forcePosition = serverForcePosition;
+        module.status.env.forcePosition |= serverForcePosition;
 
         // If the server sends same angle acceptance again
         if (anglesQueue.lastReceivedAngleID === serverLastReceivedAngleID) return;

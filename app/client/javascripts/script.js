@@ -13,6 +13,7 @@ let game = {
     init: function () {
         game.constants = Constants();
 
+        // Initialize game status
         game.gameStatus = GameStatus();
         game.gameStatus.init();
 

@@ -1,13 +1,13 @@
 export default function () {
     return {
         general: {
-            SEND_ANGLE_TO_SERVER_RATE: (1000 / 120) * 10, // milliseconds
+            SEND_ANGLE_TO_SERVER_RATE: 15, // milliseconds
             MAX_ANGLES_BUFFER_SIZE: 20,
             UPDATE_PHYSICS_THRESHOLD: 15,
             FORCE_SERVER_POSITIONS_TIME: 3000
         },
         physics: {
-            MOVEMENT_INTERPOLATION_FACTOR: 0.1,
+            MOVEMENT_INTERPOLATION_FACTOR: 0.3,
             GROW_INTERPOLATION_FACTOR: 0.05
         },
         graphics: {

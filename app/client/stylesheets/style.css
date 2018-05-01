@@ -10,4 +10,44 @@ body {
     /*  Stop Scrolling  */
     height: 100%;
     overflow: hidden;
+    position: relative;
+}
+
+canvas {
+    position: absolute;
+}
+
+.overlay {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    display: none;
+    background: rgba(78, 78, 78, 0.42);
+    text-align: center;
+}
+
+.form {
+    margin: 30px auto;
+    max-width: fit-content;
+    max-height: fit-content;
+    border-radius: 5px;
+    background: floralwhite;
+    padding: 25px 30px;
+    text-align: center;
+}
+
+.login-form {
+    margin-top: 20px;
+}
+
+@media only screen and (min-width: 600px) {
+    .form {
+        min-width: 400px;
+    }
+}
+
+@media only screen and (min-height: 599px) {
+    .form {
+        margin-top: calc(50vh - 200px);
+    }
 }
