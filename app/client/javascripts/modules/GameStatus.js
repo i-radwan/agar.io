@@ -104,7 +104,7 @@ export default function () {
 
             serverGamePlayers[key] = player;
 
-            if (player.id === module.status.meId) continue;
+            if (key === module.status.meId) continue;
 
             let vf = player.velocity * 2 * delta / constants.general.UPDATE_PHYSICS_THRESHOLD;
             player.x += Math.cos(player.angle) * vf;
