@@ -10,7 +10,7 @@ class Player {
      * @param id
      * @param name: string
      */
-    constructor(id, name = "Test") {
+    constructor(id, position, name = "Test") {
         // Set id (unique within room) and name
         this.id = id;
         this.name = name;
@@ -23,8 +23,8 @@ class Player {
         this.radius = Constants.PLAYER_INITIAL_RADIUS;
 
         // Generate random normalized position
-        this.x = 0;//Utilities.getRandomFloat(-1, 1);
-        this.y = 0;//Utilities.getRandomFloat(-1, 1);
+        this.x = position.x;
+        this.y = position.y;
 
         // Set initial movement velocity and angle
         this.velocity = Constants.PLAYER_INITIAL_SPEED;

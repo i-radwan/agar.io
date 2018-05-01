@@ -125,10 +125,7 @@ class Room {
      */
     addPlayer(playerID) {
         // Get a random position for a player.
-        let playerPosition = this.getInitialPlayerPosition();
-        console.log(playerPosition);
-
-        let player = new Player(playerID);
+        let player = new Player(playerID, this.getInitialPlayerPosition());
 
         this.players[playerID] = player;
         this.playersStaticInfo[playerID] = this.newPlayersStaticInfo[playerID] = player.getStaticInfo();
