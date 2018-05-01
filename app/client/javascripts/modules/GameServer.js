@@ -23,7 +23,7 @@ export default function (gameStatus) {
 
             gameStatus.status.meId = receivedGameStatus.meId;
 
-            gameStatus.set(receivedGameStatus);
+            gameStatus.sync(receivedGameStatus);
 
             startGameCallback();
         });
@@ -31,7 +31,7 @@ export default function (gameStatus) {
         // Receive game status
         socket.on('game_status', function (receivedGameStatus) {
             // Update local gameStatus by receivedGameStatus
-            gameStatus.set(receivedGameStatus);
+            gameStatus.sync(receivedGameStatus);
         });
 
         // Listen to disconnection event

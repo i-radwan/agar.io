@@ -5,7 +5,7 @@ export default function () {
     let constants = Constants();
 
     /**
-     * Fill game status with initial dummy values
+     * Fills initial game status.
      */
     module.init = function () {
         module.status = {
@@ -33,9 +33,9 @@ export default function () {
     };
 
     /**
-     * Update the game status
+     * Synchronizes the game status with the newly received status from the server.
      */
-    module.set = function (serverGameStatus) {
+    module.sync = function (serverGameStatus) {
         syncGems(serverGameStatus.newGems, serverGameStatus.deletedGemsIDs);
         syncPlayers(serverGameStatus.players, serverGameStatus.newPlayers);
         syncAnglesBuffer(serverGameStatus.sync);
@@ -75,8 +75,14 @@ export default function () {
         module.status.anglesQueue.firstIdx = firstIdx;
     };
 
+    /**
+     * Synchronizes the game gems with the server.
+     *
+     * @param serverGameNewGems     the newly generated gems to be added
+     * @param serverGameDeletedGems the newly eaten gems to be removed
+     */
     let syncGems = function (serverGameNewGems, serverGameDeletedGems) {
-        // Sync local gems
+        // Remove eaten gems
         for (let i in serverGameDeletedGems) {
             delete module.status.gems[serverGameDeletedGems[i]];
         }
@@ -85,6 +91,12 @@ export default function () {
         module.status.newGems = Object.assign(module.status.newGems, serverGameNewGems);
     };
 
+    /**
+     * Synchronizes the game players with the server.
+     *
+     * @param serverGamePlayers     the server players graphics parameters
+     * @param serverGameNewPlayers  the newly registered player static information (i.e. name, color, ..etc)
+     */
     let syncPlayers = function (serverGamePlayers, serverGameNewPlayers) {
         // Check if I was eaten
         if (!serverGamePlayers[module.status.meId]) {
@@ -103,6 +115,11 @@ export default function () {
         module.status.newPlayers = Object.assign(module.status.newPlayers, serverGameNewPlayers);
     };
 
+    /**
+     * Synchronizes main player angles buffer with the server.
+     *
+     * @param serverEnv the server sync environment variables
+     */
     let syncAnglesBuffer = function (serverEnv) {
         if (!serverEnv) return;
 

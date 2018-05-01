@@ -27,7 +27,7 @@ export default function (gameStatus, gameOverCallback) {
 
         // Initialize UI engine
         uiEngine = UIEngine(module.p5Lib);
-        uiEngine.init(me);
+        uiEngine.init();
     };
 
     /**
