@@ -116,14 +116,6 @@ export default function (p5Lib) {
         // Interpolate user location until we reach target
         player.canvasX = p5Lib.lerp(player.canvasX, player.x, constants.physics.MOVEMENT_INTERPOLATION_FACTOR);
         player.canvasY = p5Lib.lerp(player.canvasY, player.y, constants.physics.MOVEMENT_INTERPOLATION_FACTOR);
-
-        let dx = player.canvasX - player.x;
-        let dy = player.canvasY - player.y;
-
-        if (dx * dx + dy * dy < 0.00051) {
-            player.x += Math.cos(player.angle) * player.velocity;
-            player.y += Math.sin(player.angle) * player.velocity;
-        }
     };
 
     return module;
