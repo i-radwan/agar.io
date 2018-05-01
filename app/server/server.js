@@ -32,7 +32,7 @@ class GameServer {
         self.io.on('connection', function (socket) {
             // Add new player to a room upon receiving connection event
             socket.on('subscribe', function () {
-                socket.join(self.addNewPlayer(socket.id));
+                self.addNewPlayer(socket.id);
                 console.log("a player connected", socket.id);
             });
 
@@ -60,62 +60,14 @@ class GameServer {
      * send him back its game status
      *
      * @param playerID      the player socket id
-     * @returns {number}    the room id that the player was assigned to
      */
     addNewPlayer(playerID) {
-        let roomID = this.getAvailableRoom();
-
-        let room = this.rooms[roomID];
+        let room = this.getAvailableRoom();
         let player = room.addPlayer(playerID);
 
-        this.playerRoomId[playerID] = roomID;
+        this.playerRoomId[playerID] = room.id;
 
         this.sendInitialGameStatus(player, room);
-
-        return roomID;
-    };
-
-    /**
-     * Searches for the first available room with free slot
-     * to assign for the newly connect player.
-     * If no rooms are available then creates a new one.
-     *
-     * @returns {number}        the room id
-     */
-    getAvailableRoom() {
-        // Search for any room having a free slot
-        for (let i in this.rooms) {
-            let room = this.rooms[i];
-
-            if (room.playersCount < Constants.ROOM_MAX_PLAYERS) {
-                return room.id;
-            }
-        }
-
-        // All rooms are full, create a new one
-        let id = this.nextRoomID++;
-        this.rooms[id] = new Room(id);
-
-        return id;
-    }
-
-    /**
-     * Updates the given player's position by simulating his movement
-     * by the given sequence of angles.
-     *
-     * @param playerID      the player socket id
-     * @param anglesBuffer  a sequence of angles to move the player with
-     */
-    updatePlayerPosition(playerID, anglesBuffer) {
-        if (!this.playerRoomId.hasOwnProperty(playerID)) return;
-
-        // Get ids
-        let roomID = this.playerRoomId[playerID];
-
-        // Simulate player movements based on the received angles sequence
-        if (this.rooms[roomID].isPlayerAlive(playerID)) {
-            this.rooms[roomID].simulatePlayer(playerID, anglesBuffer);
-        }
     };
 
     /**
@@ -142,6 +94,47 @@ class GameServer {
         //     delete this.rooms[roomID];
         // }
     };
+
+    /**
+     * Updates the given player's position by simulating his movement
+     * by the given sequence of angles.
+     *
+     * @param playerID      the player socket id
+     * @param anglesBuffer  a sequence of angles to move the player with
+     */
+    updatePlayerPosition(playerID, anglesBuffer) {
+        if (!this.playerRoomId.hasOwnProperty(playerID)) return;
+
+        // Get ids
+        let roomID = this.playerRoomId[playerID];
+
+        // Simulate player movements based on the received angles sequence
+        if (this.rooms[roomID].isPlayerAlive(playerID)) {
+            this.rooms[roomID].simulatePlayer(playerID, anglesBuffer);
+        }
+    };
+
+    /**
+     * Searches for the first available room with free slot
+     * to assign for the newly connect player.
+     * If no rooms are available then creates a new one.
+     *
+     * @returns {Room}        the first available room
+     */
+    getAvailableRoom() {
+        // Search for any room having a free slot
+        for (let i in this.rooms) {
+            let room = this.rooms[i];
+
+            if (room.playersCount < Constants.ROOM_MAX_PLAYERS) {
+                return room;
+            }
+        }
+
+        // All rooms are full, create a new one
+        let id = this.nextRoomID++;
+        return this.rooms[id] = new Room(id);
+    }
 
     /**
      * Sends the information of the newly connected player
