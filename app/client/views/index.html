@@ -2,16 +2,38 @@
 <html>
 <head>
     <title>Agar.io</title>
+    <link rel="stylesheet" href="../vendor/stylesheets/bootstrap.css">
     <link rel="stylesheet" href="../stylesheets/style.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
 </head>
 <body>
 
 <canvas id="hudCanvasId"></canvas>
+<div class="overlay text-center">
+    <div class="form">
+        <h1 class="display-3">Game</h1>
+        <div class="form-group">
+            <input type="text" class="form-control" placeholder="Your name...">
+        </div>
+        <div class="form-group">
+            <button class="btn btn-md btn-success">Play</button>
+        </div>
+        <div class="login-form">
+            <input type="text" class="form-control" placeholder="Username...">
+        </div>
+        <div class="login-form">
+            <input type="password" class="form-control" placeholder="••••••••">
+        </div>
+        <div class="login-form">
+            <button class="btn btn-md btn-primary">Login</button>
+        </div>
+    </div>
+</div>
 <script src="../vendor/javascripts/socket.io.js"></script>
 <script src="../vendor/javascripts/jquery-3.3.1.slim.min.js"></script>
 <script src="../vendor/javascripts/p5.min.js"></script>
 <script src="../vendor/javascripts/p5.dom.min.js"></script>
+<script src="../vendor/javascripts/bootstrap.js"></script>
 <script type="module" src="../javascripts/script.js"></script>
 </body>
 </html>

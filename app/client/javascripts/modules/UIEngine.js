@@ -298,6 +298,7 @@ export default function (p5Lib) {
         // https://forum.processing.org/two/discussion/11462/help-in-p5-js-performance-improvement-on-mobile-devices
         canvas.elt.style.width = '100%';
         canvas.elt.style.height = '100%';
+        canvas.elt.style.position = 'absolute';
 
         //
         // Head up display canvas
