@@ -9,7 +9,7 @@ class Gem {
      *
      * @param id    gem unique id in the game room
      */
-    constructor(id) {
+    constructor(id, position) {
         // Set id (unique within room)
         this.id = id;
 
@@ -19,9 +19,8 @@ class Gem {
         // Set radius
         this.radius = Constants.GEM_RADIUS;
 
-        // Generate random normalized position
-        this.x = Utilities.getRandomFloat(-1, 1);
-        this.y = Utilities.getRandomFloat(-1, 1);
+        this.x = position.x;
+        this.y = position.y;
     }
 }
 

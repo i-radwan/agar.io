@@ -33,8 +33,8 @@ class Grid {
             let BottomRightX = Math.trunc((object.x + object.radius + 1.0) * this.width / 2.0);
             let BottomRightY = Math.trunc((object.y + object.radius + 1.0) * this.height / 2.0);
 
-            for (let i = topLeftX; i <= BottomRightX; i++) {
-                for (let j = topLeftY; j <= BottomRightY; j++) {
+            for (let i = Math.max(0, topLeftX); i <= Math.min(1, BottomRightX); i++) {
+                for (let j = Math.max(0, topLeftY); j <= Math.min(1, BottomRightY); j++) {
                     this.grid[i][j] = Constants.OCCUPIED_CELL;
                 }
             }

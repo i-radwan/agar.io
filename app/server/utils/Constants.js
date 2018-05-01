@@ -22,6 +22,7 @@ function Constants() {
         // Gems
         ROOM_MAX_GEMS: 600,
         GEM_RADIUS: 9 * SCALE_FACTOR,
+        GEM_GENERATE_POS_MAX_ITERATIONS: 20,
 
         // Players
         ROOM_MAX_PLAYERS: 5,
@@ -36,7 +37,7 @@ function Constants() {
         //
         // Grid constants
         //
-        GRID_MAX_ITERATIONS: 50,
+        GRID_MAX_ITERATIONS: 1000,
         EMPTY_CELL: 0,
         OCCUPIED_CELL: 1,
     };

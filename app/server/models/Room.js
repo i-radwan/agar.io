@@ -3,6 +3,7 @@ const Constants = require("../utils/Constants")();
 const Gem = require("./Gem");
 const Player = require("./Player");
 const Grid = require("../utils/Grid");
+const Utilities = require("../utils/Utilities");
 
 class Room {
 
@@ -125,7 +126,7 @@ class Room {
      */
     addPlayer(playerID) {
         // Get a random position for a player.
-        let player = new Player(playerID, this.getInitialPlayerPosition());
+        let player = new Player(playerID, this.getNewPlayerPosition());
 
         this.players[playerID] = player;
         this.playersStaticInfo[playerID] = this.newPlayersStaticInfo[playerID] = player.getStaticInfo();
@@ -153,7 +154,7 @@ class Room {
      */
     generateGems() {
         while (this.gemsCount < Constants.ROOM_MAX_GEMS) {
-            this.gems[this.nextGemID] = this.newGems[this.nextGemID] = new Gem(this.nextGemID);
+            this.gems[this.nextGemID] = this.newGems[this.nextGemID] = new Gem(this.nextGemID, this.getNewGemPosition());
             this.gemsCount++;
             this.nextGemID++;
         }
@@ -222,7 +223,12 @@ class Room {
         return gameStatus;
     }
 
-    getInitialPlayerPosition() {
+    /**
+     * Get a new initial random position for a new player.
+     * TODO @Samir55 Adjust when removing the normalization.
+     * @returns {{x: Number, y: Number}} the coordinates of the new player.
+     */
+    getNewPlayerPosition() {
         // Create a square grid and mark its occupied cells.
         let gridLength = Constants.GAME_SIZE / Constants.PLAYER_ABSOLUTE_INITIAL_RADIUS;
         let playersGrid = new Grid(gridLength, gridLength);
@@ -230,6 +236,34 @@ class Room {
         playersGrid.fill(this.players);
 
         return playersGrid.getFreeCell();
+    }
+
+    /**
+     * Get a (possibly empty) position for a new generated gem.
+     * TODO @Samir55 Adjust when removing the normalization.
+     */
+    getNewGemPosition() {
+        let ret = {
+            x: Utilities.getRandomFloat(-1, 1),
+            y: Utilities.getRandomFloat(-1, 1),
+            radius: Constants.GEM_RADIUS
+        };
+
+        for (let i = 0; i < Constants.GEM_GENERATE_POS_MAX_ITERATIONS; i++) {
+            let freePosition = true;
+
+            for (let id in this.players)
+                if (this.players[id].canEat(ret))
+                    freePosition = false;
+
+            if (freePosition)
+                return ret;
+            
+            ret.x = Utilities.getRandomFloat(-1, 1);
+            ret.y = Utilities.getRandomFloat(-1, 1);
+        }
+
+        return ret;
     }
 }
 
