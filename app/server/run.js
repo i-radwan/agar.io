@@ -1,7 +1,6 @@
 // Imports
 const Constants = require("./utils/Constants")();
-const GameServer = require("./server");             // For serving the actual game
-// const User = require('./models/user');              // User database model class
+const GameServer = require("./server");
 
 const express = require('express');
 
@@ -58,17 +57,11 @@ function setupServer() {
     // Middleware's
     //
 
-    // Add session options
     // Use sessions for tracking users
     app.use(session);
 
-    io.use(sharedSession(session, {
-        autoSave:true
-    }));
-
-    // Parse incoming requests body
-    // app.use(bodyParser.json());
-    // app.use(bodyParser.urlencoded({extended: false}));
+    // Use sessions with socket io
+    io.use(sharedSession(session, {autoSave: true}));
 
     // Set static path to provide required assets
     app.use(express.static(path.resolve('../client/')));
@@ -79,63 +72,25 @@ function setupServer() {
 
     // Main game screen
     app.get('/', function (req, res) {
+        console.log(req.session);
         res.sendFile(path.resolve('../client/views/index.html'));
     });
 
-    // // Register endpoint
-    // app.post('/register', function (req, res) {
-    //     if (req.body.username && req.body.password) {
-    //         let userData = {
-    //             username: req.body.username,
-    //             password: req.body.password,
-    //         };
-    //
-    //         User.create(userData, function (error, user) {
-    //             if (error) {
-    //                 console.log(error);
-    //                 return res.send("failed");
-    //             }
-    //             else {
-    //                 req.session.userId = user._id;
-    //                 return res.send("registered!!");
-    //             }
-    //         });
-    //     }
-    //     else {
-    //         return res.send("failed");
-    //     }
-    // });
-    //
-    // // Log in endpoint
-    // app.post('/login', function (req, res) {
-    //     if (req.body.username && req.body.password) {
-    //         User.authenticate(req.body.username, req.body.password, function (error, user) {
-    //             if (error || !user) {
-    //                 return res.send("failed");
-    //             }
-    //             else {
-    //                 req.session.userId = user._id;
-    //                 return res.send("logged in!!");
-    //             }
-    //         });
-    //     }
-    // });
-    //
-    // // Log out endpoint
-    // app.get('/logout', function (req, res) {
-    //     if (req.session) {
-    //
-    //         // delete session object
-    //         req.session.destroy(function (err) {
-    //             if (err) {
-    //                 return next(err);
-    //             }
-    //             else {
-    //                 return res.redirect('/');
-    //             }
-    //         });
-    //     }
-    // });
+    // Log out endpoint
+    app.get('/logout', function (req, res) {
+        if (req.session) {
+
+            // delete session object
+            req.session.destroy(function (err) {
+                if (err) {
+                    return next(err);
+                }
+                else {
+                    return res.redirect('/');
+                }
+            });
+        }
+    });
 }
 
 /**

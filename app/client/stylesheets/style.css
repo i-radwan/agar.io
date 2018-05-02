@@ -17,6 +17,10 @@ canvas {
     position: absolute;
 }
 
+.text-danger{
+    margin-bottom: 0;
+}
+
 .overlay {
     position: absolute;
     width: 100vw;

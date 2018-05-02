@@ -1,6 +1,7 @@
 // Imports
 const Constants = require("./utils/Constants")();
 const Room = require("./models/Room");
+const User = require('./models/user');
 
 class GameServer {
 
@@ -30,21 +31,53 @@ class GameServer {
         // Register event listeners
         //
         self.io.on('connection', function (socket) {
+            console.log("TAG2: ", socket.handshake.session);
+
             // Add new player to a room upon receiving connection event
             socket.on('subscribe', function (msg) {
-                console.log(socket.handshake.session);
+                let session = socket.handshake.session;
 
                 if (msg.type === Constants.GUEST_MSG_TYPE) {
-                    console.log(msg.name);
+                    self.addNewPlayer(socket.id, msg.name);
                 }
                 else if (msg.type === Constants.LOGIN_MSG_TYPE) {
-                    console.log(msg.username, msg.password);
+                    if (msg.username && msg.password) {
+                        User.authenticate(msg.username, msg.password, function (error, user) {
+                            if (error || !user) {
+                                self.io.to(socket.id).emit("error", "Invalid credentials!");
+                            }
+                            else {
+                                socket.handshake.session.user = user;
+                                socket.handshake.session.save();
+                                console.log("TAG3: ", socket.handshake.session);
+
+                                self.addNewPlayer(socket.id, user.username);
+                            }
+                        });
+                    }
                 }
                 else if (msg.type === Constants.REGISTER_MSG_TYPE) {
-                    console.log(msg.username, msg.password);
+                    if (msg.username && msg.password) {
+                        let userData = {
+                            username: msg.username,
+                            password: msg.password,
+                        };
+
+                        User.create(userData, function (error, user) {
+                            if (error || !user) {
+                                self.io.to(socket.id).emit("error", "Invalid credentials!");
+                            }
+                            else {
+                                session.user = user;
+                                self.addNewPlayer(socket.id, user.username);
+                            }
+                        });
+                    }
+                    else {
+                        self.io.to(socket.id).emit("error", "Invalid request!");
+                    }
                 }
 
-                self.addNewPlayer(socket.id);
                 console.log("a player connected", socket.id);
             });
 
@@ -71,13 +104,14 @@ class GameServer {
      * Assigns the newly connected player to a room and
      * send him back its game status
      *
-     * @param playerID      the player socket id
+     * @param id    the player socket id
+     * @param name  the player name
      */
-    addNewPlayer(playerID) {
+    addNewPlayer(id, name) {
         let room = this.getAvailableRoom();
-        let player = room.addPlayer(playerID);
+        let player = room.addPlayer(id, name);
 
-        this.playerRoomId[playerID] = room.id;
+        this.playerRoomId[id] = room.id;
 
         this.sendInitialGameStatus(player, room);
     };
@@ -85,17 +119,17 @@ class GameServer {
     /**
      * Removes the given player from his room when he disconnecting.
      *
-     * @param playerID  the player socket id
+     * @param id  the player socket id
      */
-    removePlayer(playerID) {
-        if (!this.playerRoomId.hasOwnProperty(playerID)) return;
+    removePlayer(id) {
+        if (!this.playerRoomId.hasOwnProperty(id)) return;
 
         // Get room id
-        let roomID = this.playerRoomId[playerID];
+        let roomID = this.playerRoomId[id];
 
         // Remove player from his room
-        if (this.rooms[roomID].isPlayerAlive(playerID)) {
-            this.rooms[roomID].removePlayer(playerID);
+        if (this.rooms[roomID].isPlayerAlive(id)) {
+            this.rooms[roomID].removePlayer(id);
         }
 
         // Remove player entry from map
@@ -111,18 +145,18 @@ class GameServer {
      * Updates the given player's position by simulating his movement
      * by the given sequence of angles.
      *
-     * @param playerID      the player socket id
+     * @param id            the player socket id
      * @param anglesBuffer  a sequence of angles to move the player with
      */
-    updatePlayerPosition(playerID, anglesBuffer) {
-        if (!this.playerRoomId.hasOwnProperty(playerID)) return;
+    updatePlayerPosition(id, anglesBuffer) {
+        if (!this.playerRoomId.hasOwnProperty(id)) return;
 
         // Get ids
-        let roomID = this.playerRoomId[playerID];
+        let roomID = this.playerRoomId[id];
 
         // Simulate player movements based on the received angles sequence
-        if (this.rooms[roomID].isPlayerAlive(playerID)) {
-            this.rooms[roomID].simulatePlayer(playerID, anglesBuffer);
+        if (this.rooms[roomID].isPlayerAlive(id)) {
+            this.rooms[roomID].simulatePlayer(id, anglesBuffer);
         }
     };
 

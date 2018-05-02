@@ -13,83 +13,19 @@ let game = {
     init: function () {
         game.constants = Constants();
 
+        // Bind views
+        game.bindViews();
+
+        // Setup listeners
+        game.setupListeners();
+
         // Initialize game status
         game.gameStatus = GameStatus();
         game.gameStatus.init();
 
         // Establish server communication
-        game.gameServer = GameServer(game.gameStatus);
+        game.gameServer = GameServer(game.gameStatus, game.errorMsgCallback);
         game.gameServer.init(game.startGame);
-
-        // Setup listeners
-        game.setupListeners();
-    },
-
-    /**
-     * Setup buttons
-     */
-    setupListeners: function () {
-        let playBtn = $("#play-btn");
-        let loginBtn = $("#login-btn");
-        let registerBtn = $("#signup-btn");
-
-        let nameFiled = $("#name-field");
-        let usernameField = $("#username-field");
-        let passwordField = $("#password-field");
-
-        let errorMsg = $("#error-msg");
-
-        playBtn.click(function () {
-            let name = nameFiled.val().trim();
-
-            if (name.length <= 0) {
-                errorMsg.html("Please enter valid name!");
-                return;
-            }
-
-            let msg = {
-                type: game.constants.general.GUEST_MSG_TYPE,
-                name: name
-            };
-
-            game.gameServer.sendSubscribeRequest(msg);
-        });
-
-        loginBtn.click(function () {
-            let username = usernameField.val().trim();
-            let password = passwordField.val().trim();
-
-            if (username.length <= 0 || password.length <= 0) {
-                errorMsg.html("Please enter valid credentials!");
-                return;
-            }
-
-            let msg = {
-                type: game.constants.general.LOGIN_MSG_TYPE,
-                username: username,
-                password: password
-            };
-
-            game.gameServer.sendSubscribeRequest(msg);
-        });
-
-        registerBtn.click(function () {
-            let username = usernameField.val().trim();
-            let password = passwordField.val().trim();
-
-            if (username.length <= 0 || password.length <= 0) {
-                errorMsg.html("Please enter valid credentials!");
-                return;
-            }
-
-            let msg = {
-                type: game.constants.general.REGISTER_MSG_TYPE,
-                username: username,
-                password: password
-            };
-
-            game.gameServer.sendSubscribeRequest(msg);
-        });
     },
 
     /**
@@ -129,6 +65,87 @@ let game = {
         if (confirm("Sry, new round?")) {
             game.gameServer.reconnect();
         }
+    },
+
+    /**
+     * Binds UI views to local variables.
+     */
+    bindViews: function () {
+        game.playBtn = $("#play-btn");
+        game.loginBtn = $("#login-btn");
+        game.registerBtn = $("#register-btn");
+
+        game.nameFiled = $("#name-field");
+        game.usernameField = $("#username-field");
+        game.passwordField = $("#password-field");
+
+        game.errorMsg = $("#error-msg");
+    },
+
+    /**
+     * Setup buttons
+     */
+    setupListeners: function () {
+        game.playBtn.click(function () {
+            let name = game.nameFiled.val().trim();
+
+            if (name.length <= 0) {
+                game.errorMsg.html("Please enter valid name!");
+                return;
+            }
+
+            let msg = {
+                type: game.constants.general.GUEST_MSG_TYPE,
+                name: name
+            };
+
+            game.gameServer.sendSubscribeRequest(msg);
+        });
+
+        game.loginBtn.click(function () {
+            let username = game.usernameField.val().trim();
+            let password = game.passwordField.val().trim();
+
+            if (username.length <= 0 || password.length <= 0) {
+                game.errorMsg.html("Please enter valid credentials!");
+                return;
+            }
+
+            let msg = {
+                type: game.constants.general.LOGIN_MSG_TYPE,
+                username: username,
+                password: password
+            };
+
+            game.gameServer.sendSubscribeRequest(msg);
+        });
+
+        game.registerBtn.click(function () {
+            let username = game.usernameField.val().trim();
+            let password = game.passwordField.val().trim();
+
+            if (username.length <= 0 || password.length <= 0) {
+                game.errorMsg.html("Please enter valid credentials!");
+                return;
+            }
+
+            let msg = {
+                type: game.constants.general.REGISTER_MSG_TYPE,
+                username: username,
+                password: password
+            };
+
+            game.gameServer.sendSubscribeRequest(msg);
+        });
+    },
+
+    /**
+     * Displays error message to user interface.
+     *
+     * @param errorMsg the error message to be displayed
+     */
+    errorMsgCallback: function (errorMsg) {
+        game.errorMsg.html(errorMsg);
     }
 };
 

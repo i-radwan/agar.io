@@ -7,10 +7,11 @@ class Player {
     /**
      * Player model constructor.
      *
-     * @param id
-     * @param name: string
+     * @param id        the player id
+     * @param position  the player initial coordinates
+     * @param name      the player name
      */
-    constructor(id, position, name = "Test") {
+    constructor(id, position, name) {
         // Set id (unique within room) and name
         this.id = id;
         this.name = name;

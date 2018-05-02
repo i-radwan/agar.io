@@ -1,4 +1,4 @@
-export default function (gameStatus) {
+export default function (gameStatus, errorMsgCallback) {
     let module = {};
 
     let socket = io({reconnection: false});
@@ -32,6 +32,11 @@ export default function (gameStatus) {
         // Listen to disconnection event
         socket.on('disconnect', function () {
             gameStatus.status.env.running = false;
+        });
+
+        // Receive pong from the server to get latency
+        socket.on('error', function (msg) {
+            errorMsgCallback(msg);
         });
 
         // Receive pong from the server to get latency

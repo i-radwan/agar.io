@@ -121,15 +121,16 @@ class Room {
     /**
      * Adds a new player to the room.
      *
-     * @param playerID      the player id to add
+     * @param id            the player id to add
+     * @param name          player name
      * @returns {Player}    the newly added player
      */
-    addPlayer(playerID) {
+    addPlayer(id, name) {
         // Get a random position for a player.
-        let player = new Player(playerID, this.getNewPlayerPosition());
+        let player = new Player(id, this.getNewPlayerPosition(), name);
 
-        this.players[playerID] = player;
-        this.playersStaticInfo[playerID] = this.newPlayersStaticInfo[playerID] = player.getStaticInfo();
+        this.players[id] = player;
+        this.playersStaticInfo[id] = this.newPlayersStaticInfo[id] = player.getStaticInfo();
 
         this.playersCount++;
 
@@ -163,12 +164,12 @@ class Room {
     /**
      * Removes the given gem from the room.
      *
-     * @param gemID the gem id to be removed
+     * @param id the gem id to be removed
      */
-    removeGem(gemID) {
-        this.deletedGemsIDs.push(gemID);
+    removeGem(id) {
+        this.deletedGemsIDs.push(id);
         this.gemsCount--;
-        delete this.gems[gemID];
+        delete this.gems[id];
     };
 
     /**
