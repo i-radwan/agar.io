@@ -18,7 +18,7 @@ const io = require('socket.io')(httpServer, {
     pingTimeout: Constants.PING_TIMEOUT,
 });
 
-// const bodyParser = require('body-parser');          // For parsing the body of the incoming request
+const bodyParser = require('body-parser');          // For parsing the body of the incoming request
 const path = require('path');
 
 const mongoose = require('mongoose');               // For modeling database
@@ -72,8 +72,33 @@ function setupServer() {
 
     // Main game screen
     app.get('/', function (req, res) {
-        console.log(req.session);
+        // ToDo: check if not logged in -> redirect to '/login'
         res.sendFile(path.resolve('../client/views/index.html'));
+    });
+
+    // Log in view endpoint
+    app.get('/login', function (req, res) {
+        // ToDo: check if already logged in -> redirect to '/'
+        res.sendFile(path.resolve('../client/views/auth.html'));
+    });
+
+    // Join endpoint
+    // ToDo: try to redirect the user from here the server. Check: (https://stackoverflow.com/questions/11355366/how-to-redirect-users-browser-url-to-a-different-page-in-nodejs)
+    app.post('/join', function (req, res) {
+        // ToDo: check if already logged in
+        // return res.json({status: 0, redirect: "/"});
+        return res.json({status: 1, error_msg: "Please use valid name!"});
+    });
+
+    // ToDo: merge register, endpoint functions
+    // Register endpoint
+    app.post('/register', function (req, res) {
+        // ToDo: check if already logged in
+    });
+
+    // Log in post request endpoint
+    app.post('/login', function (req, res) {
+        // ToDo: check if already logged in
     });
 
     // Log out endpoint

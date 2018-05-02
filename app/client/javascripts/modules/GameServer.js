@@ -9,6 +9,11 @@ export default function (gameStatus, errorMsgCallback) {
      * @param startGameCallback a callback function to be called when receiving initial room game states
      */
     module.init = function (startGameCallback) {
+        // Send subscription request once got connected
+        socket.on('connect', function () {
+            sendSubscribeRequest();
+        });
+
         // Receive initial game status
         socket.on('initial_game_status', function (receivedGameStatus) {
             gameStatus.init();
@@ -54,12 +59,12 @@ export default function (gameStatus, errorMsgCallback) {
         socket.receiveBuffer = [];
 
         if (socket.connected) { // Player didn't loose connection, just got eaten
-            // sendSubscribeRequest();
+            sendSubscribeRequest();
             return;
         }
 
         // Reconnect to server
-        // sendSubscribeRequest();
+        sendSubscribeRequest();
     };
 
     /**
@@ -92,11 +97,9 @@ export default function (gameStatus, errorMsgCallback) {
 
     /**
      * Sends a subscribe request to join a game room and start playing.
-     *
-     * @param msg the message to be sent to server, in cases of login/sign up
      */
-    module.sendSubscribeRequest = function (msg = {}) {
-        socket.emit('subscribe', msg);
+    let sendSubscribeRequest = function () {
+        socket.emit('subscribe', {});
     };
 
     return module;

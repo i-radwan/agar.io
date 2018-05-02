@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Agar.io</title>
+    <link rel="stylesheet" href="../vendor/stylesheets/bootstrap.css">
+    <link rel="stylesheet" href="../stylesheets/style.css">
+</head>
+<body>
+<div class="overlay text-center">
+    <div class="form">
+        <h1 class="display-3">Agar</h1>
+        <div class="form-group">
+            <input type="text" class="form-control" id="name-field" placeholder="Your name...">
+        </div>
+        <div class="form-group">
+            <button class="btn btn-md btn-success form-btn" id="play-btn">Play</button>
+        </div>
+        <div class="login-form">
+            <input type="text" class="form-control" id="username-field" placeholder="Username...">
+        </div>
+        <div class="login-form">
+            <input type="password" class="form-control" id="password-field" placeholder="••••••••">
+        </div>
+        <div class="login-form">
+            <button class="btn btn-md btn-primary form-btn" id="login-btn">Login</button>
+            <button class="btn btn-md btn-primary form-btn" id="register-btn">Register</button>
+        </div>
+        <div class="login-form">
+            <p class="text-danger" id="error-msg"></p>
+        </div>
+    </div>
+</div>
+<script src="../vendor/javascripts/jquery.min.js"></script>
+<script src="../vendor/javascripts/bootstrap.js"></script>
+<script src="../javascripts/auth.js"></script>
+</body>
+</html>

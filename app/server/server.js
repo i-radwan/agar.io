@@ -34,51 +34,52 @@ class GameServer {
             console.log("TAG2: ", socket.handshake.session);
 
             // Add new player to a room upon receiving connection event
-            socket.on('subscribe', function (msg) {
-                let session = socket.handshake.session;
-
-                if (msg.type === Constants.GUEST_MSG_TYPE) {
-                    self.addNewPlayer(socket.id, msg.name);
-                }
-                else if (msg.type === Constants.LOGIN_MSG_TYPE) {
-                    if (msg.username && msg.password) {
-                        User.authenticate(msg.username, msg.password, function (error, user) {
-                            if (error || !user) {
-                                self.io.to(socket.id).emit("error", "Invalid credentials!");
-                            }
-                            else {
-                                socket.handshake.session.user = user;
-                                socket.handshake.session.save();
-                                console.log("TAG3: ", socket.handshake.session);
-
-                                self.addNewPlayer(socket.id, user.username);
-                            }
-                        });
-                    }
-                }
-                else if (msg.type === Constants.REGISTER_MSG_TYPE) {
-                    if (msg.username && msg.password) {
-                        let userData = {
-                            username: msg.username,
-                            password: msg.password,
-                        };
-
-                        User.create(userData, function (error, user) {
-                            if (error || !user) {
-                                self.io.to(socket.id).emit("error", "Invalid credentials!");
-                            }
-                            else {
-                                session.user = user;
-                                self.addNewPlayer(socket.id, user.username);
-                            }
-                        });
-                    }
-                    else {
-                        self.io.to(socket.id).emit("error", "Invalid request!");
-                    }
-                }
-
+            socket.on('subscribe', function () {
+                self.addNewPlayer(socket.id, "Test");
                 console.log("a player connected", socket.id);
+
+                // let session = socket.handshake.session;
+                //
+                // if (msg.type === Constants.GUEST_MSG_TYPE) {
+                //     self.addNewPlayer(socket.id, msg.name);
+                // }
+                // else if (msg.type === Constants.LOGIN_MSG_TYPE) {
+                //     if (msg.username && msg.password) {
+                //         User.authenticate(msg.username, msg.password, function (error, user) {
+                //             if (error || !user) {
+                //                 self.io.to(socket.id).emit("error", "Invalid credentials!");
+                //             }
+                //             else {
+                //                 socket.handshake.session.user = user;
+                //                 socket.handshake.session.save();
+                //                 console.log("TAG3: ", socket.handshake.session);
+                //
+                //                 self.addNewPlayer(socket.id, user.username);
+                //             }
+                //         });
+                //     }
+                // }
+                // else if (msg.type === Constants.REGISTER_MSG_TYPE) {
+                //     if (msg.username && msg.password) {
+                //         let userData = {
+                //             username: msg.username,
+                //             password: msg.password,
+                //         };
+                //
+                //         User.create(userData, function (error, user) {
+                //             if (error || !user) {
+                //                 self.io.to(socket.id).emit("error", "Invalid credentials!");
+                //             }
+                //             else {
+                //                 session.user = user;
+                //                 self.addNewPlayer(socket.id, user.username);
+                //             }
+                //         });
+                //     }
+                //     else {
+                //         self.io.to(socket.id).emit("error", "Invalid request!");
+                //     }
+                // }
             });
 
             // Updates player's angle
