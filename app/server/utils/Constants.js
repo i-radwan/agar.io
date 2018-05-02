@@ -13,6 +13,11 @@ function Constants() {
         SEND_GAME_STATUS_RATE: 40,
         REGENERATE_GEMS_RATE: 10000,
 
+        // Client start message types
+        GUEST_MSG_TYPE: 10000,
+        LOGIN_MSG_TYPE: 10001,
+        REGISTER_MSG_TYPE: 10002,
+        
         //
         // Game related constants
         //

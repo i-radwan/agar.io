@@ -31,7 +31,19 @@ class GameServer {
         //
         self.io.on('connection', function (socket) {
             // Add new player to a room upon receiving connection event
-            socket.on('subscribe', function () {
+            socket.on('subscribe', function (msg) {
+                console.log(socket.handshake.session);
+
+                if (msg.type === Constants.GUEST_MSG_TYPE) {
+                    console.log(msg.name);
+                }
+                else if (msg.type === Constants.LOGIN_MSG_TYPE) {
+                    console.log(msg.username, msg.password);
+                }
+                else if (msg.type === Constants.REGISTER_MSG_TYPE) {
+                    console.log(msg.username, msg.password);
+                }
+
                 self.addNewPlayer(socket.id);
                 console.log("a player connected", socket.id);
             });

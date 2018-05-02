@@ -2,7 +2,9 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
-
+/**
+ * Defines user model schema.
+ */
 let userSchema = new mongoose.Schema({
     username: {
         type: String,
@@ -16,9 +18,15 @@ let userSchema = new mongoose.Schema({
     }
 });
 
-// Authenticate input against database
+/**
+ * Authenticates the given username and password.
+ *
+ * @param username
+ * @param password
+ * @param callback
+ */
 userSchema.statics.authenticate = function (username, password, callback) {
-    User.findOne({username: username}).exec(function (err, user) {
+    this.findOne({username: username}).exec(function (err, user) {
         if (err) {
             return callback(err)
         }
@@ -40,7 +48,9 @@ userSchema.statics.authenticate = function (username, password, callback) {
     });
 };
 
-// Hash the user password before saving it to the database
+/**
+ * Hashes the user's password before saving it in the database.
+ */
 userSchema.pre('save', function (next) {
     let user = this;
 
@@ -54,6 +64,9 @@ userSchema.pre('save', function (next) {
     })
 });
 
-let User = mongoose.model('user', userSchema);
-
-module.exports = User;
+/**
+ * Compiles and exports the user model from the given schema.
+ *
+ * @type {Model}
+ */
+module.exports = mongoose.model('user', userSchema);

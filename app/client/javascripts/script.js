@@ -33,13 +33,15 @@ let game = {
         let loginBtn = $("#login-btn");
         let registerBtn = $("#signup-btn");
 
-        let name = $("#name-field").val().trim();
-        let username = $("#username-field").val().trim();
-        let password = $("#password-field").val().trim();
+        let nameFiled = $("#name-field");
+        let usernameField = $("#username-field");
+        let passwordField = $("#password-field");
 
         let errorMsg = $("#error-msg");
 
         playBtn.click(function () {
+            let name = nameFiled.val().trim();
+
             if (name.length <= 0) {
                 errorMsg.html("Please enter valid name!");
                 return;
@@ -54,6 +56,9 @@ let game = {
         });
 
         loginBtn.click(function () {
+            let username = usernameField.val().trim();
+            let password = passwordField.val().trim();
+
             if (username.length <= 0 || password.length <= 0) {
                 errorMsg.html("Please enter valid credentials!");
                 return;
@@ -69,6 +74,9 @@ let game = {
         });
 
         registerBtn.click(function () {
+            let username = usernameField.val().trim();
+            let password = passwordField.val().trim();
+
             if (username.length <= 0 || password.length <= 0) {
                 errorMsg.html("Please enter valid credentials!");
                 return;
@@ -89,6 +97,9 @@ let game = {
      * Callback function to be called when the server responds with initial game status.
      */
     startGame: function () {
+        // Hide login dialog
+        $(".overlay").hide();
+
         if (game.gameEngine) {
             game.gameEngine.reset();
         } else {
@@ -108,6 +119,9 @@ let game = {
      * Callback function to be called only when the game is over.
      */
     gameOver: function () {
+        // Show login dialog
+        $(".overlay").show();
+
         // Stop sending player angle
         clearInterval(game.gameServer.sendAngle);
 
