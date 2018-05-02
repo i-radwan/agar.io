@@ -77,7 +77,7 @@ function setupServer() {
     });
 
     // Log in view endpoint
-    app.get('/login', function (req, res) {
+    app.get(['/login', '/register'], function (req, res) {
         // ToDo: check if already logged in -> redirect to '/'
         res.sendFile(path.resolve('../client/views/auth.html'));
     });
@@ -90,7 +90,6 @@ function setupServer() {
         return res.json({status: 1, error_msg: "Please use valid name!"});
     });
 
-    // ToDo: merge register, endpoint functions
     // Register endpoint
     app.post('/register', function (req, res) {
         // ToDo: check if already logged in
