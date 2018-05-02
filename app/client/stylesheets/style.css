@@ -21,7 +21,7 @@ canvas {
     position: absolute;
     width: 100vw;
     height: 100vh;
-    display: none;
+    /*display: none;*/
     background: rgba(78, 78, 78, 0.42);
     text-align: center;
 }
@@ -38,6 +38,12 @@ canvas {
 
 .login-form {
     margin-top: 20px;
+}
+
+.form-btn {
+    display: inline-block;
+    margin: 0 20px;
+    width: 120px;
 }
 
 @media only screen and (min-width: 600px) {

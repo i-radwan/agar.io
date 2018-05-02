@@ -39,7 +39,6 @@ export default function () {
     module.sync = function (serverGameStatus) {
         let current = Date.now();
         let delta = current - module.status.env.lastGameStatusTimestamp;
-        console.log("Server latency: ", delta);
         module.status.env.lastGameStatusTimestamp = current;
 
         syncGems(serverGameStatus.newGems, serverGameStatus.deletedGemsIDs);

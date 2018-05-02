@@ -20,6 +20,68 @@ let game = {
         // Establish server communication
         game.gameServer = GameServer(game.gameStatus);
         game.gameServer.init(game.startGame);
+
+        // Setup listeners
+        game.setupListeners();
+    },
+
+    /**
+     * Setup buttons
+     */
+    setupListeners: function () {
+        let playBtn = $("#play-btn");
+        let loginBtn = $("#login-btn");
+        let registerBtn = $("#signup-btn");
+
+        let name = $("#name-field").val().trim();
+        let username = $("#username-field").val().trim();
+        let password = $("#password-field").val().trim();
+
+        let errorMsg = $("#error-msg");
+
+        playBtn.click(function () {
+            if (name.length <= 0) {
+                errorMsg.html("Please enter valid name!");
+                return;
+            }
+
+            let msg = {
+                type: game.constants.general.GUEST_MSG_TYPE,
+                name: name
+            };
+
+            game.gameServer.sendSubscribeRequest(msg);
+        });
+
+        loginBtn.click(function () {
+            if (username.length <= 0 || password.length <= 0) {
+                errorMsg.html("Please enter valid credentials!");
+                return;
+            }
+
+            let msg = {
+                type: game.constants.general.LOGIN_MSG_TYPE,
+                username: username,
+                password: password
+            };
+
+            game.gameServer.sendSubscribeRequest(msg);
+        });
+
+        registerBtn.click(function () {
+            if (username.length <= 0 || password.length <= 0) {
+                errorMsg.html("Please enter valid credentials!");
+                return;
+            }
+
+            let msg = {
+                type: game.constants.general.REGISTER_MSG_TYPE,
+                username: username,
+                password: password
+            };
+
+            game.gameServer.sendSubscribeRequest(msg);
+        });
     },
 
     /**
