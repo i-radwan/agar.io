@@ -27,8 +27,8 @@ class Player {
         this.radius = Constants.PLAYER_INITIAL_RADIUS;
 
         // Generate random normalized position
-        this.x = position.x;
-        this.y = position.y;
+        this.x = 0;//position.x;
+        this.y = 0;//position.y;
 
         // Set initial movement velocity and angle
         this.velocity = Constants.PLAYER_INITIAL_SPEED;
@@ -169,11 +169,14 @@ class Player {
         );
 
         // Save user's highest score
-        if (this.user && this.score > (this.user.highScore || 0)) {
+        if (this.user && this.score > this.user.highScore) {
+            console.log("here");
+
             User.update(
                 {_id: this.user._id},
                 {highScore: this.score},
-                {multi: true}
+                {multi: true},
+                function (err, count) {}
             );
         }
     }

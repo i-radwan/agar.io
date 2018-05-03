@@ -17,7 +17,14 @@ canvas {
     position: absolute;
 }
 
-.text-danger{
+.sep {
+    width: 75%;
+    height: 1px;
+    border-top: 1px solid #a8a8a8;
+    margin: 20px auto;
+}
+
+.text-danger {
     margin-bottom: 0;
 }
 
@@ -47,6 +54,19 @@ canvas {
     display: inline-block;
     margin: 0 20px;
     width: 120px;
+}
+
+.info-div {
+    margin: 20px 50px;
+}
+
+.col-form-label {
+    text-align: left;
+    font-size: 16px;
+}
+
+.form-control-plaintext{
+    font-size: 16px;
 }
 
 @media only screen and (min-width: 600px) {

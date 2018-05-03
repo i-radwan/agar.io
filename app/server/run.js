@@ -68,37 +68,28 @@ function setupServer() {
     let path = require('path');
     app.use(express.static(path.resolve('../client/')));
 
-
     //
     // Routes
     //
 
-    // Main game screen
+    // Authentication view endpoint
     app.get('/', function (req, res) {
         if (req.session.user) {
-            res.sendFile(path.resolve('../client/views/index.html'));
-        }
-        else {
-            res.redirect('/login');
-        }
-    });
-
-    // Log in view endpoint
-    app.get(['/login', '/register'], function (req, res) {
-        if (req.session.user) {
-            res.redirect('/');
+            res.sendFile(path.resolve('../client/views/profile.html'));
         }
         else {
             res.sendFile(path.resolve('../client/views/auth.html'));
         }
     });
 
+    // Main game screen
+    app.get('/play', function (req, res) {
+        res.sendFile(path.resolve('../client/views/index.html'));
+    });
+
     // Join endpoint
     app.post('/join', function (req, res) {
-        // ToDo: check if already logged in
-        // return res.json({status: 0, redirect: "/"});
-
-        console.log(req.session.name = req.body.name);
+        req.session.name = (req.session.user ? req.session.user.username : req.body.name);
         res.json({status: 0});
     });
 
@@ -114,6 +105,7 @@ function setupServer() {
         let userData = {
             username: username,
             password: password,
+            highScore: 10
         };
 
         // Try registering the user
@@ -158,11 +150,13 @@ function setupServer() {
             req.session.destroy(function (err) {
                 if (err) {
                     console.log("logout", err);
+                    res.json({status: 1, error_msg: "Please try again later!"});
+                }
+                else {
+                    res.json({status: 0});
                 }
             });
         }
-
-        res.redirect('/login');
     });
 }
 

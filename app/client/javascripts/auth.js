@@ -1,4 +1,4 @@
-const GAME_URL = "http://localhost:3000";
+const GAME_URL = "http://localhost:3000/play";
 const STATUS_OK = 0;
 const STATUS_ERROR = 0;
 
@@ -23,7 +23,7 @@ let app = {
         app.loginBtn = $("#login-btn");
         app.registerBtn = $("#register-btn");
 
-        app.nameFiled = $("#name-field");
+        app.nameField = $("#name-field");
         app.usernameField = $("#username-field");
         app.passwordField = $("#password-field");
 
@@ -35,7 +35,7 @@ let app = {
      */
     setupListeners: function () {
         app.playBtn.click(function () {
-            let name = app.nameFiled.val().trim();
+            let name = app.nameField.val().trim();
 
             if (name.length <= 0) {
                 app.errorMsg.html("Please enter valid name!");
@@ -67,7 +67,7 @@ let app = {
     },
 
     /**
-     * Sends authentication related requests to the given endping
+     * Sends authentication related requests to the given endpoint
      *
      * @param endpoint  the destination endpoint
      */

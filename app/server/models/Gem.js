@@ -7,7 +7,8 @@ class Gem {
     /**
      * Gem model constructor.
      *
-     * @param id    gem unique id in the game room
+     * @param id        the gem unique id in the game room
+     * @param position  the gem position
      */
     constructor(id, position) {
         // Set id (unique within room)

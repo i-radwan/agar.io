@@ -22,6 +22,11 @@ export default function (gameStatus, errorMsgCallback) {
             gameStatus.status.anglesQueue.serverAngleTimestamp = receivedGameStatus.serverTimestamp;
 
             gameStatus.status.meId = receivedGameStatus.meId;
+            gameStatus.status.name = receivedGameStatus.name;
+            gameStatus.status.highScore = receivedGameStatus.highScore;
+
+            localStorage.setItem("name", receivedGameStatus.name);
+            localStorage.setItem("high_score", receivedGameStatus.highScore);
 
             gameStatus.sync(receivedGameStatus);
 
@@ -32,6 +37,11 @@ export default function (gameStatus, errorMsgCallback) {
         socket.on('game_status', function (receivedGameStatus) {
             // Update local gameStatus by receivedGameStatus
             gameStatus.sync(receivedGameStatus);
+        });
+
+        // Listen to game over event
+        socket.on('game_over', function () {
+            gameStatus.status.env.running = false;
         });
 
         // Listen to disconnection event
@@ -48,23 +58,6 @@ export default function (gameStatus, errorMsgCallback) {
         socket.on('pong', function (ms) {
             gameStatus.status.env.ping = ms;
         });
-    };
-
-    /**
-     * Reconnects the client socket to server socket when the player replays the game
-     */
-    module.reconnect = function () {
-        // Ignore socket old buffers
-        socket.sendBuffer = [];
-        socket.receiveBuffer = [];
-
-        if (socket.connected) { // Player didn't loose connection, just got eaten
-            sendSubscribeRequest();
-            return;
-        }
-
-        // Reconnect to server
-        sendSubscribeRequest();
     };
 
     /**

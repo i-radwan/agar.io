@@ -114,7 +114,7 @@ class GameServer {
 
         // Simulate player movements based on the received angles sequence
         if (this.rooms[roomID].isPlayerAlive(id)) {
-            this.rooms[roomID].simulatePlayer(id, anglesBuffer);
+            this.rooms[roomID].simulatePlayer(id, anglesBuffer, this.sendGameOverMsg.bind(this));
         }
     };
 
@@ -153,6 +153,8 @@ class GameServer {
 
         // Attach player-specific data
         status.meId = player.id;
+        status.name = player.name;
+        status.highScore = (player.user ? player.user.highScore : 10);
         status.serverTimestamp = player.lastAngleTimestamp;
 
         // Send status to the player
@@ -175,6 +177,13 @@ class GameServer {
             }
         }
     };
+
+    /**
+     * Sends a game over message the given player when got eaten.
+     */
+    sendGameOverMsg(playerID) {
+        this.io.to(playerID).emit('game_over', {});
+    }
 
     /**
      * Regenerates the gems of all game rooms
