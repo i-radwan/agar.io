@@ -27,8 +27,8 @@ class Player {
         this.radius = Constants.PLAYER_INITIAL_RADIUS;
 
         // Generate random normalized position
-        this.x = 0;//position.x;
-        this.y = 0;//position.y;
+        this.x = position.x;
+        this.y = position.y;
 
         // Set initial movement velocity and angle
         this.velocity = Constants.PLAYER_INITIAL_SPEED;
