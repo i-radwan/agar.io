@@ -13,12 +13,23 @@ export default function (p5Lib) {
     let playerNameTextFont;
 
     let sortedPlayers;
+    let isMobile = false;
+
+    // HUD margins
+    let HUDMarginLeft, HUDMarginRight, HUDMarginUp, HUDMarginDown;
 
     /**
      * Initializes the UI engine canvas, fonts, and other drawing parameters.
      */
     module.init = function () {
         playerNameTextFont = p5Lib.loadFont(constants.graphics.PLAYER_NAME_TEXT_FONT_PATH);
+
+        // Detect if the user is mobile.
+        let mobileDetect = new MobileDetect(window.navigator.userAgent);
+        if (mobileDetect.mobile()) {
+            isMobile = true;
+            zoom = constants.graphics.INITIAL_ZOOM * Math.sqrt((window.innerWidth * window.innerHeight) / (constants.graphics.GENERIC_WINDOW_AREA));
+        }
 
         // Create canvas
         makeCanvas();
@@ -92,9 +103,12 @@ export default function (p5Lib) {
         // Clear the head up display canvas
         clearHUDCanvas();
 
-        drawHUDText("bottom", "left", "Score: " + score, 0, window.innerHeight);
-        drawHUDText("top", "left", "FPS: " + (1000 / elapsed).toFixed(0), 0, 0);
-        drawHUDText("top", "left", "Ping: " + parseInt(ping), 0, constants.graphics.TEXT_HEIGHT);
+        if (!isMobile) {
+            drawHUDText("top", "left", "FPS: " + (1000 / elapsed).toFixed(0), HUDMarginLeft, HUDMarginUp);
+            drawHUDText("top", "left", "Ping: " + parseInt(ping), HUDMarginLeft, constants.graphics.TEXT_HEIGHT + HUDMarginUp);
+        }
+
+        drawHUDText("bottom", "left", "Score: " + score, HUDMarginLeft, window.innerHeight - HUDMarginDown);
         drawLeaderboard();
     };
 
@@ -304,7 +318,7 @@ export default function (p5Lib) {
             leaderboardTitle += " ";
 
         // Draw leaderboard title.
-        drawHUDText("top", "right", leaderboardTitle, window.innerWidth, 0);
+        drawHUDText("top", "right", leaderboardTitle, window.innerWidth - HUDMarginRight, HUDMarginUp);
 
         for (let i = 0; i < Math.min(constants.graphics.LEADER_BOARD_PLAYERS_COUNT, sortedPlayers.length); i++) {
             let player = sortedPlayers[sortedPlayers.length - i - 1];
@@ -330,15 +344,15 @@ export default function (p5Lib) {
 
             // Add all of the missing spaces in order to maintain the same width even with different scores/names.
             for (let j = 0; j < ((constants.graphics.LEADER_BOARD_SPACES_COUNT
-                                + constants.graphics.LEADER_BOARD_MAX_SCORE_LENGTH - scoreDigitsCnt)
-                                + (constants.graphics.LEADER_BOARD_MAX_NAME_LENGTH
-                                - playerName.length)); j++) {
+                + constants.graphics.LEADER_BOARD_MAX_SCORE_LENGTH - scoreDigitsCnt)
+                + (constants.graphics.LEADER_BOARD_MAX_NAME_LENGTH
+                    - playerName.length)); j++) {
                 text += " ";
             }
             text += playerScore;
 
             // Draw the player score and name in the leaderboard.
-            drawHUDText("top", "right", text, window.innerWidth, (i + 1) * constants.graphics.TEXT_HEIGHT);
+            drawHUDText("top", "right", text, window.innerWidth - HUDMarginRight, (i + 1) * constants.graphics.TEXT_HEIGHT + HUDMarginUp);
         }
     };
 
@@ -382,6 +396,21 @@ export default function (p5Lib) {
     };
 
     let updateGameSize = function () {
+
+        // Update HUD margins
+        if (isMobile) {
+            HUDMarginLeft = 0;
+            HUDMarginRight = 0;
+            HUDMarginUp = 0;
+            HUDMarginDown = 0;
+        } else {
+            HUDMarginLeft = window.innerWidth * constants.graphics.HUD_MARGIN_WIDTH_FACTOR;
+            HUDMarginRight = window.innerWidth * constants.graphics.HUD_MARGIN_WIDTH_FACTOR;
+            HUDMarginUp = window.innerHeight * constants.graphics.HUD_MARGIN_HEIGHT_FACTOR;
+            HUDMarginDown = window.innerHeight * constants.graphics.HUD_MARGIN_HEIGHT_FACTOR;
+        }
+
+
         // Calculate screen specific zoom factor
         zoomFactor = Math.sqrt((window.innerWidth * window.innerHeight) / (constants.graphics.GENERIC_WINDOW_AREA));
 

@@ -51,7 +51,10 @@ export default function () {
             LEADER_BOARD_SPACES_COUNT: 5,
             LEADER_BOARD_MAX_NAME_LENGTH:  10,
             LEADER_BOARD_DOTS_COUNT: 2,
-            LEADER_BOARD_MAX_SCORE_LENGTH: 5
+            LEADER_BOARD_MAX_SCORE_LENGTH: 5,
+
+            HUD_MARGIN_WIDTH_FACTOR: 10/1920,
+            HUD_MARGIN_HEIGHT_FACTOR: 10/1080
         }
     };
 };
