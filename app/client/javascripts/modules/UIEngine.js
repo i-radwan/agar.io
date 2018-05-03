@@ -177,10 +177,10 @@ export default function (p5Lib) {
         blob.yOffset += elapsed * constants.graphics.WABBLE_SPEED / Math.sqrt(blob.radius);
 
         // Draw the large noisy circle
-        drawNoisyCircle(blob, blob.canvasRadius, constants.graphics.BLOB_STROKE_COLOR);
+        drawNoisyCircle(blob, blob.radius, constants.graphics.OUTER_RADIUS_EXTRA_LENGTH, constants.graphics.BLOB_STROKE_COLOR);
 
         // Draw the small noisy circle
-        drawNoisyCircle(blob, blob.canvasRadius * (1 - constants.graphics.MAX_BLOB_WABBLE_RADIUS_OFFSET), blob.color);
+        drawNoisyCircle(blob, blob.radius - constants.graphics.OUTER_RADIUS_EXTRA_LENGTH, 0, blob.color);
 
         // Draw My center and Server Center (Debugging)
         let serverCenterCircle = {
@@ -215,33 +215,42 @@ export default function (p5Lib) {
      *
      * @param blob object used to get attributes of the blob
      * @param radius the radius of this circle (has to be passed in because it may differ from the blob radius)
+     * @param extraRadius an added length to the borders in order to extend the blob outer layer.
      * @param color the circle filling color
      */
-    let drawNoisyCircle = function (blob, radius, color) {
+    let drawNoisyCircle = function (blob, radius, extraRadius, color) {
         p5Lib.push();
         p5Lib.beginShape();
 
         // Fill the drawing with the required color
         p5Lib.fill(color);
 
-        let r = radius;
         let xOffset = 0;
+        for (let theta = 0; theta < p5Lib.TWO_PI - 0.1; theta += 0.01) {
+            // Get the vertex of the circle
+            let x = blob.canvasX + radius * Math.cos(theta);
+            let y = blob.canvasY + radius * Math.sin(theta);
 
-        for (let theta = 0; theta < p5Lib.TWO_PI - 0.1; theta += 0.1) {
-            // Make radius with ± noise
-            let rad = p5Lib.map(
-                p5Lib.noise(xOffset, blob.yOffset),
-                0, 1,
-                r, r * (1 + constants.graphics.MAX_BLOB_WABBLE_RADIUS_OFFSET)
-            );
+            // Check if the point is out of the border
+            if (x > constants.graphics.GAME_BORDER_RIGHT + extraRadius)
+                x = constants.graphics.GAME_BORDER_RIGHT + extraRadius;
+            else if (x < constants.graphics.GAME_BORDER_LEFT - extraRadius)
+                x = constants.graphics.GAME_BORDER_LEFT - extraRadius;
+            if (y > constants.graphics.GAME_BORDER_UP + extraRadius)
+                y = constants.graphics.GAME_BORDER_UP + extraRadius;
+            else if (y < constants.graphics.GAME_BORDER_DOWN - extraRadius)
+                y = constants.graphics.GAME_BORDER_DOWN - extraRadius;
 
-            // Add the vertex of the circle
-            let x = blob.canvasX + rad * Math.cos(theta);
-            let y = blob.canvasY + rad * Math.sin(theta);
+            let v = {x: x - blob.canvasX, y: y - blob.canvasY};
+
+            // ± noise to the point in its direction
+            x += p5Lib.noise(xOffset, blob.yOffset) * v.x * constants.graphics.MAX_BLOB_WABBLE_RADIUS_OFFSET;
+            y += p5Lib.noise(xOffset, blob.yOffset) * v.y * constants.graphics.MAX_BLOB_WABBLE_RADIUS_OFFSET;
+
             p5Lib.vertex(x, y);
 
             // Increase the xOffset to get another noisy pattern in the next loop (for the blob animation)
-            xOffset += 0.1;
+            xOffset += 0.01;
         }
 
         p5Lib.endShape();
