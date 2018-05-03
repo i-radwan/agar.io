@@ -42,7 +42,7 @@ export default function () {
             MAX_BLOB_WABBLE_RADIUS_OFFSET: 1 / 7,
             WABBLE_SPEED: 0.00009,
 
-            TEXT_STYLE: 'Lucida Console',
+            TEXT_STYLE: 'comic sans ms',
             TEXT_HEIGHT: 20,
             TEXT_COLOR: 'orange',
 
