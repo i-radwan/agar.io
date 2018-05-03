@@ -42,7 +42,7 @@ export default function () {
         module.status.env.lastGameStatusTimestamp = current;
 
         syncGems(serverGameStatus.newGems, serverGameStatus.deletedGemsIDs);
-        syncPlayers(serverGameStatus.players, serverGameStatus.newPlayers, delta);
+        syncPlayers(serverGameStatus.players, serverGameStatus.newPlayers, delta, serverGameStatus.now);
         syncAnglesBuffer(serverGameStatus.sync);
     };
 
@@ -102,12 +102,14 @@ export default function () {
      * @param serverGamePlayers     the server players graphics parameters
      * @param serverGameNewPlayers  the newly registered player static information (i.e. name, color, ..etc)
      */
-    let syncPlayers = function (serverGamePlayers, serverGameNewPlayers, delta) {
+    let syncPlayers = function (serverGamePlayers, serverGameNewPlayers, delta, now) {
         // Check if I was eaten
         if (!serverGamePlayers[module.status.meId]) {
             module.status.env.running = false;
             return;
         }
+
+        let clientNow = Date.now();
 
         for (let key in serverGamePlayers) {
             let player = module.status.players[key] || {};
@@ -117,7 +119,10 @@ export default function () {
 
             if (key === module.status.meId) continue;
 
+            let delays = (player.lag + clientNow - now) / constants.general.UPDATE_PHYSICS_THRESHOLD;
+            // let vf = player.velocity * delays;
             let vf = player.velocity * 2 * delta / constants.general.UPDATE_PHYSICS_THRESHOLD;
+
             player.x += Math.cos(player.angle) * vf;
             player.y += Math.sin(player.angle) * vf;
         }

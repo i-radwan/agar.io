@@ -2,6 +2,7 @@ export default function () {
     return {
         general: {
             SEND_ANGLE_TO_SERVER_RATE: 15, // milliseconds
+            RECEIVE_STATUS_FROM_SERVER: 40,
             MAX_ANGLES_BUFFER_SIZE: 20,
             UPDATE_PHYSICS_THRESHOLD: 15,
             FORCE_SERVER_POSITIONS_TIME: 3000,
@@ -11,7 +12,7 @@ export default function () {
             REGISTER_MSG_TYPE: 10002,
         },
         physics: {
-            MOVEMENT_INTERPOLATION_FACTOR: 0.3,
+            MOVEMENT_INTERPOLATION_FACTOR: 0.15,
             GROW_INTERPOLATION_FACTOR: 0.05
         },
         graphics: {

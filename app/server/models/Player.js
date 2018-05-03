@@ -56,14 +56,15 @@ class Player {
      *
      * @returns Object
      */
-    getGraphicsInfo() {
+    getGraphicsInfo(current) {
         return {
             score: this.score,
             radius: this.radius,
             x: this.x,
             y: this.y,
             velocity: this.velocity,
-            angle: this.angle
+            angle: this.angle,
+            lag: current - this.lastAngleTimestamp
         };
     }
 

@@ -1,7 +1,7 @@
 // Imports
 const Constants = require("./utils/Constants")();
 const Room = require("./models/Room");
-const User = require('./models/user');
+const User = require('./models/User');
 
 class GameServer {
 

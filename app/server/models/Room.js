@@ -178,10 +178,12 @@ class Room {
      * @returns {Array} array of players' graphics info
      */
     getPlayersGraphicsInfo() {
+        let current = Date.now();
         let ret = {};
         for (let key in this.players) {
-            ret[key] = this.players[key].getGraphicsInfo();
+            ret[key] = this.players[key].getGraphicsInfo(current);
         }
+
         return ret;
     }
 
@@ -210,6 +212,7 @@ class Room {
         this.lastSendRoomStatusTime = Date.now();
 
         let gameStatus = {
+            now: this.lastSendRoomStatusTime,
             players: this.getPlayersGraphicsInfo(),
             newPlayers: this.newPlayersStaticInfo,
             newGems: this.newGems,
