@@ -232,7 +232,7 @@ export default function (p5Lib) {
             let rad = p5Lib.map(
                 p5Lib.noise(xOffset, blob.yOffset),
                 0, 1,
-                r, r * (1 + constants.graphics.MAX_BLOB_WABBLE_RADIUS_OFFSET)
+                r * (1 - constants.graphics.MAX_BLOB_WABBLE_RADIUS_OFFSET), r
             );
 
             // Add the vertex of the circle
@@ -294,6 +294,10 @@ export default function (p5Lib) {
                 drawCircle(stars[n]);
             }
         }
+    };
+
+    let clearHUDCanvas = function () {
+        hudCanvasContext.clearRect(0, 0, window.innerWidth, window.innerHeight);
     };
 
     let drawHUDText = function (textBaseline, textAlign, text, x, y) {
@@ -396,7 +400,6 @@ export default function (p5Lib) {
     };
 
     let updateGameSize = function () {
-
         // Update HUD margins
         if (isMobile) {
             HUDMarginLeft = 0;
@@ -427,10 +430,6 @@ export default function (p5Lib) {
         $('body, canvas').bind('touchmove', function (e) {
             e.preventDefault();
         });
-    };
-
-    let clearHUDCanvas = function () {
-        hudCanvasContext.clearRect(0, 0, window.innerWidth, window.innerHeight);
     };
 
     /**

@@ -122,6 +122,7 @@ export default function () {
             if (key === module.status.meId) continue;
 
             let delays = (player.lag + clientNow - now) / constants.general.UPDATE_PHYSICS_THRESHOLD;
+
             // let vf = player.velocity * delays;
             let vf = player.velocity * 2 * delta / constants.general.UPDATE_PHYSICS_THRESHOLD;
 
