@@ -122,12 +122,13 @@ class Room {
      * Adds a new player to the room.
      *
      * @param id            the player id to add
-     * @param name          player name
+     * @param name          the player name
+     * @param user          the user model of the given player
      * @returns {Player}    the newly added player
      */
-    addPlayer(id, name) {
+    addPlayer(id, name, user) {
         // Get a random position for a player.
-        let player = new Player(id, this.getNewPlayerPosition(), name);
+        let player = new Player(id, this.getNewPlayerPosition(), name, user);
 
         this.players[id] = player;
         this.playersStaticInfo[id] = this.newPlayersStaticInfo[id] = player.getStaticInfo();

@@ -5,10 +5,6 @@ export default function () {
             MAX_ANGLES_BUFFER_SIZE: 20,
             UPDATE_PHYSICS_THRESHOLD: 15,
             FORCE_SERVER_POSITIONS_TIME: 3000,
-
-            GUEST_MSG_TYPE: 10000,
-            LOGIN_MSG_TYPE: 10001,
-            REGISTER_MSG_TYPE: 10002,
         },
         physics: {
             MOVEMENT_INTERPOLATION_FACTOR: 0.3,

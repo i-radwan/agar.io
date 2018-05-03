@@ -1,7 +1,6 @@
 // Imports
 const Constants = require("./utils/Constants")();
 const Room = require("./models/Room");
-const User = require('./models/user');
 
 class GameServer {
 
@@ -31,55 +30,12 @@ class GameServer {
         // Register event listeners
         //
         self.io.on('connection', function (socket) {
-            console.log("TAG2: ", socket.handshake.session);
-
             // Add new player to a room upon receiving connection event
             socket.on('subscribe', function () {
-                self.addNewPlayer(socket.id, "Test");
-                console.log("a player connected", socket.id);
+                let session = socket.handshake.session;
 
-                // let session = socket.handshake.session;
-                //
-                // if (msg.type === Constants.GUEST_MSG_TYPE) {
-                //     self.addNewPlayer(socket.id, msg.name);
-                // }
-                // else if (msg.type === Constants.LOGIN_MSG_TYPE) {
-                //     if (msg.username && msg.password) {
-                //         User.authenticate(msg.username, msg.password, function (error, user) {
-                //             if (error || !user) {
-                //                 self.io.to(socket.id).emit("error", "Invalid credentials!");
-                //             }
-                //             else {
-                //                 socket.handshake.session.user = user;
-                //                 socket.handshake.session.save();
-                //                 console.log("TAG3: ", socket.handshake.session);
-                //
-                //                 self.addNewPlayer(socket.id, user.username);
-                //             }
-                //         });
-                //     }
-                // }
-                // else if (msg.type === Constants.REGISTER_MSG_TYPE) {
-                //     if (msg.username && msg.password) {
-                //         let userData = {
-                //             username: msg.username,
-                //             password: msg.password,
-                //         };
-                //
-                //         User.create(userData, function (error, user) {
-                //             if (error || !user) {
-                //                 self.io.to(socket.id).emit("error", "Invalid credentials!");
-                //             }
-                //             else {
-                //                 session.user = user;
-                //                 self.addNewPlayer(socket.id, user.username);
-                //             }
-                //         });
-                //     }
-                //     else {
-                //         self.io.to(socket.id).emit("error", "Invalid request!");
-                //     }
-                // }
+                self.addNewPlayer(socket.id, session.name, session.user);
+                console.log("a player connected", socket.id);
             });
 
             // Updates player's angle
@@ -107,10 +63,11 @@ class GameServer {
      *
      * @param id    the player socket id
      * @param name  the player name
+     * @param user  the user model of the given player
      */
-    addNewPlayer(id, name) {
+    addNewPlayer(id, name, user) {
         let room = this.getAvailableRoom();
-        let player = room.addPlayer(id, name);
+        let player = room.addPlayer(id, name, user);
 
         this.playerRoomId[id] = room.id;
 

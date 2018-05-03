@@ -46,11 +46,11 @@ let app = {
                 name: name
             };
 
-            $.post("/join", JSON.stringify({data: msg}),
-                function (result) {
+            $.post("/join", msg, function (result) {
                     if (result.status === STATUS_OK) {
                         window.location = GAME_URL;
-                    } else {
+                    }
+                    else {
                         app.errorMsgCallback(result.error_msg);
                     }
                 }
@@ -85,11 +85,11 @@ let app = {
             password: password
         };
 
-        $.post(endpoint, JSON.stringify({data: msg}),
-            function (result) {
+        $.post(endpoint, msg, function (result) {
                 if (result.status === STATUS_OK) {
                     window.location = GAME_URL;
-                } else {
+                }
+                else {
                     app.errorMsgCallback(result.error_msg);
                 }
             }
