@@ -170,8 +170,6 @@ class Player {
 
         // Save user's highest score
         if (this.user && this.score > this.user.highScore) {
-            console.log("here");
-
             User.update(
                 {_id: this.user._id},
                 {highScore: this.score},

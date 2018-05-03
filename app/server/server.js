@@ -86,17 +86,15 @@ class GameServer {
         let roomID = this.playerRoomId[id];
 
         // Remove player from his room
-        if (this.rooms[roomID].isPlayerAlive(id)) {
-            this.rooms[roomID].removePlayer(id);
-        }
+        this.rooms[roomID].removePlayer(id);
 
         // Remove player entry from map
-        // delete this.playersMap[playerSocketID];
+        delete this.playerRoomId[id];
 
         // Remove room if this was the last player
-        // if (this.rooms[roomID].playersCount === 0) {
-        //     delete this.rooms[roomID];
-        // }
+        if (this.rooms[roomID].playersCount === 0) {
+            delete this.rooms[roomID];
+        }
     };
 
     /**
@@ -113,9 +111,7 @@ class GameServer {
         let roomID = this.playerRoomId[id];
 
         // Simulate player movements based on the received angles sequence
-        if (this.rooms[roomID].isPlayerAlive(id)) {
-            this.rooms[roomID].simulatePlayer(id, anglesBuffer, this.sendGameOverMsg.bind(this));
-        }
+        this.rooms[roomID].simulatePlayer(id, anglesBuffer, this.sendGameOverMsg.bind(this));
     };
 
     /**
@@ -180,9 +176,23 @@ class GameServer {
 
     /**
      * Sends a game over message the given player when got eaten.
+     *
+     * @param id the id of the eaten player
      */
-    sendGameOverMsg(playerID) {
-        this.io.to(playerID).emit('game_over', {});
+    sendGameOverMsg(id) {
+        // Send game over event to the loser client
+        this.io.to(id).emit('game_over', {});
+
+        // Get room id
+        let roomID = this.playerRoomId[id];
+
+        // Remove player entry from map
+        delete this.playerRoomId[id];
+
+        // Remove room if this was the last player
+        if (this.rooms[roomID].playersCount === 0) {
+            delete this.rooms[roomID];
+        }
     }
 
     /**
