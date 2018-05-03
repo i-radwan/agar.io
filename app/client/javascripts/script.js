@@ -27,12 +27,9 @@ let game = {
      * Callback function to be called when the server responds with initial game status.
      */
     startGame: function () {
-        if (game.gameEngine) {
-            game.gameEngine.reset();
-        } else {
-            game.gameEngine = GameEngine(game.gameStatus, game.gameOver);
-            game.gameEngine.init();
-        }
+        // Setup game engine
+        game.gameEngine = GameEngine(game.gameStatus, game.gameOver);
+        game.gameEngine.init();
 
         // Start game loop
         requestAnimationFrame(game.gameEngine.gameEngineLoop);
@@ -46,13 +43,15 @@ let game = {
      * Callback function to be called only when the game is over.
      */
     gameOver: function () {
+        let me = game.gameStatus.status.players[game.gameStatus.status.meId];
+
+        localStorage.setItem("high_score", Math.max(game.gameStatus.status.highScore, me.score).toString());
+
         // Stop sending player angle
         clearInterval(game.gameServer.sendAngle);
 
-        // Ask the user to restart the game
-        if (confirm("Sry, new round?")) {
-            game.gameServer.reconnect();
-        }
+        // Redirect to authentication page
+        window.location = game.constants.general.AUTH_URL;
     },
 };
 

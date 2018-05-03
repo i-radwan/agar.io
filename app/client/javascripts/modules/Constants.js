@@ -1,10 +1,12 @@
 export default function () {
     return {
         general: {
+            AUTH_URL: "http://localhost:3000/",
+            GAME_URL: "http://localhost:3000/play",
             SEND_ANGLE_TO_SERVER_RATE: 15, // milliseconds
             MAX_ANGLES_BUFFER_SIZE: 20,
             UPDATE_PHYSICS_THRESHOLD: 15,
-            FORCE_SERVER_POSITIONS_TIME: 3000,
+            FORCE_SERVER_POSITIONS_TIME: 3000
         },
         physics: {
             MOVEMENT_INTERPOLATION_FACTOR: 0.3,

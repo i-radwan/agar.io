@@ -1,13 +1,11 @@
 // Imports
 const Constants = require("../utils/Constants")();
+const Utilities = require("../utils/Utilities");
 const Gem = require("./Gem");
 const Player = require("./Player");
 const Grid = require("../utils/Grid");
-const Utilities = require("../utils/Utilities");
 
 class Room {
-
-    // TODO @Samir55 select using quad trees
 
     /**
      * Room model constructor.
@@ -38,11 +36,12 @@ class Room {
     /**
      * Simulates the movements of the given player based on the received angles sequence.
      *
-     * @param playerID      the player id to simulate
+     * @param id            the player id to simulate
      * @param anglesBuffer  the received player angles sequence buffer
+     * @param callback      a callback function to be called when a player got eaten
      */
-    simulatePlayer(playerID, anglesBuffer) {
-        let player = this.players[playerID];
+    simulatePlayer(id, anglesBuffer, callback) {
+        let player = this.players[id];
 
         // Return if invalid angles was received
         if (player.forcePosition = !player.validateSyncParams(anglesBuffer, this.lastSendRoomStatusTime)) {
@@ -60,7 +59,7 @@ class Room {
             this.eatOverlappingGems(player);
 
             // Check player eaten & update score of the player
-            this.eatOverlappingPlayers(player);
+            this.eatOverlappingPlayers(player, callback);
         }
     };
 
@@ -84,8 +83,9 @@ class Room {
      * Feeds any of the overlapping room players to the given player.
      *
      * @param player    the player to feed
+     * @param callback  a callback function to be called when a player got eaten
      */
-    eatOverlappingPlayers(player) {
+    eatOverlappingPlayers(player, callback) {
         for (let id in this.players) {
             if (id === player.id) {
                 continue;
@@ -95,6 +95,7 @@ class Room {
 
             // I was eaten
             if (foePlayer.canEat(player)) {
+                callback(player.id);
                 foePlayer.eat(player);
                 this.removePlayer(player.id);
                 return;
@@ -102,6 +103,7 @@ class Room {
 
             // I ate another player
             if (player.canEat(foePlayer)) {
+                callback(foePlayer.id);
                 player.eat(foePlayer);
                 this.removePlayer(foePlayer.id);
             }
@@ -111,11 +113,11 @@ class Room {
     /**
      * Checks whether the player is alive or not.
      *
-     * @param playerID      the id of the player to check
+     * @param id            the id of the player to check
      * @returns {boolean}   true if the given player is alive, false otherwise
      */
-    isPlayerAlive(playerID) {
-        return this.players.hasOwnProperty(playerID);
+    isPlayerAlive(id) {
+        return this.players.hasOwnProperty(id);
     }
 
     /**
@@ -141,14 +143,14 @@ class Room {
     /**
      * Removes the given player from the room.
      *
-     * @param playerID      the player id to be removed
+     * @param id    the player id to be removed
      */
-    removePlayer(playerID) {
+    removePlayer(id) {
         this.playersCount--;
 
-        delete this.players[playerID];
-        delete this.playersStaticInfo[playerID];
-        delete this.newPlayersStaticInfo[playerID];
+        delete this.players[id];
+        delete this.playersStaticInfo[id];
+        delete this.newPlayersStaticInfo[id];
     };
 
     /**
@@ -248,7 +250,6 @@ class Room {
         let ret = {
             x: Utilities.getRandomFloat(-1, 1),
             y: Utilities.getRandomFloat(-1, 1),
-            radius: Constants.GEM_RADIUS
         };
 
         for (let i = 0; i < Constants.GEM_GENERATE_POS_MAX_ITERATIONS; i++) {

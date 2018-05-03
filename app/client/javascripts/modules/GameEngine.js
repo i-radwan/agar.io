@@ -31,17 +31,6 @@ export default function (gameStatus, gameOverCallback) {
     };
 
     /**
-     * Resets game engine variables.
-     *
-     */
-    module.reset = function () {
-        physicsEngine.init();
-
-        status = gameStatus.status;
-        me = status.players[status.meId];
-    };
-
-    /**
      * Main game loop function.
      * Keeps running until our main player got eaten or disconnected.
      */
