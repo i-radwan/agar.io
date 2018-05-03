@@ -42,8 +42,16 @@ export default function () {
             MAX_BLOB_WABBLE_RADIUS_OFFSET: 1 / 7,
             WABBLE_SPEED: 0.00009,
 
-            TEXT_STYLE: '20px serif',
-            TEXT_COLOR: 'orange'
+            TEXT_STYLE: 'Lucida Console',
+            TEXT_HEIGHT: 20,
+            TEXT_COLOR: 'orange',
+
+            LEADER_BOARD_TITLE: "Leaderboard",
+            LEADER_BOARD_PLAYERS_COUNT: 10,
+            LEADER_BOARD_SPACES_COUNT: 5,
+            LEADER_BOARD_MAX_NAME_LENGTH:  10,
+            LEADER_BOARD_DOTS_COUNT: 2,
+            LEADER_BOARD_MAX_SCORE_LENGTH: 5
         }
     };
 };

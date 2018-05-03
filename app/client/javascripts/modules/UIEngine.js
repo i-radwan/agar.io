@@ -12,6 +12,8 @@ export default function (p5Lib) {
 
     let playerNameTextFont;
 
+    let sortedPlayers;
+
     /**
      * Initializes the UI engine canvas, fonts, and other drawing parameters.
      */
@@ -58,7 +60,7 @@ export default function (p5Lib) {
         }
 
         // Sort players by size, to render bigger players at top of smaller ones
-        let sortedPlayers = Object.values(players).sort(function (a, b) {
+        sortedPlayers = Object.values(players).sort(function (a, b) {
             return (a.radius - b.radius);
         });
 
@@ -92,7 +94,8 @@ export default function (p5Lib) {
 
         drawHUDText("bottom", "left", "Score: " + score, 0, window.innerHeight);
         drawHUDText("top", "left", "FPS: " + (1000 / elapsed).toFixed(0), 0, 0);
-        drawHUDText("top", "right", "Ping: " + parseInt(ping), window.innerWidth, 0);
+        drawHUDText("top", "left", "Ping: " + parseInt(ping), 0, constants.graphics.TEXT_HEIGHT);
+        drawLeaderboard();
     };
 
     /**
@@ -286,6 +289,60 @@ export default function (p5Lib) {
     };
 
     /**
+     * Draw the leaderboard on the top right with all of its calculations.
+     */
+    let drawLeaderboard = function () {
+        let leaderboardTitle = constants.graphics.LEADER_BOARD_TITLE;
+
+        // Calculate how many spaces needed to m,ake leaderboard title in the middle.
+        let spacesCnt = (constants.graphics.LEADER_BOARD_MAX_NAME_LENGTH
+            + constants.graphics.LEADER_BOARD_MAX_SCORE_LENGTH
+            + constants.graphics.LEADER_BOARD_SPACES_COUNT
+            - (leaderboardTitle.length)) / 2;
+
+        for (let i = 0; i < spacesCnt; i++)
+            leaderboardTitle += " ";
+
+        // Draw leaderboard title.
+        drawHUDText("top", "right", leaderboardTitle, window.innerWidth, 0);
+
+        for (let i = 0; i < Math.min(constants.graphics.LEADER_BOARD_PLAYERS_COUNT, sortedPlayers.length); i++) {
+            let player = sortedPlayers[sortedPlayers.length - i - 1];
+            let playerScore = player.score;
+            let playerName = player.name;
+            let text = "";
+
+            // Check for long names in order to cut them down.
+            if (playerName.length > constants.graphics.LEADER_BOARD_MAX_NAME_LENGTH) {
+                playerName = playerName.substr(0, constants.graphics.LEADER_BOARD_MAX_NAME_LENGTH - constants.graphics.LEADER_BOARD_DOTS_COUNT);
+
+                for (let j = 0; j < constants.graphics.LEADER_BOARD_DOTS_COUNT; j++)
+                    playerName += ".";
+            }
+            text += playerName;
+
+            // Check for small score digits to know how many spaces needed.
+            let scoreDigitsCnt = 0, tmpScore = playerScore;
+            while (tmpScore > 0) {
+                scoreDigitsCnt++;
+                tmpScore = parseInt(tmpScore / 10);
+            }
+
+            // Add all of the missing spaces in order to maintain the same width even with different scores/names.
+            for (let j = 0; j < ((constants.graphics.LEADER_BOARD_SPACES_COUNT
+                                + constants.graphics.LEADER_BOARD_MAX_SCORE_LENGTH - scoreDigitsCnt)
+                                + (constants.graphics.LEADER_BOARD_MAX_NAME_LENGTH
+                                - playerName.length)); j++) {
+                text += " ";
+            }
+            text += playerScore;
+
+            // Draw the player score and name in the leaderboard.
+            drawHUDText("top", "right", text, window.innerWidth, (i + 1) * constants.graphics.TEXT_HEIGHT);
+        }
+    };
+
+    /**
      * Use p5js createCanvas function to create canvas and configure it
      *
      * @return canvas object
@@ -332,7 +389,7 @@ export default function (p5Lib) {
 
         hudCanvas.width = Number(window.innerWidth);
         hudCanvas.height = Number(window.innerHeight);
-        hudCanvasContext.font = constants.graphics.TEXT_STYLE;
+        hudCanvasContext.font = constants.graphics.TEXT_HEIGHT + 'px ' + constants.graphics.TEXT_STYLE;
         hudCanvasContext.fillStyle = constants.graphics.TEXT_COLOR;
     };
 
