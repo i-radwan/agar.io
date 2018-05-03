@@ -31,17 +31,6 @@ export default function (gameStatus, gameOverCallback) {
     };
 
     /**
-     * Resets game engine variables.
-     *
-     */
-    module.reset = function () {
-        physicsEngine.init();
-
-        status = gameStatus.status;
-        me = status.players[status.meId];
-    };
-
-    /**
      * Main game loop function.
      * Keeps running until our main player got eaten or disconnected.
      */
@@ -119,11 +108,6 @@ export default function (gameStatus, gameOverCallback) {
     let update = function () {
         // Add canvas parameters to new game objects
         updateCanvasObjects();
-
-        // Sort players by size, to render bigger players at top of smaller ones
-        // status.players.sort(function (a, b) {
-        //     return (a.radius - b.radius);
-        // });
 
         // Get number of missed physics iterations and reduce the physics lag time
         let count = physicsEngine.narrowPhysicsDelay(status.env.forcePosition);

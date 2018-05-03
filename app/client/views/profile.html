@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Agar.io</title>
+    <link rel="stylesheet" href="../vendor/stylesheets/bootstrap.css">
+    <link rel="stylesheet" href="../stylesheets/style.css">
+</head>
+<body>
+<div class="overlay text-center">
+    <div class="form">
+        <h1 class="display-3">Agar</h1>
+        <hr class="sep">
+        <div class="info-div">
+            <div class="form-group row">
+                <label for="name-view" class="col-sm-6 col-form-label text-dark">Name</label>
+                <div class="col-sm-6">
+                    <input type="text" readonly class="form-control-plaintext" id="name-view" value="Omar">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="highest-score-view" class="col-sm-6 col-form-label">Highest Score</label>
+                <div class="col-sm-6">
+                    <input type="text" readonly class="form-control-plaintext" id="highest-score-view" value="12">
+                </div>
+            </div>
+        </div>
+        <div class="login-form">
+            <button class="btn btn-md btn-primary form-btn" id="logout-btn">Logout</button>
+            <button class="btn btn-md btn-success form-btn" id="play-btn">Play</button>
+        </div>
+        <div class="login-form">
+            <p class="text-danger" id="error-msg"></p>
+        </div>
+    </div>
+</div>
+<script src="../vendor/javascripts/jquery.min.js"></script>
+<script src="../vendor/javascripts/bootstrap.js"></script>
+<script src="../javascripts/profile.js"></script>
+</body>
+</html>

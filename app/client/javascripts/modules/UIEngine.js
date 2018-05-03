@@ -12,11 +12,24 @@ export default function (p5Lib) {
 
     let playerNameTextFont;
 
+    let sortedPlayers;
+    let isMobile = false;
+
+    // HUD margins
+    let HUDMarginLeft, HUDMarginRight, HUDMarginUp, HUDMarginDown;
+
     /**
      * Initializes the UI engine canvas, fonts, and other drawing parameters.
      */
     module.init = function () {
         playerNameTextFont = p5Lib.loadFont(constants.graphics.PLAYER_NAME_TEXT_FONT_PATH);
+
+        // Detect if the user is mobile.
+        let mobileDetect = new MobileDetect(window.navigator.userAgent);
+        if (mobileDetect.mobile()) {
+            isMobile = true;
+            zoom = constants.graphics.INITIAL_ZOOM * Math.sqrt((window.innerWidth * window.innerHeight) / (constants.graphics.GENERIC_WINDOW_AREA));
+        }
 
         // Create canvas
         makeCanvas();
@@ -57,9 +70,14 @@ export default function (p5Lib) {
             }
         }
 
+        // Sort players by size, to render bigger players at top of smaller ones
+        sortedPlayers = Object.values(players).sort(function (a, b) {
+            return (a.radius - b.radius);
+        });
+
         // Draw all players
-        for (let key in players) {
-            let player = players[key];
+        for (let key in sortedPlayers) {
+            let player = sortedPlayers[key];
 
             // Smoothly increase player's radius
             player.canvasRadius = p5Lib.lerp(player.canvasRadius, player.radius, constants.physics.GROW_INTERPOLATION_FACTOR);
@@ -85,9 +103,13 @@ export default function (p5Lib) {
         // Clear the head up display canvas
         clearHUDCanvas();
 
-        drawHUDText("bottom", "left", "Score: " + score, 0, window.innerHeight);
-        drawHUDText("top", "left", "FPS: " + (1000 / elapsed).toFixed(0), 0, 0);
-        drawHUDText("top", "right", "Ping: " + parseInt(ping), window.innerWidth, 0);
+        if (!isMobile) {
+            drawHUDText("top", "left", "FPS: " + (1000 / elapsed).toFixed(0), HUDMarginLeft, HUDMarginUp);
+            drawHUDText("top", "left", "Ping: " + parseInt(ping), HUDMarginLeft, constants.graphics.TEXT_HEIGHT + HUDMarginUp);
+        }
+
+        drawHUDText("bottom", "left", "Score: " + score, HUDMarginLeft, window.innerHeight - HUDMarginDown);
+        drawLeaderboard();
     };
 
     /**
@@ -281,6 +303,60 @@ export default function (p5Lib) {
     };
 
     /**
+     * Draw the leaderboard on the top right with all of its calculations.
+     */
+    let drawLeaderboard = function () {
+        let leaderboardTitle = constants.graphics.LEADER_BOARD_TITLE;
+
+        // Calculate how many spaces needed to m,ake leaderboard title in the middle.
+        let spacesCnt = (constants.graphics.LEADER_BOARD_MAX_NAME_LENGTH
+            + constants.graphics.LEADER_BOARD_MAX_SCORE_LENGTH
+            + constants.graphics.LEADER_BOARD_SPACES_COUNT
+            - (leaderboardTitle.length)) / 2;
+
+        for (let i = 0; i < spacesCnt; i++)
+            leaderboardTitle += " ";
+
+        // Draw leaderboard title.
+        drawHUDText("top", "right", leaderboardTitle, window.innerWidth - HUDMarginRight, HUDMarginUp);
+
+        for (let i = 0; i < Math.min(constants.graphics.LEADER_BOARD_PLAYERS_COUNT, sortedPlayers.length); i++) {
+            let player = sortedPlayers[sortedPlayers.length - i - 1];
+            let playerScore = player.score;
+            let playerName = player.name;
+            let text = "";
+
+            // Check for long names in order to cut them down.
+            if (playerName.length > constants.graphics.LEADER_BOARD_MAX_NAME_LENGTH) {
+                playerName = playerName.substr(0, constants.graphics.LEADER_BOARD_MAX_NAME_LENGTH - constants.graphics.LEADER_BOARD_DOTS_COUNT);
+
+                for (let j = 0; j < constants.graphics.LEADER_BOARD_DOTS_COUNT; j++)
+                    playerName += ".";
+            }
+            text += playerName;
+
+            // Check for small score digits to know how many spaces needed.
+            let scoreDigitsCnt = 0, tmpScore = playerScore;
+            while (tmpScore > 0) {
+                scoreDigitsCnt++;
+                tmpScore = parseInt(tmpScore / 10);
+            }
+
+            // Add all of the missing spaces in order to maintain the same width even with different scores/names.
+            for (let j = 0; j < ((constants.graphics.LEADER_BOARD_SPACES_COUNT
+                + constants.graphics.LEADER_BOARD_MAX_SCORE_LENGTH - scoreDigitsCnt)
+                + (constants.graphics.LEADER_BOARD_MAX_NAME_LENGTH
+                    - playerName.length)); j++) {
+                text += " ";
+            }
+            text += playerScore;
+
+            // Draw the player score and name in the leaderboard.
+            drawHUDText("top", "right", text, window.innerWidth - HUDMarginRight, (i + 1) * constants.graphics.TEXT_HEIGHT + HUDMarginUp);
+        }
+    };
+
+    /**
      * Use p5js createCanvas function to create canvas and configure it
      *
      * @return canvas object
@@ -320,6 +396,21 @@ export default function (p5Lib) {
     };
 
     let updateGameSize = function () {
+
+        // Update HUD margins
+        if (isMobile) {
+            HUDMarginLeft = 0;
+            HUDMarginRight = 0;
+            HUDMarginUp = 0;
+            HUDMarginDown = 0;
+        } else {
+            HUDMarginLeft = window.innerWidth * constants.graphics.HUD_MARGIN_WIDTH_FACTOR;
+            HUDMarginRight = window.innerWidth * constants.graphics.HUD_MARGIN_WIDTH_FACTOR;
+            HUDMarginUp = window.innerHeight * constants.graphics.HUD_MARGIN_HEIGHT_FACTOR;
+            HUDMarginDown = window.innerHeight * constants.graphics.HUD_MARGIN_HEIGHT_FACTOR;
+        }
+
+
         // Calculate screen specific zoom factor
         zoomFactor = Math.sqrt((window.innerWidth * window.innerHeight) / (constants.graphics.GENERIC_WINDOW_AREA));
 
@@ -327,7 +418,7 @@ export default function (p5Lib) {
 
         hudCanvas.width = Number(window.innerWidth);
         hudCanvas.height = Number(window.innerHeight);
-        hudCanvasContext.font = constants.graphics.TEXT_STYLE;
+        hudCanvasContext.font = constants.graphics.TEXT_HEIGHT + 'px ' + constants.graphics.TEXT_STYLE;
         hudCanvasContext.fillStyle = constants.graphics.TEXT_COLOR;
     };
 

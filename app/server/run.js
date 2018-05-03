@@ -1,16 +1,9 @@
 // Imports
 const Constants = require("./utils/Constants")();
 const GameServer = require("./server");
+const User = require('./models/user');
 
 const express = require('express');
-
-const session = require('express-session')({
-    secret: 'session_secret_key',
-    resave: true,
-    saveUninitialized: false
-});
-const sharedSession = require("express-socket.io-session");
-
 const app = express();
 const httpServer = require('http').Server(app);
 const io = require('socket.io')(httpServer, {
@@ -18,18 +11,12 @@ const io = require('socket.io')(httpServer, {
     pingTimeout: Constants.PING_TIMEOUT,
 });
 
-const bodyParser = require('body-parser');          // For parsing the body of the incoming request
-const path = require('path');
-
-const mongoose = require('mongoose');               // For modeling database
-
 
 /**
  * The starting main function of the server.
  */
 function run() {
     setupDatabase();
-    setupServer();
     setupServer();
     startServer();
 }
@@ -39,10 +26,13 @@ function run() {
  */
 function setupDatabase() {
     // Connect to MongoDB
-    mongoose.connect('mongodb://localhost/agar_io');
-    let db = mongoose.connection;
+    let mongoose = require('mongoose');
+
+    mongoose.connect('mongodb://localhost:27017/agar_io');
 
     // Handle MongoDB error
+    let db = mongoose.connection;
+
     db.on('error', console.error.bind(console, 'connection error:'));
     db.once('open', function () {
         console.log("connected to MongoDB");
@@ -57,60 +47,113 @@ function setupServer() {
     // Middleware's
     //
 
-    // Use sessions for tracking users
+    // Use HTTP sessions
+    let session = require('express-session')({
+        secret: 'session_secret_key',
+        resave: true,
+        saveUninitialized: false
+    });
     app.use(session);
 
-    // Use sessions with socket io
-    io.use(sharedSession(session, {autoSave: true}));
+    // Use Socket IO sessions
+    let sharedSession = require("express-socket.io-session")(session, {autoSave: true});
+    io.use(sharedSession);
+
+    // Parse the body of the incoming requests
+    let bodyParser = require('body-parser');
+    app.use(bodyParser.json());
+    app.use(bodyParser.urlencoded({extended: false}));
 
     // Set static path to provide required assets
+    let path = require('path');
     app.use(express.static(path.resolve('../client/')));
 
     //
     // Routes
     //
 
-    // Main game screen
+    // Authentication view endpoint
     app.get('/', function (req, res) {
-        // ToDo: check if not logged in -> redirect to '/login'
+        if (req.session.user) {
+            res.sendFile(path.resolve('../client/views/profile.html'));
+        }
+        else {
+            res.sendFile(path.resolve('../client/views/auth.html'));
+        }
+    });
+
+    // Main game screen
+    app.get('/play', function (req, res) {
         res.sendFile(path.resolve('../client/views/index.html'));
     });
 
-    // Log in view endpoint
-    app.get(['/login', '/register'], function (req, res) {
-        // ToDo: check if already logged in -> redirect to '/'
-        res.sendFile(path.resolve('../client/views/auth.html'));
-    });
-
     // Join endpoint
-    // ToDo: try to redirect the user from here the server. Check: (https://stackoverflow.com/questions/11355366/how-to-redirect-users-browser-url-to-a-different-page-in-nodejs)
     app.post('/join', function (req, res) {
-        // ToDo: check if already logged in
-        // return res.json({status: 0, redirect: "/"});
-        return res.json({status: 1, error_msg: "Please use valid name!"});
+        req.session.name = (req.session.user ? req.session.user.username : req.body.name);
+        res.json({status: 0});
     });
 
     // Register endpoint
     app.post('/register', function (req, res) {
-        // ToDo: check if already logged in
+        let username = req.body.username;
+        let password = req.body.password;
+
+        if (!username || !password) {
+            return res.json({status: 1, error_msg: "Invalid register request"});
+        }
+
+        let userData = {
+            username: username,
+            password: password,
+            highScore: 10
+        };
+
+        // Try registering the user
+        User.create(userData, function (error, user) {
+            if (error || !user) {
+                res.json({status: 1, error_msg: "The username already exists"});
+            }
+            else {
+                req.session.user = user;
+                req.session.name = username;
+                res.json({status: 0});
+            }
+        });
     });
 
     // Log in post request endpoint
     app.post('/login', function (req, res) {
-        // ToDo: check if already logged in
+        let username = req.body.username;
+        let password = req.body.password;
+
+        if (!username || !password) {
+            return res.json({status: 1, error_msg: "Invalid login request"});
+        }
+
+        // Authenticate user's credentials
+        User.authenticate(username, password, function (error, user) {
+            if (error) {
+                res.json({status: 1, error_msg: error.message});
+            }
+            else {
+                req.session.user = user;
+                req.session.name = username;
+                res.json({status: 0});
+            }
+        });
     });
 
     // Log out endpoint
     app.get('/logout', function (req, res) {
+        // Destroy session object
         if (req.session) {
-
-            // delete session object
             req.session.destroy(function (err) {
                 if (err) {
-                    return next(err);
+                    console.log("logout", err);
+                    res.json({status: 1, error_msg: "Please try again later!"});
                 }
                 else {
-                    return res.redirect('/');
+                    res.json({status: 0});
                 }
             });
         }

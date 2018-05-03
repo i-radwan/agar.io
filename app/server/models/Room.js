@@ -1,13 +1,10 @@
 // Imports
 const Constants = require("../utils/Constants")();
-const Gem = require("./Gem");
-const Player = require("./Player");
-const Grid = require("../utils/Grid");
 const Utilities = require("../utils/Utilities");
+const Player = require("./Player");
+const Gem = require("./Gem");
 
 class Room {
-
-    // TODO @Samir55 select using quad trees
 
     /**
      * Room model constructor.
@@ -38,11 +35,12 @@ class Room {
     /**
      * Simulates the movements of the given player based on the received angles sequence.
      *
-     * @param playerID      the player id to simulate
+     * @param id            the player id to simulate
      * @param anglesBuffer  the received player angles sequence buffer
+     * @param callback      a callback function to be called when a player got eaten
      */
-    simulatePlayer(playerID, anglesBuffer) {
-        let player = this.players[playerID];
+    simulatePlayer(id, anglesBuffer, callback) {
+        let player = this.players[id];
 
         // Return if invalid angles was received
         if (player.forcePosition = !player.validateSyncParams(anglesBuffer, this.lastSendRoomStatusTime)) {
@@ -60,7 +58,7 @@ class Room {
             this.eatOverlappingGems(player);
 
             // Check player eaten & update score of the player
-            this.eatOverlappingPlayers(player);
+            this.eatOverlappingPlayers(player, callback);
         }
     };
 
@@ -84,8 +82,9 @@ class Room {
      * Feeds any of the overlapping room players to the given player.
      *
      * @param player    the player to feed
+     * @param callback  a callback function to be called when a player got eaten
      */
-    eatOverlappingPlayers(player) {
+    eatOverlappingPlayers(player, callback) {
         for (let id in this.players) {
             if (id === player.id) {
                 continue;
@@ -95,6 +94,7 @@ class Room {
 
             // I was eaten
             if (foePlayer.canEat(player)) {
+                callback(player.id);
                 foePlayer.eat(player);
                 this.removePlayer(player.id);
                 return;
@@ -102,6 +102,7 @@ class Room {
 
             // I ate another player
             if (player.canEat(foePlayer)) {
+                callback(foePlayer.id);
                 player.eat(foePlayer);
                 this.removePlayer(foePlayer.id);
             }
@@ -109,25 +110,16 @@ class Room {
     };
 
     /**
-     * Checks whether the player is alive or not.
-     *
-     * @param playerID      the id of the player to check
-     * @returns {boolean}   true if the given player is alive, false otherwise
-     */
-    isPlayerAlive(playerID) {
-        return this.players.hasOwnProperty(playerID);
-    }
-
-    /**
      * Adds a new player to the room.
      *
      * @param id            the player id to add
-     * @param name          player name
+     * @param user          the user model id of the given player
+     * @param name          the player name
      * @returns {Player}    the newly added player
      */
-    addPlayer(id, name) {
+    addPlayer(id, user, name) {
         // Get a random position for a player.
-        let player = new Player(id, this.getNewPlayerPosition(), name);
+        let player = new Player(id, user, name, this.getEmptyPosition());
 
         this.players[id] = player;
         this.playersStaticInfo[id] = this.newPlayersStaticInfo[id] = player.getStaticInfo();
@@ -140,14 +132,14 @@ class Room {
     /**
      * Removes the given player from the room.
      *
-     * @param playerID      the player id to be removed
+     * @param id    the player id to be removed
      */
-    removePlayer(playerID) {
+    removePlayer(id) {
         this.playersCount--;
 
-        delete this.players[playerID];
-        delete this.playersStaticInfo[playerID];
-        delete this.newPlayersStaticInfo[playerID];
+        delete this.players[id];
+        delete this.playersStaticInfo[id];
+        delete this.newPlayersStaticInfo[id];
     };
 
     /**
@@ -155,7 +147,7 @@ class Room {
      */
     generateGems() {
         while (this.gemsCount < Constants.ROOM_MAX_GEMS) {
-            this.gems[this.nextGemID] = this.newGems[this.nextGemID] = new Gem(this.nextGemID, this.getNewGemPosition());
+            this.gems[this.nextGemID] = this.newGems[this.nextGemID] = new Gem(this.nextGemID, this.getEmptyPosition());
             this.gemsCount++;
             this.nextGemID++;
         }
@@ -228,46 +220,38 @@ class Room {
     }
 
     /**
-     * Get a new initial random position for a new player.
-     * TODO @Samir55 Adjust when removing the normalization.
-     * @returns {{x: Number, y: Number}} the coordinates of the new player.
+     * Returns an empty position in the game.
+     *
+     * @return Object a free position, or (0, 0) in case of exceeding maximum iteration limit
      */
-    getNewPlayerPosition() {
-        // Create a square grid and mark its occupied cells.
-        let gridLength = Constants.GAME_SIZE / Constants.PLAYER_ABSOLUTE_INITIAL_RADIUS;
-        let playersGrid = new Grid(gridLength, gridLength);
+    getEmptyPosition() {
+        let cnt = Constants.MAX_ITERATIONS_LIMIT;
 
-        playersGrid.fill(this.players);
+        while (cnt--) {
+            let pos = {
+                x: Utilities.getRandomFloat(-1, 1),
+                y: Utilities.getRandomFloat(-1, 1)
+            };
 
-        return playersGrid.getFreeCell();
+            if (this.isEmptyPosition(pos)) {
+                return pos;
+            }
+        }
+
+        return {x: 0, y: 0};
     }
 
     /**
-     * Get a (possibly empty) position for a new generated gem.
-     * TODO @Samir55 Adjust when removing the normalization.
+     * Checks if the given position is empty or not.
+     *
+     * @param pos the position to check
      */
-    getNewGemPosition() {
-        let ret = {
-            x: Utilities.getRandomFloat(-1, 1),
-            y: Utilities.getRandomFloat(-1, 1),
-            radius: Constants.GEM_RADIUS
-        };
+    isEmptyPosition(pos) {
+        for (let id in this.players)
+            if (this.players[id].canEat(pos))
+                return false;
 
-        for (let i = 0; i < Constants.GEM_GENERATE_POS_MAX_ITERATIONS; i++) {
-            let freePosition = true;
-
-            for (let id in this.players)
-                if (this.players[id].canEat(ret))
-                    freePosition = false;
-
-            if (freePosition)
-                return ret;
-            
-            ret.x = Utilities.getRandomFloat(-1, 1);
-            ret.y = Utilities.getRandomFloat(-1, 1);
-        }
-
-        return ret;
+        return true;
     }
 }
 

@@ -1,15 +1,13 @@
 export default function () {
     return {
         general: {
+            AUTH_URL: "http://localhost:3000/",
+            GAME_URL: "http://localhost:3000/play",
             SEND_ANGLE_TO_SERVER_RATE: 15, // milliseconds
             RECEIVE_STATUS_FROM_SERVER: 40,
             MAX_ANGLES_BUFFER_SIZE: 20,
             UPDATE_PHYSICS_THRESHOLD: 15,
-            FORCE_SERVER_POSITIONS_TIME: 3000,
-
-            GUEST_MSG_TYPE: 10000,
-            LOGIN_MSG_TYPE: 10001,
-            REGISTER_MSG_TYPE: 10002,
+            FORCE_SERVER_POSITIONS_TIME: 3000
         },
         physics: {
             MOVEMENT_INTERPOLATION_FACTOR: 0.15,
@@ -45,8 +43,19 @@ export default function () {
             MAX_BLOB_WABBLE_RADIUS_OFFSET: 1 / 7,
             WABBLE_SPEED: 0.00009,
 
-            TEXT_STYLE: '20px serif',
-            TEXT_COLOR: 'orange'
+            TEXT_STYLE: 'comic sans ms',
+            TEXT_HEIGHT: 20,
+            TEXT_COLOR: 'orange',
+
+            LEADER_BOARD_TITLE: "Leaderboard",
+            LEADER_BOARD_PLAYERS_COUNT: 10,
+            LEADER_BOARD_SPACES_COUNT: 5,
+            LEADER_BOARD_MAX_NAME_LENGTH:  10,
+            LEADER_BOARD_DOTS_COUNT: 2,
+            LEADER_BOARD_MAX_SCORE_LENGTH: 5,
+
+            HUD_MARGIN_WIDTH_FACTOR: 10/1920,
+            HUD_MARGIN_HEIGHT_FACTOR: 10/1080
         }
     };
 };

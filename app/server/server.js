@@ -1,7 +1,6 @@
 // Imports
 const Constants = require("./utils/Constants")();
 const Room = require("./models/Room");
-const User = require('./models/User');
 
 class GameServer {
 
@@ -31,55 +30,12 @@ class GameServer {
         // Register event listeners
         //
         self.io.on('connection', function (socket) {
-            console.log("TAG2: ", socket.handshake.session);
-
             // Add new player to a room upon receiving connection event
             socket.on('subscribe', function () {
-                self.addNewPlayer(socket.id, "Test");
-                console.log("a player connected", socket.id);
+                let session = socket.handshake.session;
 
-                // let session = socket.handshake.session;
-                //
-                // if (msg.type === Constants.GUEST_MSG_TYPE) {
-                //     self.addNewPlayer(socket.id, msg.name);
-                // }
-                // else if (msg.type === Constants.LOGIN_MSG_TYPE) {
-                //     if (msg.username && msg.password) {
-                //         User.authenticate(msg.username, msg.password, function (error, user) {
-                //             if (error || !user) {
-                //                 self.io.to(socket.id).emit("error", "Invalid credentials!");
-                //             }
-                //             else {
-                //                 socket.handshake.session.user = user;
-                //                 socket.handshake.session.save();
-                //                 console.log("TAG3: ", socket.handshake.session);
-                //
-                //                 self.addNewPlayer(socket.id, user.username);
-                //             }
-                //         });
-                //     }
-                // }
-                // else if (msg.type === Constants.REGISTER_MSG_TYPE) {
-                //     if (msg.username && msg.password) {
-                //         let userData = {
-                //             username: msg.username,
-                //             password: msg.password,
-                //         };
-                //
-                //         User.create(userData, function (error, user) {
-                //             if (error || !user) {
-                //                 self.io.to(socket.id).emit("error", "Invalid credentials!");
-                //             }
-                //             else {
-                //                 session.user = user;
-                //                 self.addNewPlayer(socket.id, user.username);
-                //             }
-                //         });
-                //     }
-                //     else {
-                //         self.io.to(socket.id).emit("error", "Invalid request!");
-                //     }
-                // }
+                self.addNewPlayer(socket.id, session.user, session.name);
+                console.log("a player connected", socket.id);
             });
 
             // Updates player's angle
@@ -105,12 +61,13 @@ class GameServer {
      * Assigns the newly connected player to a room and
      * send him back its game status
      *
-     * @param id    the player socket id
-     * @param name  the player name
+     * @param id        the player socket id
+     * @param user      the user model id of the given player
+     * @param name      the player name to be displayed
      */
-    addNewPlayer(id, name) {
+    addNewPlayer(id, user, name) {
         let room = this.getAvailableRoom();
-        let player = room.addPlayer(id, name);
+        let player = room.addPlayer(id, user, name);
 
         this.playerRoomId[id] = room.id;
 
@@ -129,17 +86,15 @@ class GameServer {
         let roomID = this.playerRoomId[id];
 
         // Remove player from his room
-        if (this.rooms[roomID].isPlayerAlive(id)) {
-            this.rooms[roomID].removePlayer(id);
-        }
+        this.rooms[roomID].removePlayer(id);
 
         // Remove player entry from map
-        // delete this.playersMap[playerSocketID];
+        delete this.playerRoomId[id];
 
         // Remove room if this was the last player
-        // if (this.rooms[roomID].playersCount === 0) {
-        //     delete this.rooms[roomID];
-        // }
+        if (this.rooms[roomID].playersCount === 0) {
+            delete this.rooms[roomID];
+        }
     };
 
     /**
@@ -156,9 +111,7 @@ class GameServer {
         let roomID = this.playerRoomId[id];
 
         // Simulate player movements based on the received angles sequence
-        if (this.rooms[roomID].isPlayerAlive(id)) {
-            this.rooms[roomID].simulatePlayer(id, anglesBuffer);
-        }
+        this.rooms[roomID].simulatePlayer(id, anglesBuffer, this.sendGameOverMsg.bind(this));
     };
 
     /**
@@ -196,6 +149,8 @@ class GameServer {
 
         // Attach player-specific data
         status.meId = player.id;
+        status.name = player.name;
+        status.highScore = (player.user ? player.user.highScore : 10);
         status.serverTimestamp = player.lastAngleTimestamp;
 
         // Send status to the player
@@ -218,6 +173,27 @@ class GameServer {
             }
         }
     };
+
+    /**
+     * Sends a game over message the given player when got eaten.
+     *
+     * @param id the id of the eaten player
+     */
+    sendGameOverMsg(id) {
+        // Send game over event to the loser client
+        this.io.to(id).emit('game_over', {});
+
+        // Get room id
+        let roomID = this.playerRoomId[id];
+
+        // Remove player entry from map
+        delete this.playerRoomId[id];
+
+        // Remove room if this was the last player
+        if (this.rooms[roomID].playersCount === 0) {
+            delete this.rooms[roomID];
+        }
+    }
 
     /**
      * Regenerates the gems of all game rooms

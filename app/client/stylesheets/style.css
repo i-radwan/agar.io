@@ -17,7 +17,14 @@ canvas {
     position: absolute;
 }
 
-.text-danger{
+.sep {
+    width: 75%;
+    height: 1px;
+    border-top: 1px solid #a8a8a8;
+    margin: 20px auto;
+}
+
+.text-danger {
     margin-bottom: 0;
 }
 
@@ -49,6 +56,19 @@ canvas {
     width: 120px;
 }
 
+.info-div {
+    margin: 20px 50px;
+}
+
+.col-form-label {
+    text-align: left;
+    font-size: 16px;
+}
+
+.form-control-plaintext{
+    font-size: 16px;
+}
+
 @media only screen and (min-width: 600px) {
     .form {
         min-width: 400px;
@@ -59,4 +79,16 @@ canvas {
     .form {
         margin-top: calc(50vh - 200px);
     }
+}
+
+@font-face{
+    font-family:'comic sans ms';
+    font-style:normal;
+    font-weight:400;
+    src:local('Comic Sans MS'),
+    local('ComicSansMS-Regular'),
+    url(http://allfont.ru/cache/fonts/comic-sans-ms_53a8778a817839ef2dbc5dc94ce14334.woff)
+    format('woff'),
+    url(http://allfont.ru/cache/fonts/comic-sans-ms_53a8778a817839ef2dbc5dc94ce14334.ttf)
+    format('truetype')
 }

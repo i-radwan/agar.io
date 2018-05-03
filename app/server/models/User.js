@@ -7,15 +7,36 @@ const bcrypt = require('bcrypt');
  */
 let userSchema = new mongoose.Schema({
     username: {
-        type: String,
+        type: 'string',
         unique: true,
         required: true,
-        trim: true
+        trim: true,
+        lowercase: true
     },
     password: {
-        type: String,
+        type: 'string',
         required: true
+    },
+    highScore: {
+        type: 'number'
     }
+});
+
+/**
+ * Hashes the user's password before saving it in the database.
+ */
+userSchema.pre('save', function (next) {
+    let user = this;
+
+    bcrypt.hash(user.password, 10, function (err, hash) {
+        if (err) {
+            next(err);
+        }
+        else {
+            user.password = hash;
+            next();
+        }
+    })
 });
 
 /**
@@ -28,41 +49,24 @@ let userSchema = new mongoose.Schema({
 userSchema.statics.authenticate = function (username, password, callback) {
     this.findOne({username: username}).exec(function (err, user) {
         if (err) {
-            return callback(err)
+            console.log(err);
+            return callback(new Error('Internal error'))
         }
 
         if (!user) {
-            let err = new Error('User not found.');
-            err.status = 401;
-            return callback(err);
+            return callback(new Error('Invalid username or password'));
         }
 
         bcrypt.compare(password, user.password, function (err, result) {
             if (result === true) {
-                return callback(null, user);
+                callback(null, user);
             }
             else {
-                return callback();
+                callback(new Error('Invalid username or password'));
             }
         })
     });
 };
-
-/**
- * Hashes the user's password before saving it in the database.
- */
-userSchema.pre('save', function (next) {
-    let user = this;
-
-    bcrypt.hash(user.password, 10, function (err, hash) {
-        if (err) {
-            return next(err);
-        }
-
-        user.password = hash;
-        next();
-    })
-});
 
 /**
  * Compiles and exports the user model from the given schema.

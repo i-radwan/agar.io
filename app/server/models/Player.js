@@ -1,6 +1,7 @@
 // Imports
 const Constants = require("../utils/Constants")();
 const Utilities = require("../utils/Utilities");
+const User = require('../models/user');
 
 class Player {
 
@@ -8,12 +9,14 @@ class Player {
      * Player model constructor.
      *
      * @param id        the player id
-     * @param position  the player initial coordinates
+     * @param user      the user model id of the given player
      * @param name      the player name
+     * @param position  the player initial coordinates
      */
-    constructor(id, position, name) {
+    constructor(id, user, name, position) {
         // Set id (unique within room) and name
         this.id = id;
+        this.user = user;
         this.name = name;
         this.score = 10;
 
@@ -154,15 +157,27 @@ class Player {
      * @param obj   the object to eat (gem, or other player)
      */
     eat(obj) {
+        // Increment player's score
         this.score += (obj.score || 1);
 
         // Area(new) = Area(old) + Area(obj)
         this.radius = Math.sqrt(this.radius * this.radius + obj.radius * obj.radius);
 
+        // Update player's velocity
         this.velocity = Math.max(
             Constants.PLAYER_MIN_SPEED,
             Constants.PLAYER_INITIAL_SPEED - 0.00291 * this.radius
         );
+
+        // Save user's highest score
+        if (this.user && this.score > this.user.highScore) {
+            User.update(
+                {_id: this.user._id},
+                {highScore: this.score},
+                {multi: true},
+                function (err, count) {}
+            );
+        }
     }
 }
 

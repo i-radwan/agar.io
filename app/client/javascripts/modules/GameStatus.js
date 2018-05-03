@@ -10,6 +10,8 @@ export default function () {
     module.init = function () {
         module.status = {
             meId: -1,
+            name: "Test",
+            highScore: 10,
             players: {},
             newPlayers: {},
             gems: {},
