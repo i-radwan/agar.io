@@ -1,5 +1,4 @@
-const Gem = require("../models/Gem");
-const Player = require("../models/Player");
+// Imports
 const Constants = require("./Constants")();
 const Utilities = require("./Utilities");
 

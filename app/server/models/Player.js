@@ -9,11 +9,11 @@ class Player {
      * Player model constructor.
      *
      * @param id        the player id
-     * @param position  the player initial coordinates
+     * @param user      the user model id of the given player
      * @param name      the player name
-     * @param user      the user model of the given player
+     * @param position  the player initial coordinates
      */
-    constructor(id, position, name, user) {
+    constructor(id, user, name, position) {
         // Set id (unique within room) and name
         this.id = id;
         this.user = user;
@@ -169,8 +169,7 @@ class Player {
         );
 
         // Save user's highest score
-        if (!this.user) return;
-        if (this.score > (this.user.highScore || 0)) {
+        if (this.user && this.score > (this.user.highScore || 0)) {
             User.update(
                 {_id: this.user._id},
                 {highScore: this.score},

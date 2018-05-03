@@ -108,7 +108,7 @@ function setupServer() {
         let password = req.body.password;
 
         if (!username || !password) {
-            return res.json({status: 1, error_msg: "Invalid register request!"});
+            return res.json({status: 1, error_msg: "Invalid register request"});
         }
 
         let userData = {
@@ -119,7 +119,7 @@ function setupServer() {
         // Try registering the user
         User.create(userData, function (error, user) {
             if (error || !user) {
-                res.json({status: 1, error_msg: "The username already exists!"});
+                res.json({status: 1, error_msg: "The username already exists"});
             }
             else {
                 req.session.user = user;
@@ -135,13 +135,13 @@ function setupServer() {
         let password = req.body.password;
 
         if (!username || !password) {
-            return res.json({status: 1, error_msg: "Invalid login request!"});
+            return res.json({status: 1, error_msg: "Invalid login request"});
         }
 
         // Authenticate user's credentials
         User.authenticate(username, password, function (error, user) {
-            if (error || !user) {
-                res.json({status: 1, error_msg: "Invalid credentials!"});
+            if (error) {
+                res.json({status: 1, error_msg: error.message});
             }
             else {
                 req.session.user = user;
@@ -157,7 +157,7 @@ function setupServer() {
         if (req.session) {
             req.session.destroy(function (err) {
                 if (err) {
-                    console.log(err);
+                    console.log("logout", err);
                 }
             });
         }

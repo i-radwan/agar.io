@@ -34,7 +34,7 @@ class GameServer {
             socket.on('subscribe', function () {
                 let session = socket.handshake.session;
 
-                self.addNewPlayer(socket.id, session.name, session.user);
+                self.addNewPlayer(socket.id, session.user, session.name);
                 console.log("a player connected", socket.id);
             });
 
@@ -61,13 +61,13 @@ class GameServer {
      * Assigns the newly connected player to a room and
      * send him back its game status
      *
-     * @param id    the player socket id
-     * @param name  the player name
-     * @param user  the user model of the given player
+     * @param id        the player socket id
+     * @param user      the user model id of the given player
+     * @param name      the player name to be displayed
      */
-    addNewPlayer(id, name, user) {
+    addNewPlayer(id, user, name) {
         let room = this.getAvailableRoom();
-        let player = room.addPlayer(id, name, user);
+        let player = room.addPlayer(id, user, name);
 
         this.playerRoomId[id] = room.id;
 
