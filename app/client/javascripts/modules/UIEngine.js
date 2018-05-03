@@ -57,9 +57,14 @@ export default function (p5Lib) {
             }
         }
 
+        // Sort players by size, to render bigger players at top of smaller ones
+        let sortedPlayers = Object.values(players).sort(function (a, b) {
+            return (a.radius - b.radius);
+        });
+
         // Draw all players
-        for (let key in players) {
-            let player = players[key];
+        for (let key in sortedPlayers) {
+            let player = sortedPlayers[key];
 
             // Smoothly increase player's radius
             player.canvasRadius = p5Lib.lerp(player.canvasRadius, player.radius, constants.physics.GROW_INTERPOLATION_FACTOR);

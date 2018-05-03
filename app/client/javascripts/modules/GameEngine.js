@@ -120,11 +120,6 @@ export default function (gameStatus, gameOverCallback) {
         // Add canvas parameters to new game objects
         updateCanvasObjects();
 
-        // Sort players by size, to render bigger players at top of smaller ones
-        // status.players.sort(function (a, b) {
-        //     return (a.radius - b.radius);
-        // });
-
         // Get number of missed physics iterations and reduce the physics lag time
         let count = physicsEngine.narrowPhysicsDelay(status.env.forcePosition);
 
