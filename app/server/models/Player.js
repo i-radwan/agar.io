@@ -17,7 +17,7 @@ class Player {
         // Set id (unique within room) and name
         this.id = id;
         this.user = user;
-        this.name = name;
+        this.name = name || "";
         this.score = 10;
 
         // Pick a random color

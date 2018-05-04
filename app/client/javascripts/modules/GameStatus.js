@@ -143,16 +143,23 @@ export default function () {
             Object.assign(player, serverGamePlayers[key]);
             serverGamePlayers[key] = player;
 
+            //
             // Extrapolate other players
+            //
+            
             if (key === module.status.meId) continue;
 
-            let delays = (player.lag + clientNow - now) / constants.general.UPDATE_PHYSICS_THRESHOLD;
+            let delays = Math.max(100, (player.lag + clientNow - now)) / constants.general.UPDATE_PHYSICS_THRESHOLD;
 
-            // let vf = player.velocity * delays;
-            let vf = player.velocity * 2 * delta / constants.general.UPDATE_PHYSICS_THRESHOLD;
-            console.log(2 * delta, delays);
+            let vf = player.velocity * delays;
+            // let vf = player.velocity * 2 * delta / constants.general.UPDATE_PHYSICS_THRESHOLD;
             player.x += Math.cos(player.angle) * vf;
             player.y += Math.sin(player.angle) * vf;
+
+            if (player.x < -1) player.x = -1;
+            if (player.x > 1) player.x = 1;
+            if (player.y < -1) player.y = -1;
+            if (player.y > 1) player.y = 1;
         }
 
         module.status.players = serverGamePlayers;

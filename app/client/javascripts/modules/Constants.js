@@ -1,8 +1,8 @@
 export default function () {
     return {
         general: {
-            AUTH_URL: "http://localhost:3000/",
-            GAME_URL: "http://localhost:3000/play",
+            AUTH_URL: "http://192.168.1.10:3000/",
+            GAME_URL: "http://192.168.1.10:3000/play",
             SEND_ANGLE_TO_SERVER_RATE: 15, // milliseconds
             RECEIVE_STATUS_FROM_SERVER: 40,
             MAX_ANGLES_BUFFER_SIZE: 20,

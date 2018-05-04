@@ -1,4 +1,4 @@
-const GAME_URL = "http://localhost:3000/play";
+const GAME_URL = "http://192.168.1.10:3000/play";
 const STATUS_OK = 0;
 const STATUS_ERROR = 0;
 
