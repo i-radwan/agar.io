@@ -225,8 +225,8 @@ export default function (p5Lib) {
             radius: 0.1 * blob.canvasRadius
         };
 
-        // drawCircle(centerCircle);
-        // drawCircle(serverCenterCircle);
+        drawCircle(centerCircle);
+        drawCircle(serverCenterCircle);
     };
 
     /**
@@ -289,7 +289,7 @@ export default function (p5Lib) {
         p5Lib.beginShape();
 
         // Fill the drawing with the required color
-        let c = p5Lib.lerpColor(p5Lib.color(color), p5Lib.color("red"), redness);
+        let c = p5Lib.lerpColor(p5Lib.color(color), p5Lib.color("rgba(255, 0, 0, 0.5)"), redness);
         p5Lib.fill(c);
 
         let xOffset = 0;

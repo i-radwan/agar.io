@@ -146,10 +146,10 @@ export default function () {
             //
             // Extrapolate other players
             //
-            
+
             if (key === module.status.meId) continue;
 
-            let delays = Math.max(100, (player.lag + clientNow - now)) / constants.general.UPDATE_PHYSICS_THRESHOLD;
+            let delays = Math.min(100, (player.lag + clientNow - now)) / constants.general.UPDATE_PHYSICS_THRESHOLD;
 
             let vf = player.velocity * delays;
             // let vf = player.velocity * 2 * delta / constants.general.UPDATE_PHYSICS_THRESHOLD;

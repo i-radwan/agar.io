@@ -1,5 +1,5 @@
-const GAME_URL = "http://192.168.1.10:3000/play";
-const AUTH_URL = "http://192.168.1.10:3000/";
+const GAME_URL = "http://156.209.233.115:3000/play";
+const AUTH_URL = "http://156.209.233.115:3000/";
 const STATUS_OK = 0;
 const STATUS_ERROR = 0;
 

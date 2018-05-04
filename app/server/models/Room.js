@@ -101,8 +101,8 @@ class Room {
         for (let trapID in this.traps) {
             let trap = this.traps[trapID];
 
-            if (player.score > 5 && player.canEat(trap)) {
-                player.eat(trap, -1);
+            if (player.score > 10 && player.canEat(trap)) {
+                player.eat(trap, -5);
                 this.removeTrap(trapID);
             }
         }
