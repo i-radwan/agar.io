@@ -43,10 +43,6 @@ let game = {
      * Callback function to be called only when the game is over.
      */
     gameOver: function () {
-        let me = game.gameStatus.status.players[game.gameStatus.status.meId];
-
-        localStorage.setItem("high_score", Math.max(game.gameStatus.status.highScore, me.score).toString());
-
         // Stop sending player angle
         clearInterval(game.gameServer.sendAngle);
 

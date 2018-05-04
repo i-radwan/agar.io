@@ -6,6 +6,7 @@
 
 body {
     font: 13px Helvetica, Arial;
+    background: radial-gradient(#414246, #57575f, #717179);
 
     /*  Stop Scrolling  */
     height: 100%;
@@ -28,13 +29,13 @@ canvas {
     margin-bottom: 0;
 }
 
-.overlay {
-    position: absolute;
-    width: 100vw;
-    height: 100vh;
-    background: radial-gradient(#414246, #57575f, #717179);
-    text-align: center;
-}
+/*.overlay {*/
+/*position: absolute;*/
+/*width: 100vw;*/
+/*height: 100vh;*/
+/*background: radial-gradient(#414246, #57575f, #717179);*/
+/*text-align: center;*/
+/*}*/
 
 .form {
     margin: 30px auto;
@@ -46,14 +47,12 @@ canvas {
     text-align: center;
 }
 
-.login-form {
-    margin-top: 20px;
+.form-btn {
+    width: 100%;
 }
 
-.form-btn {
-    display: inline-block;
-    margin: 0 20px;
-    width: 120px;
+.login-form {
+    margin-top: 20px;
 }
 
 .info-div {
@@ -65,7 +64,7 @@ canvas {
     font-size: 16px;
 }
 
-.form-control-plaintext{
+.form-control-plaintext {
     font-size: 16px;
 }
 
@@ -75,20 +74,24 @@ canvas {
     }
 }
 
-@media only screen and (min-height: 599px) {
-    .form {
-        margin-top: calc(50vh - 200px);
+@media only screen and (max-width: 600px) {
+    .form-btn {
+        margin-top: 10px;
     }
 }
 
-@font-face{
-    font-family:'comic sans ms';
-    font-style:normal;
-    font-weight:400;
-    src:local('Comic Sans MS'),
+@media only screen and (min-height: 599px) {
+    .form {
+        margin-top: calc(25vh);
+    }
+}
+
+@font-face {
+    font-family: 'comic sans ms';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Comic Sans MS'),
     local('ComicSansMS-Regular'),
-    url(http://allfont.ru/cache/fonts/comic-sans-ms_53a8778a817839ef2dbc5dc94ce14334.woff)
-    format('woff'),
-    url(http://allfont.ru/cache/fonts/comic-sans-ms_53a8778a817839ef2dbc5dc94ce14334.ttf)
-    format('truetype')
+    url(http://allfont.ru/cache/fonts/comic-sans-ms_53a8778a817839ef2dbc5dc94ce14334.woff) format('woff'),
+    url(http://allfont.ru/cache/fonts/comic-sans-ms_53a8778a817839ef2dbc5dc94ce14334.ttf) format('truetype')
 }

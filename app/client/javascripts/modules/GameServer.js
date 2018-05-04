@@ -37,6 +37,10 @@ export default function (gameStatus, errorMsgCallback) {
         socket.on('game_status', function (receivedGameStatus) {
             // Update local gameStatus by receivedGameStatus
             gameStatus.sync(receivedGameStatus);
+
+            // Update my high score
+            let me = gameStatus.status.players[gameStatus.status.meId];
+            localStorage.setItem("high_score", Math.max(parseInt(localStorage.getItem("high_score")), me.score).toString());
         });
 
         // Listen to game over event

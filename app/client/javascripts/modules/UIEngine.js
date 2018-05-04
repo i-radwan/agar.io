@@ -282,13 +282,14 @@ export default function (p5Lib) {
      * @param radius the radius of this circle (has to be passed in because it may differ from the blob radius)
      * @param extraRadius an added length to the borders in order to extend the blob outer layer.
      * @param color the circle filling color
+     * @param redness degree of circle redness
      */
     let drawNoisyCircle = function (blob, radius, extraRadius, color, redness) {
         p5Lib.push();
         p5Lib.beginShape();
 
         // Fill the drawing with the required color
-        let c = p5Lib.lerpColor(p5Lib.color(color), p5Lib.color("rgba(255, 0, 0, 1)"), redness);
+        let c = p5Lib.lerpColor(p5Lib.color(color), p5Lib.color("red"), redness);
         p5Lib.fill(c);
 
         let xOffset = 0;

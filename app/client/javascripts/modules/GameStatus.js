@@ -150,7 +150,7 @@ export default function () {
 
             // let vf = player.velocity * delays;
             let vf = player.velocity * 2 * delta / constants.general.UPDATE_PHYSICS_THRESHOLD;
-
+            console.log(2 * delta, delays);
             player.x += Math.cos(player.angle) * vf;
             player.y += Math.sin(player.angle) * vf;
         }
