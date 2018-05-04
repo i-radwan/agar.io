@@ -40,8 +40,9 @@ export default function () {
 
             START_BLOB_RADIUS: 0.02 * 6000,     // MAX_RADIUS_ZOOM_THRESHOLD * INITIAL_ZOOM
             BLOB_STROKE_COLOR: 255,
-            MAX_BLOB_WABBLE_RADIUS_OFFSET: 1 / 7,
-            WABBLE_SPEED: 0.00009,
+            MAX_BLOB_WABBLE_RADIUS_OFFSET: 1 / 5,
+            OUTER_RADIUS_EXTRA_LENGTH: 1 / 650,
+            WABBLE_SPEED: 0.00019,
 
             TEXT_STYLE: 'comic sans ms',
             TEXT_HEIGHT: 20,
@@ -50,12 +51,12 @@ export default function () {
             LEADER_BOARD_TITLE: "Leaderboard",
             LEADER_BOARD_PLAYERS_COUNT: 10,
             LEADER_BOARD_SPACES_COUNT: 5,
-            LEADER_BOARD_MAX_NAME_LENGTH:  10,
+            LEADER_BOARD_MAX_NAME_LENGTH: 10,
             LEADER_BOARD_DOTS_COUNT: 2,
             LEADER_BOARD_MAX_SCORE_LENGTH: 5,
 
-            HUD_MARGIN_WIDTH_FACTOR: 10/1920,
-            HUD_MARGIN_HEIGHT_FACTOR: 10/1080
+            HUD_MARGIN_WIDTH_FACTOR: 10 / 1920,
+            HUD_MARGIN_HEIGHT_FACTOR: 10 / 1080
         }
     };
 };
