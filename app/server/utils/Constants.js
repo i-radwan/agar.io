@@ -25,7 +25,7 @@ function Constants() {
         GEM_RADIUS: 9 * SCALE_FACTOR,
 
         // Traps
-        ROOM_MAX_TRAPS: 30,
+        ROOM_MAX_TRAPS: 100,
         TRAP_COLOR: "red",
         TRAP_RADIUS: 9 * SCALE_FACTOR,
 
