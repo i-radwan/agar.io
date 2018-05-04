@@ -16,6 +16,8 @@ export default function () {
             newPlayers: {},
             gems: {},
             newGems: {},
+            traps: {},
+            newTraps: {},
             env: {
                 running: true,
                 rollback: false,
@@ -43,6 +45,7 @@ export default function () {
         let delta = current - module.status.env.lastGameStatusTimestamp;
         module.status.env.lastGameStatusTimestamp = current;
 
+        syncTraps(serverGameStatus.newTraps, serverGameStatus.deletedTrapsIDs);
         syncGems(serverGameStatus.newGems, serverGameStatus.deletedGemsIDs);
         syncPlayers(serverGameStatus.players, serverGameStatus.newPlayers, delta, serverGameStatus.now);
         syncAnglesBuffer(serverGameStatus.sync);
@@ -80,6 +83,22 @@ export default function () {
         }
 
         module.status.anglesQueue.firstIdx = firstIdx;
+    };
+
+    /**
+     * Synchronizes the game traps with the server.
+     *
+     * @param serverGameNewTraps     the newly generated traps to be added
+     * @param serverGameDeletedTraps the newly eaten traps to be removed
+     */
+    let syncTraps = function (serverGameNewTraps, serverGameDeletedTraps) {
+        // Remove eaten traps
+        for (let i in serverGameDeletedTraps) {
+            delete module.status.traps[serverGameDeletedTraps[i]];
+        }
+
+        // Append new traps
+        module.status.newTraps = Object.assign(module.status.newTraps, serverGameNewTraps);
     };
 
     /**

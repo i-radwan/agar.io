@@ -11,7 +11,8 @@ function Constants() {
         UPDATE_PHYSICS_THRESHOLD: 15,
         SEND_GAME_STATUS_RATE: 40,
         REGENERATE_GEMS_RATE: 10000,
-        
+        REGENERATE_TRAPS_RATE: 30000,
+
         //
         // Game related constants
         //
@@ -22,6 +23,11 @@ function Constants() {
         // Gems
         ROOM_MAX_GEMS: 600,
         GEM_RADIUS: 9 * SCALE_FACTOR,
+
+        // Traps
+        ROOM_MAX_TRAPS: 30,
+        TRAP_COLOR: "red",
+        TRAP_RADIUS: 9 * SCALE_FACTOR,
 
         // Players
         ROOM_MAX_PLAYERS: 5,

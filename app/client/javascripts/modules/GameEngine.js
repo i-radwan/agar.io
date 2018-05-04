@@ -88,6 +88,17 @@ export default function (gameStatus, gameOverCallback) {
         // Flush new gems array
         status.newGems = {};
 
+        // Add new traps canvas params
+        for (let key in status.newTraps) {
+            let trap = status.newTraps[key];
+            status.traps[trap.id] = trap;
+
+            uiEngine.addTrapCanvasParams(status.traps[trap.id]);
+        }
+
+        // Flush new traps array
+        status.newTraps = {};
+
         // Add new players canvas params
         for (let key in status.newPlayers) {
             let player = status.players[key];
@@ -141,7 +152,7 @@ export default function (gameStatus, gameOverCallback) {
         }
 
         // Call UI Draw function
-        uiEngine.draw(me, status.players, status.gems, physicsEngine.timers.elapsed);
+        uiEngine.draw(me, status.players, status.gems, status.traps, physicsEngine.timers.elapsed);
 
         // Clear then draw the head up display
         uiEngine.drawHUD(me.score, physicsEngine.timers.elapsed, status.env.ping);

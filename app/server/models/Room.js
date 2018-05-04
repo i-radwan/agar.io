@@ -3,6 +3,7 @@ const Constants = require("../utils/Constants")();
 const Utilities = require("../utils/Utilities");
 const Player = require("./Player");
 const Gem = require("./Gem");
+const Trap = require("./Trap");
 
 class Room {
 
@@ -28,8 +29,18 @@ class Room {
         this.gemsCount = 0;
         this.nextGemID = 0;
 
+        // Room traps
+        this.traps = {};
+        this.newTraps = {};
+        this.deletedTrapsIDs = [];
+        this.trapsCount = 0;
+        this.nextTrapID = 0;
+
         // Add default gems
         this.generateGems();
+
+        // Add default traps
+        this.generateTraps();
     }
 
     /**
@@ -59,6 +70,9 @@ class Room {
 
             // Check player eaten & update score of the player
             this.eatOverlappingPlayers(player, callback);
+
+            // Check if player hit a trap
+            this.eatOverlappingTraps(player);
         }
     };
 
@@ -74,6 +88,22 @@ class Room {
             if (player.canEat(gem)) {
                 player.eat(gem);
                 this.removeGem(gemID);
+            }
+        }
+    };
+
+    /**
+     * Decreases player score as he hits a trap.
+     *
+     * @param player    the player to feed
+     */
+    eatOverlappingTraps(player) {
+        for (let trapID in this.traps) {
+            let trap = this.traps[trapID];
+
+            if (player.score > 5 && player.canEat(trap)) {
+                player.eat(trap, -1);
+                this.removeTrap(trapID);
             }
         }
     };
@@ -165,6 +195,28 @@ class Room {
     };
 
     /**
+     * Generates new traps to the room.
+     */
+    generateTraps() {
+        while (this.trapsCount < Constants.ROOM_MAX_TRAPS) {
+            this.traps[this.nextTrapID] = this.newTraps[this.nextTrapID] = new Trap(this.nextTrapID, this.getEmptyPosition());
+            this.trapsCount++;
+            this.nextTrapID++;
+        }
+    };
+
+    /**
+     * Removes the given trap from the room.
+     *
+     * @param id the trap id to be removed
+     */
+    removeTrap(id) {
+        this.deletedTrapsIDs.push(id);
+        this.trapsCount--;
+        delete this.traps[id];
+    };
+
+    /**
      * Returns players' graphics information.
      *
      * @returns {Array} array of players' graphics info
@@ -191,7 +243,9 @@ class Room {
             players: this.getPlayersGraphicsInfo(),
             newPlayers: this.playersStaticInfo,
             newGems: this.gems,
-            deletedGemsIDs: []
+            deletedGemsIDs: [],
+            newTraps: this.traps,
+            deletedTrapsIDs: []
         };
     }
 
@@ -208,13 +262,17 @@ class Room {
             players: this.getPlayersGraphicsInfo(),
             newPlayers: this.newPlayersStaticInfo,
             newGems: this.newGems,
-            deletedGemsIDs: this.deletedGemsIDs
+            deletedGemsIDs: this.deletedGemsIDs,
+            newTraps: this.newTraps,
+            deletedTrapsIDs: this.deletedTrapsIDs
         };
 
         // Reset new players and new gems
         this.newPlayersStaticInfo = {};
         this.newGems = {};
         this.deletedGemsIDs = [];
+        this.newTraps = {};
+        this.deletedTrapsIDs = [];
 
         return gameStatus;
     }

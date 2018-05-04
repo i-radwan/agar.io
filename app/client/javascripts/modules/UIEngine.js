@@ -49,10 +49,11 @@ export default function (p5Lib) {
      *
      * @param players
      * @param gems
+     * @param traps
      * @param mainPlayer
      * @param elapsed the time taken by previous game loop
      */
-    module.draw = function (mainPlayer, players, gems, elapsed) {
+    module.draw = function (mainPlayer, players, gems, traps, elapsed) {
         p5Lib.push();
 
         // Camera setup and translating to user location
@@ -67,6 +68,15 @@ export default function (p5Lib) {
 
             if (isObjectInsideMyViewWindow(gem)) {
                 drawCircle(gem);
+            }
+        }
+
+        // Draw all traps
+        for (let key in traps) {
+            let trap = traps[key];
+
+            if (isObjectInsideMyViewWindow(trap)) {
+                drawTrap(trap);
             }
         }
 
@@ -121,6 +131,17 @@ export default function (p5Lib) {
         // Set graphics attributes
         gem.canvasX = gem.x;
         gem.canvasY = gem.y;
+    };
+
+    /**
+     * Adds the given trap to the canvas to start drawing.
+     *
+     * @param trap the trap to add
+     */
+    module.addTrapCanvasParams = function (trap) {
+        // Set graphics attributes
+        trap.canvasX = trap.x;
+        trap.canvasY = trap.y;
     };
 
     /**
@@ -201,6 +222,42 @@ export default function (p5Lib) {
     };
 
     /**
+     * Draws a trap.
+     *
+     * @param trap the trap to draw
+     */
+    let drawTrap = function (trap) {
+        p5Lib.push();
+        p5Lib.beginShape();
+
+        // Fill the drawing with the required color
+        p5Lib.fill(trap.color);
+
+        let delta = trap.radius;
+        let sign = 1;
+
+        for (let theta = 0; theta <= p5Lib.TWO_PI; theta += 0.025) {
+            // Get the vertex of the circle
+            let x = trap.canvasX + (trap.radius + delta) * Math.cos(theta);
+            let y = trap.canvasY + (trap.radius + delta) * Math.sin(theta);
+
+            p5Lib.vertex(x, y);
+
+            if (delta >= trap.radius || delta < 0) {
+                sign = -sign;
+            }
+
+            delta += sign * 0.0001;
+        }
+
+        p5Lib.endShape();
+        p5Lib.pop();
+
+        p5Lib.fill(0);
+        p5Lib.ellipse(trap.canvasX, trap.canvasY, trap.radius / 2, trap.radius / 2);
+    };
+
+    /**
      * Draws a normal circle.
      *
      * @param circle the circle to draw
@@ -261,6 +318,8 @@ export default function (p5Lib) {
      * Draw player names
      */
     let drawPlayerName = function (playerObject) {
+        if (!playerObject.name) return;
+
         p5Lib.textAlign(p5Lib.CENTER, p5Lib.CENTER);
         p5Lib.textSize(playerObject.radius * constants.graphics.PLAYER_NAME_TEXT_FONT_SCALE);
         p5Lib.textFont(playerNameTextFont);
@@ -339,14 +398,16 @@ export default function (p5Lib) {
             let playerName = player.name;
             let text = "";
 
-            // Check for long names in order to cut them down.
-            if (playerName.length > constants.graphics.LEADER_BOARD_MAX_NAME_LENGTH) {
-                playerName = playerName.substr(0, constants.graphics.LEADER_BOARD_MAX_NAME_LENGTH - constants.graphics.LEADER_BOARD_DOTS_COUNT);
+            if (playerName) {
+                // Check for long names in order to cut them down.
+                if (playerName.length > constants.graphics.LEADER_BOARD_MAX_NAME_LENGTH) {
+                    playerName = playerName.substr(0, constants.graphics.LEADER_BOARD_MAX_NAME_LENGTH - constants.graphics.LEADER_BOARD_DOTS_COUNT);
 
-                for (let j = 0; j < constants.graphics.LEADER_BOARD_DOTS_COUNT; j++)
-                    playerName += ".";
+                    for (let j = 0; j < constants.graphics.LEADER_BOARD_DOTS_COUNT; j++)
+                        playerName += ".";
+                }
+                text += playerName;
             }
-            text += playerName;
 
             // Check for small score digits to know how many spaces needed.
             let scoreDigitsCnt = 0, tmpScore = playerScore;

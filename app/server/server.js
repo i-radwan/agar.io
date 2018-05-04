@@ -55,6 +55,7 @@ class GameServer {
         //
         setInterval(self.sendRoomsGameStatus.bind(self), Constants.SEND_GAME_STATUS_RATE);
         setInterval(self.regenerateGems.bind(self), Constants.REGENERATE_GEMS_RATE);
+        setInterval(self.regenerateTraps.bind(self), Constants.REGENERATE_TRAPS_RATE);
     };
 
     /**
@@ -202,6 +203,16 @@ class GameServer {
     regenerateGems() {
         for (let i in this.rooms) {
             this.rooms[i].generateGems();
+        }
+    };
+
+    /**
+     * Regenerates the traps of all game rooms
+     * every specific interval of time.
+     */
+    regenerateTraps() {
+        for (let i in this.rooms) {
+            this.rooms[i].generateTraps();
         }
     };
 }

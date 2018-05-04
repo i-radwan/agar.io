@@ -154,19 +154,20 @@ class Player {
      * Eats the given object and update the player's
      * radius, velocity, and score in accordance.
      *
-     * @param obj   the object to eat (gem, or other player)
+     * @param obj       the object to eat (gem, or other player)
+     * @param factor    indicates if the player's score to be increased (gem/player) or decreased(trap)
      */
-    eat(obj) {
+    eat(obj, factor = 1) {
         // Increment player's score
-        this.score += (obj.score || 1);
+        this.score += (obj.score || 1) * factor;
 
         // Area(new) = Area(old) + Area(obj)
-        this.radius = Math.sqrt(this.radius * this.radius + obj.radius * obj.radius);
+        this.radius = Math.sqrt(this.radius * this.radius + obj.radius * obj.radius * factor);
 
         // Update player's velocity
         this.velocity = Math.max(
             Constants.PLAYER_MIN_SPEED,
-            Constants.PLAYER_INITIAL_SPEED - 0.00291 * this.radius
+            Constants.PLAYER_INITIAL_SPEED - 0.00291 * this.radius * factor
         );
 
         // Save user's highest score
