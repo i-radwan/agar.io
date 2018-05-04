@@ -56,7 +56,9 @@ export default function () {
             LEADER_BOARD_MAX_SCORE_LENGTH: 5,
 
             HUD_MARGIN_WIDTH_FACTOR: 10 / 1920,
-            HUD_MARGIN_HEIGHT_FACTOR: 10 / 1080
+            HUD_MARGIN_HEIGHT_FACTOR: 10 / 1080,
+
+            ALERT_DURATION: 500
         }
     };
 };

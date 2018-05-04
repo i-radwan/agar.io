@@ -133,11 +133,17 @@ export default function () {
         let clientNow = Date.now();
 
         for (let key in serverGamePlayers) {
-            let player = module.status.players[key] || {};
-            Object.assign(player, serverGamePlayers[key]);
+            let player = module.status.players[key] || {score: 0};
 
+            // Check if player hit a trap
+            player.hit = player.score > serverGamePlayers[key].score;
+            player.hitTime = (player.hit ? Date.now() : player.hitTime);
+
+            // Assign server player to local one
+            Object.assign(player, serverGamePlayers[key]);
             serverGamePlayers[key] = player;
 
+            // Extrapolate other players
             if (key === module.status.meId) continue;
 
             let delays = (player.lag + clientNow - now) / constants.general.UPDATE_PHYSICS_THRESHOLD;

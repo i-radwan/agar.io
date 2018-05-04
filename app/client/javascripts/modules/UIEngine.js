@@ -155,6 +155,7 @@ export default function (p5Lib) {
         player.canvasY = player.y;
         player.canvasRadius = player.radius;
         player.yOffset = 0; // Used for noisy bubble
+        player.redness = 0; // Used for alert effect
     };
 
     /**
@@ -197,11 +198,18 @@ export default function (p5Lib) {
         // Lerp player radius
         blob.yOffset += elapsed * constants.graphics.WABBLE_SPEED / Math.sqrt(blob.radius);
 
+        if (blob.hit || Date.now() - blob.hitTime < constants.graphics.ALERT_DURATION) {
+            blob.redness += 0.1;
+            if (blob.redness >= 1) blob.redness = 0;
+        } else {
+            blob.redness = 0;
+        }
+
         // Draw the large noisy circle
-        drawNoisyCircle(blob, blob.radius, constants.graphics.OUTER_RADIUS_EXTRA_LENGTH, constants.graphics.BLOB_STROKE_COLOR);
+        drawNoisyCircle(blob, blob.radius, constants.graphics.OUTER_RADIUS_EXTRA_LENGTH, constants.graphics.BLOB_STROKE_COLOR, 0);
 
         // Draw the small noisy circle
-        drawNoisyCircle(blob, blob.radius - constants.graphics.OUTER_RADIUS_EXTRA_LENGTH, 0, blob.color);
+        drawNoisyCircle(blob, blob.radius - constants.graphics.OUTER_RADIUS_EXTRA_LENGTH, 0, blob.color, blob.redness);
 
         // Draw My center and Server Center (Debugging)
         let serverCenterCircle = {
@@ -275,12 +283,13 @@ export default function (p5Lib) {
      * @param extraRadius an added length to the borders in order to extend the blob outer layer.
      * @param color the circle filling color
      */
-    let drawNoisyCircle = function (blob, radius, extraRadius, color) {
+    let drawNoisyCircle = function (blob, radius, extraRadius, color, redness) {
         p5Lib.push();
         p5Lib.beginShape();
 
         // Fill the drawing with the required color
-        p5Lib.fill(color);
+        let c = p5Lib.lerpColor(p5Lib.color(color), p5Lib.color("rgba(255, 0, 0, 1)"), redness);
+        p5Lib.fill(c);
 
         let xOffset = 0;
         for (let theta = 0; theta < p5Lib.TWO_PI - 0.1; theta += 0.01) {
