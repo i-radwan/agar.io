@@ -233,7 +233,7 @@ export default function (p5Lib) {
         // Fill the drawing with the required color
         p5Lib.fill(trap.color);
 
-        let delta = trap.radius;
+        let delta = 0;
         let sign = 1;
 
         for (let theta = 0; theta <= p5Lib.TWO_PI; theta += 0.025) {
