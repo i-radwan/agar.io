@@ -145,9 +145,22 @@ class Player {
 
         let dx = this.x - obj.x;
         let dy = this.y - obj.y;
-        let distanceSquared = dx * dx + dy * dy;
+        let distance = Math.sqrt(dx * dx + dy * dy);
 
-        return this.radius * this.radius > distanceSquared + obj.radius * obj.radius * 0.25;
+        if (distance >= this.radius + obj.radius)
+            return false;
+
+        // Circle Circle intersection By @SharkMan201
+        let theta = 2 * Math.acos((this.radius * this.radius + distance * distance - obj.radius * obj.radius)
+            / (2 * this.radius * distance));
+        let phi = 2 * Math.acos((obj.radius * obj.radius + distance * distance - this.radius * this.radius)
+            / (2 * obj.radius * distance));
+        let intersectedArea = ((this.radius * this.radius) / 2) * (theta - Math.sin(theta))
+            + ((obj.radius * obj.radius) / 2) * (phi - Math.sin(phi));
+
+        let otherPlayerArea = Math.acos(-1) * obj.radius * obj.radius;
+
+        return intersectedArea >= 0.75 * otherPlayerArea;
     }
 
     /**
@@ -176,7 +189,8 @@ class Player {
                 {_id: this.user._id},
                 {highScore: this.score},
                 {multi: true},
-                function (err, count) {}
+                function (err, count) {
+                }
             );
         }
     }

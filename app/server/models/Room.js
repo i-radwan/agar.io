@@ -288,7 +288,8 @@ class Room {
         while (cnt--) {
             let pos = {
                 x: Utilities.getRandomFloat(-1, 1),
-                y: Utilities.getRandomFloat(-1, 1)
+                y: Utilities.getRandomFloat(-1, 1),
+                radius: Constants.PLAYER_INITIAL_RADIUS
             };
 
             if (this.isEmptyPosition(pos)) {
