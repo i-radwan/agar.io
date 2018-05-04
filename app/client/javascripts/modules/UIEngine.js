@@ -225,8 +225,8 @@ export default function (p5Lib) {
             radius: 0.1 * blob.canvasRadius
         };
 
-        drawCircle(centerCircle);
-        drawCircle(serverCenterCircle);
+        // drawCircle(centerCircle);
+        // drawCircle(serverCenterCircle);
     };
 
     /**
@@ -293,7 +293,7 @@ export default function (p5Lib) {
         p5Lib.fill(c);
 
         let xOffset = 0;
-        for (let theta = 0; theta < p5Lib.TWO_PI - 0.1; theta += 0.01) {
+        for (let theta = 0; theta < p5Lib.TWO_PI - 0.1; theta += 0.1) {
             // Get the vertex of the circle
             let x = blob.canvasX + radius * Math.cos(theta);
             let y = blob.canvasY + radius * Math.sin(theta);
@@ -317,7 +317,7 @@ export default function (p5Lib) {
             p5Lib.vertex(x, y);
 
             // Increase the xOffset to get another noisy pattern in the next loop (for the blob animation)
-            xOffset += 0.01;
+            xOffset += 0.06;
         }
 
         p5Lib.endShape();

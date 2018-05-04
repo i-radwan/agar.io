@@ -191,7 +191,7 @@ class GameServer {
         delete this.playerRoomId[id];
 
         // Remove room if this was the last player
-        if (this.rooms[roomID].playersCount === 0) {
+        if (this.rooms[roomID] && this.rooms[roomID].playersCount === 0) {
             delete this.rooms[roomID];
         }
     }

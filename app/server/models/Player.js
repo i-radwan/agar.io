@@ -160,7 +160,7 @@ class Player {
 
         let otherPlayerArea = Math.acos(-1) * obj.radius * obj.radius;
 
-        return intersectedArea >= 0.75 * otherPlayerArea;
+        return intersectedArea >= 0.5 * otherPlayerArea;
     }
 
     /**
@@ -180,7 +180,7 @@ class Player {
         // Update player's velocity
         this.velocity = Math.max(
             Constants.PLAYER_MIN_SPEED,
-            Constants.PLAYER_INITIAL_SPEED - 0.00291 * this.radius * factor
+            Constants.PLAYER_INITIAL_SPEED - 0.00291 * this.radius
         );
 
         // Save user's highest score
