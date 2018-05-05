@@ -1,7 +1,6 @@
 .idea/deployment.xml
 .idea/webServers.xml
 .idea/workspace.xml
-.idea/workspace.xml
 .idea/dictionaries/*
 node_modules/
 **/.DS_Store
