@@ -112,11 +112,13 @@ function setupServer() {
         User.create(userData, function (error, user) {
             if (error || !user) {
                 res.json({status: 1, error_msg: "The username already exists"});
+                console.log("error in registering", error);
             }
             else {
                 req.session.user = user;
                 req.session.name = username;
                 res.json({status: 0});
+                console.log(username, "has registered...");
             }
         });
     });
@@ -134,11 +136,13 @@ function setupServer() {
         User.authenticate(username, password, function (error, user) {
             if (error) {
                 res.json({status: 1, error_msg: error.message});
+                console.log("error in logging in", error);
             }
             else {
                 req.session.user = user;
                 req.session.name = username;
                 res.json({status: 0});
+                console.log(username, "has logged in...");
             }
         });
     });
@@ -149,11 +153,12 @@ function setupServer() {
         if (req.session) {
             req.session.destroy(function (err) {
                 if (err) {
-                    console.log("logout", err);
                     res.json({status: 1, error_msg: "Please try again later!"});
+                    console.log("error in logging out", error);
                 }
                 else {
                     res.json({status: 0});
+                    console.log(req.session.user, "has logged out...");
                 }
             });
         }

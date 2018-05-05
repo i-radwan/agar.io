@@ -10,8 +10,7 @@ let userSchema = new mongoose.Schema({
         type: 'string',
         unique: true,
         required: true,
-        trim: true,
-        lowercase: true
+        trim: true
     },
     password: {
         type: 'string',
@@ -47,7 +46,7 @@ userSchema.pre('save', function (next) {
  * @param callback
  */
 userSchema.statics.authenticate = function (username, password, callback) {
-    this.findOne({username: username}).exec(function (err, user) {
+    this.findOne({username: new RegExp(username, 'i') }).exec(function (err, user) {
         if (err) {
             console.log(err);
             return callback(new Error('Internal error'))
