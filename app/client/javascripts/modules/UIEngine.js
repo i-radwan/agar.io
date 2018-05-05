@@ -225,8 +225,8 @@ export default function (p5Lib) {
             radius: 0.1 * blob.canvasRadius
         };
 
-        // drawCircle(centerCircle);
-        // drawCircle(serverCenterCircle);
+        drawCircle(centerCircle);
+        drawCircle(serverCenterCircle);
     };
 
     /**

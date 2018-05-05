@@ -7,7 +7,7 @@ function Constants() {
         // Server related constants
         //
         PORT: 3000,
-        PING_TIMEOUT: 10000,
+        PING_TIMEOUT: 5000,
         UPDATE_PHYSICS_THRESHOLD: 15,
         SEND_GAME_STATUS_RATE: 40,
         REGENERATE_GEMS_RATE: 10000,

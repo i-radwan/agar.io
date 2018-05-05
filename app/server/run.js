@@ -1,7 +1,7 @@
 // Imports
 const Constants = require("./utils/Constants")();
 const GameServer = require("./server");
-const User = require('./models/user');
+const User = require('./models/User');
 
 const express = require('express');
 const app = express();
