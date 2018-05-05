@@ -39,7 +39,7 @@ export default function () {
 
             STARS_COUNT: 1000,
             STAR_RADIUS: 0.00063,
-            STAR_COLOR: "white",
+            STAR_COLOR: "#f5f6fa",
 
             START_BLOB_RADIUS: 0.02 * 6000,     // MAX_RADIUS_ZOOM_THRESHOLD * INITIAL_ZOOM
             BLOB_STROKE_COLOR: 255,
@@ -51,7 +51,7 @@ export default function () {
             TEXT_HEIGHT: 20,
             TEXT_COLOR: 'orange',
 
-            LEADER_BOARD_TITLE: "Leaderboard",
+            LEADER_BOARD_TITLE: "Leader Board",
             LEADER_BOARD_PLAYERS_COUNT: 10,
             LEADER_BOARD_SPACES_COUNT: 5,
             LEADER_BOARD_MAX_NAME_LENGTH: 10,

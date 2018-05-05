@@ -84,12 +84,13 @@ function setupServer() {
 
     // Main game screen
     app.get('/play', function (req, res) {
+        req.session.name = (req.session.user ? req.session.user.username : req.body.name) || "";
         res.sendFile(path.resolve('../client/views/index.html'));
     });
 
     // Join endpoint
     app.post('/join', function (req, res) {
-        req.session.name = (req.session.user ? req.session.user.username : req.body.name);
+        req.session.name = (req.session.user ? req.session.user.username : req.body.name) || "";
         res.json({status: 0});
     });
 

@@ -15,7 +15,7 @@ class Gem {
         this.id = id;
 
         // Pick a random color
-        this.color = Constants.COLORS[Utilities.getRandomInt(0, Constants.COLORS.length)];
+        this.color = Constants.GEMS_COLORS[Utilities.getRandomInt(0, Constants.GEMS_COLORS.length)];
 
         // Set radius
         this.radius = Constants.GEM_RADIUS;

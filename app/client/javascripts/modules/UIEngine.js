@@ -119,7 +119,7 @@ export default function (p5Lib) {
         }
 
         drawHUDText("bottom", "left", "Score: " + score, HUDMarginLeft, window.innerHeight - HUDMarginDown);
-        drawLeaderboard();
+        drawLeaderBoard();
     };
 
     /**
@@ -385,22 +385,22 @@ export default function (p5Lib) {
     };
 
     /**
-     * Draw the leaderboard on the top right with all of its calculations.
+     * Draw the leader board on the top right with all of its calculations.
      */
-    let drawLeaderboard = function () {
-        let leaderboardTitle = constants.graphics.LEADER_BOARD_TITLE;
+    let drawLeaderBoard = function () {
+        let leaderBoardTitle = constants.graphics.LEADER_BOARD_TITLE;
 
-        // Calculate how many spaces needed to m,ake leaderboard title in the middle.
+        // Calculate how many spaces needed to m,ake leader board title in the middle.
         let spacesCnt = (constants.graphics.LEADER_BOARD_MAX_NAME_LENGTH
             + constants.graphics.LEADER_BOARD_MAX_SCORE_LENGTH
             + constants.graphics.LEADER_BOARD_SPACES_COUNT
-            - (leaderboardTitle.length)) / 2;
+            - (leaderBoardTitle.length)) / 2;
 
         for (let i = 0; i < spacesCnt; i++)
-            leaderboardTitle += " ";
+            leaderBoardTitle += " ";
 
-        // Draw leaderboard title.
-        drawHUDText("top", "right", leaderboardTitle, window.innerWidth - HUDMarginRight, HUDMarginUp);
+        // Draw leader board title.
+        drawHUDText("top", "right", leaderBoardTitle, window.innerWidth - HUDMarginRight, HUDMarginUp);
 
         for (let i = 0; i < Math.min(constants.graphics.LEADER_BOARD_PLAYERS_COUNT, sortedPlayers.length); i++) {
             let player = sortedPlayers[sortedPlayers.length - i - 1];
@@ -435,7 +435,7 @@ export default function (p5Lib) {
             }
             text += playerScore;
 
-            // Draw the player score and name in the leaderboard.
+            // Draw the player score and name in the leader board.
             drawHUDText("top", "right", text, window.innerWidth - HUDMarginRight, (i + 1) * constants.graphics.TEXT_HEIGHT + HUDMarginUp);
         }
     };
