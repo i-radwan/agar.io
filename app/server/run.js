@@ -116,9 +116,9 @@ function setupServer() {
             }
             else {
                 req.session.user = user;
-                req.session.name = username;
+                req.session.name = user.username;
                 res.json({status: 0});
-                console.log(username, "has registered...");
+                console.log(user.username, "has registered...");
             }
         });
     });
@@ -140,9 +140,9 @@ function setupServer() {
             }
             else {
                 req.session.user = user;
-                req.session.name = username;
+                req.session.name = user.username;
                 res.json({status: 0});
-                console.log(username, "has logged in...");
+                console.log(user.username, "has logged in...");
             }
         });
     });
