@@ -101,11 +101,13 @@ export default function (gameStatus, gameOverCallback) {
 
         // Add new players canvas params
         for (let key in status.newPlayers) {
+            if (key === status.meId && !status.newGame) continue;
+            status.newGame = false;
+
             let player = status.players[key];
             let playerInfo = status.newPlayers[key];
 
             Object.assign(player, playerInfo);
-
             uiEngine.addPlayerCanvasParams(player);
         }
 
@@ -125,6 +127,7 @@ export default function (gameStatus, gameOverCallback) {
 
         // Lag is to much, happens with tab out, let's roll back to server now!
         if (count === -1) {
+            console.log("Force");
             physicsEngine.forceServerPositions(status.players);
             status.env.forcePosition = false;
             return;

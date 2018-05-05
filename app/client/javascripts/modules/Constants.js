@@ -1,8 +1,8 @@
 export default function () {
     return {
         general: {
-            AUTH_URL: "http://156.209.233.115:3000/",
-            GAME_URL: "http://156.209.233.115:3000/play",
+            AUTH_URL: "http://192.168.1.10:3000/",
+            GAME_URL: "http://192.168.1.10:3000/play",
             SEND_ANGLE_TO_SERVER_RATE: 15, // milliseconds
             RECEIVE_STATUS_FROM_SERVER: 40,
             MAX_ANGLES_BUFFER_SIZE: 20,
@@ -10,7 +10,7 @@ export default function () {
             FORCE_SERVER_POSITIONS_TIME: 3000
         },
         physics: {
-            MOVEMENT_INTERPOLATION_FACTOR: 0.3,
+            MOVEMENT_INTERPOLATION_FACTOR: 0.75,
             GROW_INTERPOLATION_FACTOR: 0.05
         },
         graphics: {

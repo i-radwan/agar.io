@@ -1,4 +1,4 @@
-const GAME_URL = "http://156.209.233.115:3000/play";
+const GAME_URL = "http://193.227.9.124:30702/play";
 const STATUS_OK = 0;
 const STATUS_ERROR = 0;
 

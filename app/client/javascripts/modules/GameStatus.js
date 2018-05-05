@@ -9,6 +9,7 @@ export default function () {
      */
     module.init = function () {
         module.status = {
+            newGame: true,
             meId: -1,
             name: "Test",
             highScore: 10,
@@ -149,7 +150,7 @@ export default function () {
 
             if (key === module.status.meId) continue;
 
-            let delays = Math.min(150, (player.lag + clientNow - now)) / constants.general.UPDATE_PHYSICS_THRESHOLD;
+            let delays = Math.min(200, (player.lag + module.status.env.ping / 2)) / constants.general.UPDATE_PHYSICS_THRESHOLD;
 
             let vf = player.velocity * delays;
             // let vf = player.velocity * 2 * delta / constants.general.UPDATE_PHYSICS_THRESHOLD;
