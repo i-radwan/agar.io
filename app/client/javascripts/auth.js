@@ -1,4 +1,9 @@
-const GAME_URL = "http://193.227.9.124:30702/play";
+// Imports
+import Constants from "./modules/Constants.js";
+
+const constants = Constants();
+
+const GAME_URL = constants.general.GAME_URL;
 const STATUS_OK = 0;
 const STATUS_ERROR = 0;
 

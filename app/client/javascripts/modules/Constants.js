@@ -1,8 +1,11 @@
 export default function () {
+    let SERVER_URL = "http://localhost";
+    let SERVER_PORT = "3000";
+
     return {
         general: {
-            AUTH_URL: "http://192.168.1.10:3000/",
-            GAME_URL: "http://192.168.1.10:3000/play",
+            AUTH_URL: SERVER_URL + ":" + SERVER_PORT + "/",
+            GAME_URL: SERVER_URL + ":" + SERVER_PORT + "/play",
             SEND_ANGLE_TO_SERVER_RATE: 15, // milliseconds
             RECEIVE_STATUS_FROM_SERVER: 40,
             MAX_ANGLES_BUFFER_SIZE: 20,
