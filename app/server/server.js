@@ -35,7 +35,7 @@ class GameServer {
                 let session = socket.handshake.session;
 
                 self.addNewPlayer(socket.id, session.user, session.name);
-                console.log("a player connected", socket.id);
+                console.log("a player connected", session.name);
             });
 
             // Updates player's angle
@@ -45,8 +45,10 @@ class GameServer {
 
             // Remove player on disconnection
             socket.on('disconnect', function () {
+                let session = socket.handshake.session;
+
                 self.removePlayer(socket.id);
-                console.log("a player disconnected", socket.id);
+                console.log("a player disconnected", session.name);
             });
         });
 
