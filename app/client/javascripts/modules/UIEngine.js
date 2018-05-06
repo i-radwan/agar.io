@@ -427,10 +427,11 @@ export default function (p5Lib) {
             }
 
             // Add all of the missing spaces in order to maintain the same width even with different scores/names.
+            let length = (playerName.length) ? playerName.length : 0;
             for (let j = 0; j < ((constants.graphics.LEADER_BOARD_SPACES_COUNT
                 + constants.graphics.LEADER_BOARD_MAX_SCORE_LENGTH - scoreDigitsCnt)
                 + (constants.graphics.LEADER_BOARD_MAX_NAME_LENGTH
-                    - playerName.length)); j++) {
+                    - length)); j++) {
                 text += " ";
             }
             text += playerScore;

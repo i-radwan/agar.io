@@ -1,5 +1,5 @@
 export default function () {
-    let SERVER_URL = "http://localhost";
+    let SERVER_URL = "http://192.168.1.10";
     let SERVER_PORT = "3000";
 
     return {

@@ -101,8 +101,10 @@ export default function (gameStatus, gameOverCallback) {
 
         // Add new players canvas params
         for (let key in status.newPlayers) {
-            if (key === status.meId && !status.newGame) continue;
-            status.newGame = false;
+            if (key === status.meId) {
+                if (!status.newGame) continue;
+                status.newGame = false;
+            }
 
             let player = status.players[key];
             let playerInfo = status.newPlayers[key];

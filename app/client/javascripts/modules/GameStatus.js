@@ -138,7 +138,7 @@ export default function () {
 
             // Check if player hit a trap
             player.hit = player.score > serverGamePlayers[key].score;
-            player.hitTime = (player.hit ? Date.now() : player.hitTime);
+            player.hitTime = (player.hit ? Date.now() : (player.hitTime ? player.hitTime : 0));
 
             // Assign server player to local one
             Object.assign(player, serverGamePlayers[key]);
