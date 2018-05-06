@@ -82,12 +82,12 @@ class Room {
      * @param player    the player to feed
      */
     eatOverlappingGems(player) {
-        for (let gemID in this.gems) {
-            let gem = this.gems[gemID];
+        for (let id in this.gems) {
+            let gem = this.gems[id];
 
             if (player.canEat(gem)) {
                 player.eat(gem);
-                this.removeGem(gemID);
+                this.removeGem(id);
             }
         }
     };
@@ -98,12 +98,12 @@ class Room {
      * @param player    the player to feed
      */
     eatOverlappingTraps(player) {
-        for (let trapID in this.traps) {
-            let trap = this.traps[trapID];
+        for (let id in this.traps) {
+            let trap = this.traps[id];
 
             if (player.score > 4 && player.canEat(trap)) {
                 player.eat(trap, Math.max(-20, -(player.score - 4)));
-                this.removeTrap(trapID);
+                this.removeTrap(id);
             }
         }
     };
@@ -219,7 +219,7 @@ class Room {
     /**
      * Returns players' graphics information.
      *
-     * @returns {Array} array of players' graphics info
+     * @returns Array array of players' graphics info
      */
     getPlayersGraphicsInfo() {
         let current = Date.now();

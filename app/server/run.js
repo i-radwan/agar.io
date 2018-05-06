@@ -84,12 +84,13 @@ function setupServer() {
 
     // Main game screen
     app.get('/play', function (req, res) {
+        req.session.name = (req.session.user ? req.session.user.username : req.body.name) || "";
         res.sendFile(path.resolve('../client/views/index.html'));
     });
 
     // Join endpoint
     app.post('/join', function (req, res) {
-        req.session.name = (req.session.user ? req.session.user.username : req.body.name);
+        req.session.name = (req.session.user ? req.session.user.username : req.body.name) || "";
         res.json({status: 0});
     });
 
@@ -116,9 +117,9 @@ function setupServer() {
             }
             else {
                 req.session.user = user;
-                req.session.name = username;
+                req.session.name = user.username;
                 res.json({status: 0});
-                console.log(username, "has registered...");
+                console.log(user.username, "has registered...");
             }
         });
     });
@@ -140,9 +141,9 @@ function setupServer() {
             }
             else {
                 req.session.user = user;
-                req.session.name = username;
+                req.session.name = user.username;
                 res.json({status: 0});
-                console.log(username, "has logged in...");
+                console.log(user.username, "has logged in...");
             }
         });
     });

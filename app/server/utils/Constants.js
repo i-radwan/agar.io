@@ -23,10 +23,11 @@ function Constants() {
         // Gems
         ROOM_MAX_GEMS: 600,
         GEM_RADIUS: 9 * SCALE_FACTOR,
+        GEMS_COLORS: ["red", "green", "blue", "yellow", "orange", "purple", "pink"],
 
         // Traps
         ROOM_MAX_TRAPS: 100,
-        TRAP_COLOR: "red",
+        TRAP_COLOR: "#c23616",
         TRAP_RADIUS: 9 * SCALE_FACTOR,
 
         // Players
@@ -34,9 +35,18 @@ function Constants() {
         PLAYER_INITIAL_RADIUS: 30 * SCALE_FACTOR,
         PLAYER_INITIAL_SPEED: 5 * SCALE_FACTOR,
         PLAYER_MIN_SPEED: 0.2 * SCALE_FACTOR,
-
-        // General
-        COLORS: ["red", "green", "blue", "yellow", "orange", "purple", "pink"],
+        PLAYERS_COLORS: [
+            "#6F1E51",
+            "#be2edd",
+            "#EA2027",
+            "#f39c12",
+            "#f1c40f",
+            "#C4E538",
+            "#44bd32",
+            "#009432",
+            "#0097e6",
+            "#192a56",
+        ],
     };
 }
 

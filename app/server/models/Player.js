@@ -17,11 +17,11 @@ class Player {
         // Set id (unique within room) and name
         this.id = id;
         this.user = user;
-        this.name = name || "";
+        this.name = name;
         this.score = 10;
 
         // Pick a random color
-        this.color = Constants.COLORS[Utilities.getRandomInt(0, Constants.COLORS.length)];
+        this.color = Constants.PLAYERS_COLORS[Utilities.getRandomInt(0, Constants.PLAYERS_COLORS.length)];
 
         // Set radius
         this.radius = Constants.PLAYER_INITIAL_RADIUS;
@@ -168,7 +168,7 @@ class Player {
      * radius, velocity, and score in accordance.
      *
      * @param obj       the object to eat (gem, or other player)
-     * @param factor    indicates if the player's score to be increased (gem/player) or decreased(trap)
+     * @param factor    indicates if the player's score is to be increased (gem/player) or decreased (trap)
      */
     eat(obj, factor = 1) {
         // Increment player's score
@@ -190,6 +190,7 @@ class Player {
                 {highScore: this.score},
                 {multi: true},
                 function (err, count) {
+
                 }
             );
         }
