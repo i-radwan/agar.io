@@ -28,7 +28,7 @@ function setupDatabase() {
     // Connect to MongoDB
     let mongoose = require('mongoose');
 
-    mongoose.connect('mongodb://192.168.1.10:27017/agar_io');
+    mongoose.connect('mongodb://localhost:27017/agar_io');
 
     // Handle MongoDB error
     let db = mongoose.connection;
