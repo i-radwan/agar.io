@@ -6,7 +6,7 @@ function Constants() {
         //
         // Server related constants
         //
-        PORT: 3000,
+        PORT: 30702,
         PING_TIMEOUT: 3000,
         UPDATE_PHYSICS_THRESHOLD: 15,
         SEND_GAME_STATUS_RATE: 40,
