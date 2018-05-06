@@ -1,6 +1,6 @@
 export default function () {
-    let SERVER_URL = "http://193.227.9.124";
-    let SERVER_PORT = "30702";
+    let SERVER_URL = "http://192.168.43.159";
+    let SERVER_PORT = "3000";
 
     return {
         general: {

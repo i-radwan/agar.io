@@ -6,7 +6,7 @@ function Constants() {
         //
         // Server related constants
         //
-        PORT: 30702,
+        PORT: 3000,
         PING_TIMEOUT: 3000,
         UPDATE_PHYSICS_THRESHOLD: 15,
         SEND_GAME_STATUS_RATE: 40,
@@ -43,7 +43,7 @@ function Constants() {
             "#009432",
             "#0097e6",
             "#192a56",
-        ],
+        ]
     };
 }
 
