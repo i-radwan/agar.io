@@ -84,6 +84,8 @@ function setupServer() {
 
     // Main game screen
     app.get('/play', function (req, res) {
+        req.session.name = req.session.name || "";
+
         res.sendFile(path.resolve('../client/views/index.html'));
     });
 
