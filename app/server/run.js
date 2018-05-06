@@ -84,7 +84,6 @@ function setupServer() {
 
     // Main game screen
     app.get('/play', function (req, res) {
-        req.session.name = (req.session.user ? req.session.user.username : req.body.name) || "";
         res.sendFile(path.resolve('../client/views/index.html'));
     });
 
@@ -152,6 +151,8 @@ function setupServer() {
     app.get('/logout', function (req, res) {
         // Destroy session object
         if (req.session) {
+            let username = req.session.user;
+
             req.session.destroy(function (err) {
                 if (err) {
                     res.json({status: 1, error_msg: "Please try again later!"});
@@ -159,7 +160,7 @@ function setupServer() {
                 }
                 else {
                     res.json({status: 0});
-                    console.log(req.session.user, "has logged out...");
+                    console.log(username, "has logged out...");
                 }
             });
         }
